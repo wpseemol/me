@@ -1,0 +1,2063 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Seemol Chakroborti · Full-Stack Developer | Laravel · MERN · Next.js
+        </title>
+
+        <!-- SEO Meta Tags -->
+        <meta
+            name="description"
+            content="Full-Stack Developer specializing in Laravel, MERN Stack, and Next.js. Hire Seemol Chakroborti for premium web development services."
+        />
+        <link rel="canonical" href="https://wpseemol.com" />
+
+        <!-- Open Graph / Social -->
+        <meta
+            property="og:title"
+            content="Seemol Chakroborti · Full-Stack Developer"
+        />
+        <meta
+            property="og:image"
+            content="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-weight='bold' fill='%2300d4ff'>&gt;_</text></svg>"
+        />
+        <meta
+            property="og:description"
+            content="Full-Stack Developer specializing in Laravel, MERN Stack, and Next.js. Hire Seemol Chakroborti for premium web development services."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://wpseemol.com" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+            name="twitter:title"
+            content="Seemol Chakroborti · Full-Stack Developer"
+        />
+        <meta
+            name="twitter:image"
+            content="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-weight='bold' fill='%2300d4ff'>&gt;_</text></svg>"
+        />
+        <meta
+            name="twitter:description"
+            content="Full-Stack Developer specializing in Laravel, MERN Stack, and Next.js. Hire Seemol Chakroborti for premium web development services."
+        />
+
+        <!-- Favicon – inline SVG ">_" -->
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-weight='bold' fill='%2300d4ff'>&gt;_</text></svg>"
+        />
+
+        <!-- Google Fonts (Inter) -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Font Awesome 6 (Free) -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        />
+
+        <style>
+            /* ============================================
+                   CSS CUSTOM PROPERTIES (Theme)
+                   ============================================ */
+            :root {
+                --bg-primary: #070b12;
+                --bg-secondary: #0d1524;
+                --bg-card: #111c2e;
+                --bg-card-hover: #16233b;
+                --bg-input: #0d1524;
+                --border-subtle: #1e2d45;
+
+                --text-primary: #e8edf5;
+                --text-secondary: #9aaec9;
+                --text-muted: #6a7f9e;
+
+                --accent-cyan: #00d4ff;
+                --accent-cyan-dim: rgba(0, 212, 255, 0.08);
+                --accent-cyan-glow: rgba(0, 212, 255, 0.25);
+                --accent-emerald: #10b981;
+                --accent-emerald-dim: rgba(16, 185, 129, 0.08);
+
+                --radius: 16px;
+                --radius-sm: 10px;
+                --radius-full: 9999px;
+
+                --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.45);
+                --shadow-glow: 0 0 40px rgba(0, 212, 255, 0.06);
+
+                --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                --font:
+                    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                    Roboto, sans-serif;
+            }
+
+            /* ============================================
+                   RESET & BASE
+                   ============================================ */
+            *,
+            *::before,
+            *::after {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            html {
+                scroll-behavior: smooth;
+                scroll-padding-top: 80px;
+            }
+
+            body {
+                font-family: var(--font);
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                line-height: 1.6;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+
+            img {
+                max-width: 100%;
+                display: block;
+            }
+
+            ul {
+                list-style: none;
+            }
+
+            /* ============================================
+                   SCROLLBAR
+                   ============================================ */
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+            ::-webkit-scrollbar-track {
+                background: var(--bg-primary);
+            }
+            ::-webkit-scrollbar-thumb {
+                background: var(--accent-cyan);
+                border-radius: var(--radius-full);
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: var(--accent-emerald);
+            }
+
+            /* ============================================
+                   UTILITY
+                   ============================================ */
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 24px;
+            }
+
+            .section-label {
+                display: inline-block;
+                font-size: 0.7rem;
+                font-weight: 600;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                color: var(--accent-cyan);
+                background: var(--accent-cyan-dim);
+                padding: 4px 16px;
+                border-radius: var(--radius-full);
+                border: 1px solid rgba(0, 212, 255, 0.12);
+                margin-bottom: 16px;
+            }
+
+            .section-title {
+                font-size: clamp(1.8rem, 4vw, 2.8rem);
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                line-height: 1.15;
+                margin-bottom: 12px;
+            }
+
+            .section-title .highlight {
+                color: var(--accent-cyan);
+            }
+
+            .section-sub {
+                font-size: 1.05rem;
+                color: var(--text-secondary);
+                max-width: 540px;
+            }
+
+            .section-header {
+                margin-bottom: 48px;
+            }
+
+            .section-header.centered {
+                text-align: center;
+            }
+            .section-header.centered .section-sub {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            /* ============================================
+                   NAVBAR
+                   ============================================ */
+            .navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 1000;
+                padding: 16px 0;
+                background: rgba(7, 11, 18, 0.78);
+                backdrop-filter: blur(16px) saturate(1.2);
+                border-bottom: 1px solid rgba(30, 45, 69, 0.3);
+                transition: var(--transition);
+            }
+
+            .navbar.scrolled {
+                background: rgba(7, 11, 18, 0.92);
+                box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            }
+
+            .navbar .container {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .nav-logo {
+                font-size: 1.25rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                color: var(--text-primary);
+            }
+
+            .nav-logo .accent {
+                color: var(--accent-cyan);
+            }
+
+            .nav-logo .dot {
+                display: inline-block;
+                width: 6px;
+                height: 6px;
+                background: var(--accent-cyan);
+                border-radius: 50%;
+                margin-left: 2px;
+                vertical-align: middle;
+            }
+
+            .nav-links {
+                display: flex;
+                align-items: center;
+                gap: 32px;
+            }
+
+            .nav-links a {
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: var(--text-secondary);
+                transition: var(--transition);
+                position: relative;
+            }
+
+            .nav-links a::after {
+                content: "";
+                position: absolute;
+                bottom: -4px;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: var(--accent-cyan);
+                transition: var(--transition);
+            }
+
+            .nav-links a:hover {
+                color: var(--text-primary);
+            }
+
+            .nav-links a:hover::after {
+                width: 100%;
+            }
+
+            .nav-cta {
+                background: var(--accent-cyan);
+                color: #070b12 !important;
+                padding: 8px 20px;
+                border-radius: var(--radius-full);
+                font-weight: 600 !important;
+                font-size: 0.8rem !important;
+                transition: var(--transition);
+            }
+
+            .nav-cta::after {
+                display: none !important;
+            }
+
+            .nav-cta:hover {
+                background: #00c2eb;
+                transform: translateY(-1px);
+                box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+            }
+
+            /* Hamburger */
+            .nav-toggle {
+                display: none;
+                flex-direction: column;
+                gap: 5px;
+                cursor: pointer;
+                background: none;
+                border: none;
+                padding: 4px;
+            }
+
+            .nav-toggle span {
+                display: block;
+                width: 26px;
+                height: 2.5px;
+                background: var(--text-primary);
+                border-radius: 2px;
+                transition: var(--transition);
+                transform-origin: center;
+            }
+
+            .nav-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+            .nav-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+            .nav-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+
+            /* ============================================
+                   HERO
+                   ============================================ */
+            .hero {
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                padding: 120px 0 80px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .hero::before {
+                content: "";
+                position: absolute;
+                top: -40%;
+                right: -20%;
+                width: 600px;
+                height: 600px;
+                background: radial-gradient(
+                    circle,
+                    rgba(0, 212, 255, 0.04) 0%,
+                    transparent 70%
+                );
+                pointer-events: none;
+            }
+
+            .hero::after {
+                content: "";
+                position: absolute;
+                bottom: -30%;
+                left: -20%;
+                width: 500px;
+                height: 500px;
+                background: radial-gradient(
+                    circle,
+                    rgba(16, 185, 129, 0.03) 0%,
+                    transparent 70%
+                );
+                pointer-events: none;
+            }
+
+            .hero-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 60px;
+                align-items: center;
+                position: relative;
+                z-index: 1;
+            }
+
+            .hero-content .badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background: var(--accent-cyan-dim);
+                border: 1px solid rgba(0, 212, 255, 0.12);
+                padding: 6px 18px 6px 12px;
+                border-radius: var(--radius-full);
+                font-size: 0.75rem;
+                font-weight: 500;
+                color: var(--accent-cyan);
+                margin-bottom: 24px;
+            }
+
+            .hero-content .badge .pulse {
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                background: var(--accent-cyan);
+                border-radius: 50%;
+                animation: pulse-dot 2s infinite;
+            }
+
+            @keyframes pulse-dot {
+                0%,
+                100% {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+                50% {
+                    opacity: 0.3;
+                    transform: scale(0.7);
+                }
+            }
+
+            .hero-content h1 {
+                font-size: clamp(2.8rem, 6vw, 4.2rem);
+                font-weight: 800;
+                letter-spacing: -0.03em;
+                line-height: 1.08;
+                margin-bottom: 20px;
+            }
+
+            .hero-content h1 .highlight {
+                color: var(--accent-cyan);
+            }
+
+            .hero-content .subhead {
+                font-size: clamp(1rem, 1.3vw, 1.2rem);
+                color: var(--text-secondary);
+                max-width: 480px;
+                margin-bottom: 32px;
+                line-height: 1.7;
+            }
+
+            .hero-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+
+            .btn-primary {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                background: var(--accent-cyan);
+                color: #070b12;
+                font-weight: 600;
+                font-size: 0.95rem;
+                padding: 14px 34px;
+                border-radius: var(--radius-full);
+                border: none;
+                cursor: pointer;
+                transition: var(--transition);
+                font-family: var(--font);
+            }
+
+            .btn-primary:hover {
+                background: #00c2eb;
+                transform: translateY(-2px);
+                box-shadow: 0 12px 32px rgba(0, 212, 255, 0.3);
+            }
+
+            .btn-secondary {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                background: transparent;
+                color: var(--text-primary);
+                font-weight: 500;
+                font-size: 0.95rem;
+                padding: 14px 34px;
+                border-radius: var(--radius-full);
+                border: 1px solid var(--border-subtle);
+                cursor: pointer;
+                transition: var(--transition);
+                font-family: var(--font);
+            }
+
+            .btn-secondary:hover {
+                border-color: var(--accent-cyan);
+                color: var(--accent-cyan);
+                background: var(--accent-cyan-dim);
+            }
+
+            .hero-stats {
+                display: flex;
+                gap: 40px;
+                margin-top: 40px;
+                padding-top: 32px;
+                border-top: 1px solid var(--border-subtle);
+            }
+
+            .hero-stats .stat-num {
+                font-size: 1.6rem;
+                font-weight: 700;
+                color: var(--text-primary);
+            }
+
+            .hero-stats .stat-label {
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            /* Hero Visual */
+            .hero-visual {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .hero-code-block {
+                width: 100%;
+                max-width: 480px;
+                background: var(--bg-card);
+                border-radius: var(--radius);
+                padding: 28px 30px;
+                border: 1px solid var(--border-subtle);
+                box-shadow: var(--shadow-card);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .hero-code-block::before {
+                content: "";
+                position: absolute;
+                top: -80px;
+                right: -80px;
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(
+                    circle,
+                    rgba(0, 212, 255, 0.06) 0%,
+                    transparent 70%
+                );
+                pointer-events: none;
+            }
+
+            .code-header {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 20px;
+            }
+
+            .code-header span {
+                display: block;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+            }
+
+            .code-header .dot-red {
+                background: #ff5f56;
+            }
+            .code-header .dot-yellow {
+                background: #ffbd2e;
+            }
+            .code-header .dot-green {
+                background: #27c93f;
+            }
+
+            .code-line {
+                font-family: "JetBrains Mono", "Fira Code", monospace;
+                font-size: 0.8rem;
+                line-height: 1.9;
+                color: var(--text-secondary);
+            }
+
+            .code-line .kw {
+                color: #c792ea;
+            }
+            .code-line .fn {
+                color: #82aaff;
+            }
+            .code-line .str {
+                color: #c3e88d;
+            }
+            .code-line .var {
+                color: #f78c6c;
+            }
+            .code-line .cmt {
+                color: #546e7a;
+                font-style: italic;
+            }
+            .code-line .num {
+                color: #f78c6c;
+            }
+            .code-line .cyan {
+                color: var(--accent-cyan);
+            }
+            .code-line .emerald {
+                color: var(--accent-emerald);
+            }
+
+            /* ============================================
+                   SERVICES
+                   ============================================ */
+            .services {
+                padding: 100px 0;
+                background: var(--bg-secondary);
+            }
+
+            .services-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 28px;
+            }
+
+            .service-card {
+                background: var(--bg-card);
+                border-radius: var(--radius);
+                padding: 36px 30px 32px;
+                border: 1px solid var(--border-subtle);
+                transition: var(--transition);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .service-card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 3px;
+                background: linear-gradient(
+                    90deg,
+                    var(--accent-cyan),
+                    var(--accent-emerald)
+                );
+                opacity: 0;
+                transition: var(--transition);
+            }
+
+            .service-card:hover {
+                border-color: rgba(0, 212, 255, 0.2);
+                transform: translateY(-6px);
+                box-shadow: var(--shadow-card), var(--shadow-glow);
+            }
+
+            .service-card:hover::before {
+                opacity: 1;
+            }
+
+            .service-card .icon {
+                font-size: 2.2rem;
+                color: var(--accent-cyan);
+                margin-bottom: 18px;
+                display: inline-block;
+            }
+
+            .service-card h3 {
+                font-size: 1.2rem;
+                font-weight: 600;
+                margin-bottom: 10px;
+            }
+
+            .service-card p {
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+                line-height: 1.7;
+            }
+
+            .service-card .tag {
+                display: inline-block;
+                margin-top: 16px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: var(--accent-cyan);
+                background: var(--accent-cyan-dim);
+                padding: 4px 14px;
+                border-radius: var(--radius-full);
+                border: 1px solid rgba(0, 212, 255, 0.08);
+            }
+
+            /* ============================================
+                   TECH STACK
+                   ============================================ */
+            .tech {
+                padding: 100px 0;
+                background: var(--bg-primary);
+            }
+
+            .tech-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 20px;
+            }
+
+            .tech-item {
+                background: var(--bg-card);
+                border: 1px solid var(--border-subtle);
+                border-radius: var(--radius-sm);
+                padding: 28px 16px;
+                text-align: center;
+                transition: var(--transition);
+                cursor: default;
+            }
+
+            .tech-item:hover {
+                border-color: rgba(0, 212, 255, 0.25);
+                transform: translateY(-4px);
+                box-shadow: var(--shadow-glow);
+            }
+
+            .tech-item .icon {
+                font-size: 2.6rem;
+                margin-bottom: 10px;
+                display: inline-block;
+                color: var(--text-secondary);
+                transition: var(--transition);
+            }
+
+            .tech-item:hover .icon {
+                color: var(--accent-cyan);
+            }
+
+            .tech-item .name {
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: var(--text-secondary);
+            }
+
+            .tech-item .bar {
+                width: 100%;
+                height: 3px;
+                background: var(--border-subtle);
+                border-radius: 4px;
+                margin-top: 10px;
+                overflow: hidden;
+            }
+
+            .tech-item .bar .fill {
+                display: block;
+                height: 100%;
+                border-radius: 4px;
+                background: linear-gradient(
+                    90deg,
+                    var(--accent-cyan),
+                    var(--accent-emerald)
+                );
+                width: 0%;
+                transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+
+            /* ============================================
+                   PROJECTS
+                   ============================================ */
+            .projects {
+                padding: 100px 0;
+                background: var(--bg-secondary);
+            }
+
+            .projects-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 28px;
+            }
+
+            .project-card {
+                background: var(--bg-card);
+                border-radius: var(--radius);
+                padding: 28px 26px 26px;
+                border: 1px solid var(--border-subtle);
+                transition: var(--transition);
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
+            .project-card:hover {
+                border-color: rgba(0, 212, 255, 0.2);
+                transform: translateY(-4px);
+                box-shadow: var(--shadow-card), var(--shadow-glow);
+            }
+
+            .project-card .top {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 12px;
+            }
+
+            .project-card .repo-icon {
+                font-size: 1.4rem;
+                color: var(--text-muted);
+            }
+
+            .project-card .lang {
+                font-size: 0.65rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--accent-cyan);
+                background: var(--accent-cyan-dim);
+                padding: 2px 12px;
+                border-radius: var(--radius-full);
+                border: 1px solid rgba(0, 212, 255, 0.06);
+            }
+
+            .project-card h4 {
+                font-size: 1.05rem;
+                font-weight: 600;
+                margin-bottom: 8px;
+                color: var(--text-primary);
+            }
+
+            .project-card h4 a {
+                transition: var(--transition);
+            }
+
+            .project-card h4 a:hover {
+                color: var(--accent-cyan);
+            }
+
+            .project-card p {
+                font-size: 0.9rem;
+                color: var(--text-secondary);
+                line-height: 1.6;
+                flex: 1;
+                margin-bottom: 16px;
+                display: -webkit-box;
+                line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .project-card .meta {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.75rem;
+                color: var(--text-muted);
+                border-top: 1px solid var(--border-subtle);
+                padding-top: 14px;
+                margin-top: auto;
+            }
+
+            .project-card .meta .stars i {
+                margin-right: 4px;
+            }
+
+            .project-card .meta .stars span {
+                margin-right: 12px;
+            }
+
+            .project-card .meta .link {
+                color: var(--accent-cyan);
+                font-weight: 500;
+                transition: var(--transition);
+            }
+
+            .project-card .meta .link:hover {
+                color: var(--accent-emerald);
+            }
+
+            /* Project fallback */
+            .projects-fallback {
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 40px 20px;
+                color: var(--text-secondary);
+            }
+
+            .projects-fallback i {
+                font-size: 2.4rem;
+                color: var(--text-muted);
+                margin-bottom: 12px;
+                display: block;
+            }
+
+            /* ============================================
+                   CONTACT
+                   ============================================ */
+            .contact {
+                padding: 100px 0;
+                background: var(--bg-primary);
+            }
+
+            .contact-wrapper {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 60px;
+                align-items: start;
+            }
+
+            .contact-info h3 {
+                font-size: 1.8rem;
+                font-weight: 700;
+                margin-bottom: 12px;
+            }
+
+            .contact-info p {
+                color: var(--text-secondary);
+                margin-bottom: 28px;
+                font-size: 1rem;
+                line-height: 1.7;
+            }
+
+            .contact-info .social-links {
+                display: flex;
+                gap: 16px;
+            }
+
+            .contact-info .social-links a {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 48px;
+                height: 48px;
+                border-radius: var(--radius-sm);
+                background: var(--bg-card);
+                border: 1px solid var(--border-subtle);
+                color: var(--text-secondary);
+                font-size: 1.1rem;
+                transition: var(--transition);
+            }
+
+            .contact-info .social-links a:hover {
+                color: var(--accent-cyan);
+                border-color: var(--accent-cyan);
+                transform: translateY(-3px);
+                box-shadow: var(--shadow-glow);
+            }
+
+            .contact-form {
+                background: var(--bg-card);
+                border-radius: var(--radius);
+                padding: 36px 34px;
+                border: 1px solid var(--border-subtle);
+            }
+
+            .contact-form .form-group {
+                margin-bottom: 20px;
+            }
+
+            .contact-form label {
+                display: block;
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: var(--text-secondary);
+                margin-bottom: 6px;
+            }
+
+            .contact-form input,
+            .contact-form textarea {
+                width: 100%;
+                padding: 12px 16px;
+                background: var(--bg-input);
+                border: 1px solid var(--border-subtle);
+                border-radius: var(--radius-sm);
+                color: var(--text-primary);
+                font-family: var(--font);
+                font-size: 0.95rem;
+                transition: var(--transition);
+                outline: none;
+            }
+
+            .contact-form input:focus,
+            .contact-form textarea:focus {
+                border-color: var(--accent-cyan);
+                box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.06);
+            }
+
+            .contact-form textarea {
+                resize: vertical;
+                min-height: 130px;
+            }
+
+            .contact-form .form-error {
+                font-size: 0.75rem;
+                color: #f87171;
+                margin-top: 4px;
+                display: none;
+            }
+
+            .contact-form .form-error.visible {
+                display: block;
+            }
+
+            .contact-form .submit-row {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                margin-top: 4px;
+            }
+
+            .contact-form .submit-row .btn-primary {
+                flex-shrink: 0;
+            }
+
+            .contact-form .submit-row .hint {
+                font-size: 0.75rem;
+                color: var(--text-muted);
+            }
+
+            .contact-form .submit-row .hint i {
+                margin-right: 4px;
+            }
+
+            /* ============================================
+                   FOOTER
+                   ============================================ */
+            .footer {
+                padding: 32px 0;
+                border-top: 1px solid var(--border-subtle);
+                background: var(--bg-primary);
+            }
+
+            .footer .container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+
+            .footer p {
+                font-size: 0.85rem;
+                color: var(--text-muted);
+            }
+
+            .footer .foot-links {
+                display: flex;
+                gap: 24px;
+            }
+
+            .footer .foot-links a {
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                transition: var(--transition);
+            }
+
+            .footer .foot-links a:hover {
+                color: var(--accent-cyan);
+            }
+
+            /* ============================================
+                   RESPONSIVE
+                   ============================================ */
+            @media (max-width: 1024px) {
+                .hero-grid {
+                    grid-template-columns: 1fr;
+                    gap: 40px;
+                    text-align: center;
+                }
+
+                .hero-content .subhead {
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+
+                .hero-actions {
+                    justify-content: center;
+                }
+
+                .hero-stats {
+                    justify-content: center;
+                }
+
+                .hero-code-block {
+                    max-width: 100%;
+                }
+
+                .services-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .projects-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .contact-wrapper {
+                    grid-template-columns: 1fr;
+                    gap: 40px;
+                }
+
+                .contact-info {
+                    text-align: center;
+                }
+
+                .contact-info .social-links {
+                    justify-content: center;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .nav-links {
+                    position: fixed;
+                    top: 0;
+                    right: -100%;
+                    width: 280px;
+                    height: 100vh;
+                    background: var(--bg-secondary);
+                    border-left: 1px solid var(--border-subtle);
+                    flex-direction: column;
+                    justify-content: center;
+                    padding: 40px 32px;
+                    transition: var(--transition);
+                    gap: 24px;
+                    align-items: flex-start;
+                }
+
+                .nav-links.open {
+                    right: 0;
+                }
+
+                .nav-links a {
+                    font-size: 1.1rem;
+                }
+
+                .nav-links a::after {
+                    display: none;
+                }
+
+                .nav-cta {
+                    margin-top: 8px;
+                }
+
+                .nav-toggle {
+                    display: flex;
+                    z-index: 1001;
+                }
+
+                .services-grid {
+                    grid-template-columns: 1fr;
+                    max-width: 480px;
+                    margin: 0 auto;
+                }
+
+                .projects-grid {
+                    grid-template-columns: 1fr;
+                    max-width: 480px;
+                    margin: 0 auto;
+                }
+
+                .tech-grid {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+
+                .hero-stats {
+                    gap: 24px;
+                    flex-wrap: wrap;
+                }
+
+                .contact-form {
+                    padding: 24px 20px;
+                }
+
+                .contact-form .submit-row {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .contact-form .submit-row .hint {
+                    text-align: center;
+                }
+
+                .footer .container {
+                    flex-direction: column;
+                    text-align: center;
+                }
+
+                .hero-content h1 {
+                    font-size: 2.4rem;
+                }
+
+                .section-title {
+                    font-size: 1.8rem;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .tech-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .hero-content h1 {
+                    font-size: 2rem;
+                }
+
+                .hero-code-block {
+                    padding: 20px 16px;
+                }
+
+                .code-line {
+                    font-size: 0.65rem;
+                    line-height: 1.8;
+                }
+
+                .hero-stats .stat-num {
+                    font-size: 1.2rem;
+                }
+
+                .btn-primary,
+                .btn-secondary {
+                    padding: 12px 24px;
+                    font-size: 0.85rem;
+                }
+            }
+
+            /* ============================================
+                   ANIMATIONS (Intersection Observer)
+                   ============================================ */
+            .fade-up {
+                opacity: 0;
+                transform: translateY(30px);
+                transition:
+                    opacity 0.7s ease,
+                    transform 0.7s ease;
+            }
+
+            .fade-up.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .fade-up.delay-1 {
+                transition-delay: 0.05s;
+            }
+            .fade-up.delay-2 {
+                transition-delay: 0.1s;
+            }
+            .fade-up.delay-3 {
+                transition-delay: 0.15s;
+            }
+            .fade-up.delay-4 {
+                transition-delay: 0.2s;
+            }
+            .fade-up.delay-5 {
+                transition-delay: 0.25s;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ============================================
+    NAVBAR
+    ============================================ -->
+        <nav
+            class="navbar"
+            id="navbar"
+            role="navigation"
+            aria-label="Main navigation"
+        >
+            <div class="container">
+                <a href="#hero" class="nav-logo">
+                    <span class="accent">>_</span> wpseemol<span
+                        class="dot"
+                    ></span>
+                </a>
+
+                <ul class="nav-links" id="navLinks" role="menubar">
+                    <li role="none">
+                        <a href="#services" role="menuitem">Services</a>
+                    </li>
+                    <li role="none">
+                        <a href="#tech" role="menuitem">Tech</a>
+                    </li>
+                    <li role="none">
+                        <a href="#projects" role="menuitem">Projects</a>
+                    </li>
+                    <li role="none">
+                        <a href="#contact" role="menuitem" class="nav-cta"
+                            >Hire Me</a
+                        >
+                    </li>
+                </ul>
+
+                <button
+                    class="nav-toggle"
+                    id="navToggle"
+                    aria-label="Toggle navigation menu"
+                    aria-expanded="false"
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- ============================================
+    HERO
+    ============================================ -->
+        <section class="hero" id="hero">
+            <div class="container">
+                <div class="hero-grid">
+                    <div class="hero-content">
+                        <div class="badge">
+                            <span class="pulse"></span>
+                            Open for freelance &amp; full-time
+                        </div>
+                        <h1>
+                            Full-Stack<br />
+                            <span class="highlight"
+                                >Laravel · MERN · Next.js</span
+                            >
+                        </h1>
+                        <p class="subhead">
+                            I'm Seemol Chakroborti — architecting enterprise
+                            backends with Laravel, high-performance frontends
+                            with Next.js, and full-stack MERN applications that
+                            scale.
+                        </p>
+                        <div class="hero-actions">
+                            <a href="#contact" class="btn-primary">
+                                <i class="fas fa-paper-plane"></i> Hire Me
+                            </a>
+                            <a href="#projects" class="btn-secondary">
+                                <i class="fas fa-code"></i> View Work
+                            </a>
+                        </div>
+                        <div class="hero-stats">
+                            <div>
+                                <div class="stat-num">5+</div>
+                                <div class="stat-label">Years Experience</div>
+                            </div>
+                            <div>
+                                <div class="stat-num">20+</div>
+                                <div class="stat-label">Projects Delivered</div>
+                            </div>
+                            <div>
+                                <div class="stat-num">10+</div>
+                                <div class="stat-label">Happy Clients</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hero-visual">
+                        <div class="hero-code-block">
+                            <div class="code-header">
+                                <span class="dot-red"></span>
+                                <span class="dot-yellow"></span>
+                                <span class="dot-green"></span>
+                            </div>
+                            <div class="code-line">
+                                <span class="cmt">// Full-Stack Developer</span>
+                            </div>
+                            <div class="code-line">
+                                <span class="kw">const</span>
+                                <span class="var">seemol</span>
+                                <span class="kw">=</span> {
+                            </div>
+                            <div class="code-line">
+                                &nbsp;&nbsp;<span class="var">name</span>:
+                                <span class="str">'Seemol Chakroborti'</span>,
+                            </div>
+                            <div class="code-line">
+                                &nbsp;&nbsp;<span class="var">backend</span>:
+                                <span class="cyan">'Laravel'</span>,
+                            </div>
+                            <div class="code-line">
+                                &nbsp;&nbsp;<span class="var">frontend</span>:
+                                <span class="emerald">'Next.js · React'</span>,
+                            </div>
+                            <div class="code-line">
+                                &nbsp;&nbsp;<span class="var">stack</span>:
+                                <span class="str">'MERN'</span>,
+                            </div>
+                            <div class="code-line">
+                                &nbsp;&nbsp;<span class="var">status</span>:
+                                <span class="cyan">'available'</span>
+                            </div>
+                            <div class="code-line">};</div>
+                            <div class="code-line">&nbsp;</div>
+                            <div class="code-line">
+                                <span class="fn">console</span>.<span class="fn"
+                                    >log</span
+                                >(<span class="str"
+                                    >'🚀 Let\'s build something great.'</span
+                                >);
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+    SERVICES
+    ============================================ -->
+        <section class="services" id="services">
+            <div class="container">
+                <div class="section-header centered fade-up">
+                    <span class="section-label">What I Offer</span>
+                    <h2 class="section-title">
+                        Services <span class="highlight">You Can Buy</span>
+                    </h2>
+                    <p class="section-sub">
+                        End-to-end development tailored to your business needs.
+                    </p>
+                </div>
+
+                <div class="services-grid">
+                    <div class="service-card fade-up delay-1">
+                        <div class="icon"><i class="fas fa-server"></i></div>
+                        <h3>Enterprise Backend (Laravel)</h3>
+                        <p>
+                            Robust, secure, and scalable APIs with Laravel.
+                            Authentication, payment integrations, admin
+                            dashboards, and microservices.
+                        </p>
+                        <span class="tag">Laravel · PHP · MySQL</span>
+                    </div>
+
+                    <div class="service-card fade-up delay-2">
+                        <div class="icon"><i class="fas fa-rocket"></i></div>
+                        <h3>High-Performance Frontends (Next.js)</h3>
+                        <p>
+                            Blazing-fast, SEO-optimized, and interactive UIs
+                            built with Next.js and React. SSG, SSR, and ISR for
+                            maximum performance.
+                        </p>
+                        <span class="tag">Next.js · React · TypeScript</span>
+                    </div>
+
+                    <div class="service-card fade-up delay-3">
+                        <div class="icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <h3>Custom Full-Stack (MERN)</h3>
+                        <p>
+                            Complete full-stack applications with MongoDB,
+                            Express, React, and Node.js. From MVP to
+                            production-grade systems with real-time features.
+                        </p>
+                        <span class="tag"
+                            >MongoDB · Express · React · Node</span
+                        >
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+    TECH STACK — now with static content + animated bars
+    ============================================ -->
+        <section class="tech" id="tech">
+            <div class="container">
+                <div class="section-header centered fade-up">
+                    <span class="section-label">Expertise</span>
+                    <h2 class="section-title">
+                        Tech <span class="highlight">Stack</span>
+                    </h2>
+                    <p class="section-sub">
+                        Core technologies I work with daily — including React,
+                        Next.js, Express, MongoDB, MySQL, and more.
+                    </p>
+                </div>
+
+                <div class="tech-grid" id="techGrid">
+                    <!-- React -->
+                    <div class="tech-item fade-up delay-1">
+                        <div class="icon"><i class="fab fa-react"></i></div>
+                        <div class="name">React</div>
+                        <div class="bar">
+                            <span class="fill" data-level="88"></span>
+                        </div>
+                    </div>
+                    <!-- Next.js -->
+                    <div class="tech-item fade-up delay-2">
+                        <div class="icon"><i class="fas fa-code"></i></div>
+                        <div class="name">Next.js</div>
+                        <div class="bar">
+                            <span class="fill" data-level="85"></span>
+                        </div>
+                    </div>
+                    <!-- Express -->
+                    <div class="tech-item fade-up delay-3">
+                        <div class="icon"><i class="fas fa-server"></i></div>
+                        <div class="name">Express</div>
+                        <div class="bar">
+                            <span class="fill" data-level="76"></span>
+                        </div>
+                    </div>
+                    <!-- Node.js -->
+                    <div class="tech-item fade-up delay-4">
+                        <div class="icon"><i class="fab fa-node-js"></i></div>
+                        <div class="name">Node.js</div>
+                        <div class="bar">
+                            <span class="fill" data-level="82"></span>
+                        </div>
+                    </div>
+                    <!-- Laravel -->
+                    <div class="tech-item fade-up delay-5">
+                        <div class="icon"><i class="fab fa-laravel"></i></div>
+                        <div class="name">Laravel</div>
+                        <div class="bar">
+                            <span class="fill" data-level="90"></span>
+                        </div>
+                    </div>
+                    <!-- MongoDB -->
+                    <div class="tech-item fade-up delay-1">
+                        <div class="icon"><i class="fas fa-database"></i></div>
+                        <div class="name">MongoDB</div>
+                        <div class="bar">
+                            <span class="fill" data-level="78"></span>
+                        </div>
+                    </div>
+                    <!-- MySQL -->
+                    <div class="tech-item fade-up delay-2">
+                        <div class="icon"><i class="fas fa-database"></i></div>
+                        <div class="name">MySQL</div>
+                        <div class="bar">
+                            <span class="fill" data-level="80"></span>
+                        </div>
+                    </div>
+                    <!-- PHP -->
+                    <div class="tech-item fade-up delay-3">
+                        <div class="icon"><i class="fab fa-php"></i></div>
+                        <div class="name">PHP</div>
+                        <div class="bar">
+                            <span class="fill" data-level="85"></span>
+                        </div>
+                    </div>
+                    <!-- TypeScript -->
+                    <div class="tech-item fade-up delay-4">
+                        <div class="icon"><i class="fas fa-code"></i></div>
+                        <div class="name">TypeScript</div>
+                        <div class="bar">
+                            <span class="fill" data-level="72"></span>
+                        </div>
+                    </div>
+                    <!-- Docker -->
+                    <div class="tech-item fade-up delay-5">
+                        <div class="icon"><i class="fab fa-docker"></i></div>
+                        <div class="name">Docker</div>
+                        <div class="bar">
+                            <span class="fill" data-level="70"></span>
+                        </div>
+                    </div>
+                    <!-- Redis -->
+                    <div class="tech-item fade-up delay-1">
+                        <div class="icon"><i class="fas fa-cube"></i></div>
+                        <div class="name">Redis</div>
+                        <div class="bar">
+                            <span class="fill" data-level="65"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+    PROJECTS
+    ============================================ -->
+        <section class="projects" id="projects">
+            <div class="container">
+                <div class="section-header centered fade-up">
+                    <span class="section-label">Portfolio</span>
+                    <h2 class="section-title">
+                        Latest <span class="highlight">Projects</span>
+                    </h2>
+                    <p class="section-sub">
+                        Pinned repositories from my GitHub.
+                    </p>
+                </div>
+
+                <div class="projects-grid" id="projectsGrid">
+                    <!-- Dynamically populated by JavaScript -->
+                    <div class="projects-fallback">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading projects...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+    CONTACT
+    ============================================ -->
+        <section class="contact" id="contact">
+            <div class="container">
+                <div class="section-header centered fade-up">
+                    <span class="section-label">Get in Touch</span>
+                    <h2 class="section-title">
+                        Let's <span class="highlight">Build</span> Together
+                    </h2>
+                    <p class="section-sub">
+                        Have a project in mind? Reach out and let's make it
+                        happen.
+                    </p>
+                </div>
+
+                <div class="contact-wrapper">
+                    <div class="contact-info fade-up delay-1">
+                        <h3>Seemol Chakroborti</h3>
+                        <p>
+                            Full-Stack Developer with a passion for clean code
+                            and great design. Available for freelance contracts,
+                            full-time roles, and consulting.
+                        </p>
+                        <div class="social-links">
+                            <a
+                                href="https://github.com/wpseemol"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="GitHub"
+                            >
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a
+                                href="https://linkedin.com/in/wpseemolme"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="LinkedIn"
+                            >
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a
+                                href="https://facebook.com/wpseemol"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Facebook"
+                            >
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a
+                                href="mailto:wpseemol@gmail.com"
+                                aria-label="Email"
+                            >
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <form
+                        class="contact-form fade-up delay-2"
+                        id="contactForm"
+                        novalidate
+                    >
+                        <div class="form-group">
+                            <label for="contactName">Your Name</label>
+                            <input
+                                type="text"
+                                id="contactName"
+                                placeholder="e.g. Alex Rivera"
+                                required
+                            />
+                            <div class="form-error" id="nameError">
+                                Please enter your name.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactSubject">Subject</label>
+                            <input
+                                type="text"
+                                id="contactSubject"
+                                placeholder="e.g. Project Inquiry: E-Commerce Platform"
+                                required
+                            />
+                            <div class="form-error" id="subjectError">
+                                Please enter a subject.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactDetails">Project Details</label>
+                            <textarea
+                                id="contactDetails"
+                                placeholder="Describe your project, goals, timeline, and any specific requirements..."
+                                required
+                            ></textarea>
+                            <div class="form-error" id="detailsError">
+                                Please describe your project.
+                            </div>
+                        </div>
+
+                        <div class="submit-row">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-envelope"></i> Send via Email
+                            </button>
+                            <span class="hint">
+                                <i class="fas fa-lock"></i> Opens your email
+                                client
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+    FOOTER
+    ============================================ -->
+        <footer class="footer">
+            <div class="container">
+                <p>
+                    &copy; 2026 <strong>wpseemol</strong> — Built with
+                    <i
+                        class="fas fa-heart"
+                        style="color: var(--accent-cyan)"
+                    ></i>
+                </p>
+                <div class="foot-links">
+                    <a
+                        href="https://github.com/wpseemol"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >GitHub</a
+                    >
+                    <a
+                        href="https://linkedin.com/in/wpseemolme"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >LinkedIn</a
+                    >
+                    <a href="mailto:wpseemol@gmail.com">Email</a>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ============================================
+    JAVASCRIPT
+    ============================================ -->
+        <script>
+            (function () {
+                "use strict";
+
+                /* ============================================
+               NAVBAR TOGGLE (Mobile)
+               ============================================ */
+                const navToggle = document.getElementById("navToggle");
+                const navLinks = document.getElementById("navLinks");
+
+                navToggle.addEventListener("click", function () {
+                    const expanded =
+                        this.getAttribute("aria-expanded") === "true"
+                            ? "false"
+                            : "true";
+                    this.setAttribute("aria-expanded", expanded);
+                    navLinks.classList.toggle("open");
+                    this.classList.toggle("active");
+                });
+
+                document.querySelectorAll(".nav-links a").forEach((link) => {
+                    link.addEventListener("click", () => {
+                        navLinks.classList.remove("open");
+                        navToggle.classList.remove("active");
+                        navToggle.setAttribute("aria-expanded", "false");
+                    });
+                });
+
+                const navbar = document.getElementById("navbar");
+                window.addEventListener("scroll", function () {
+                    const currentScroll =
+                        window.pageYOffset ||
+                        document.documentElement.scrollTop;
+                    if (currentScroll > 20) {
+                        navbar.classList.add("scrolled");
+                    } else {
+                        navbar.classList.remove("scrolled");
+                    }
+                });
+
+                /* ============================================
+               INTERSECTION OBSERVER (Fade-up + tech bars)
+               ============================================ */
+                const fadeElements = document.querySelectorAll(".fade-up");
+
+                const observer = new IntersectionObserver(
+                    (entries) => {
+                        entries.forEach((entry) => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add("visible");
+                            }
+                        });
+                    },
+                    {
+                        threshold: 0.15,
+                        rootMargin: "0px 0px -40px 0px",
+                    },
+                );
+
+                fadeElements.forEach((el) => observer.observe(el));
+
+                // Tech bars animation
+                const techSection = document.getElementById("tech");
+                const techFills = document.querySelectorAll(".tech-item .fill");
+                let techAnimated = false;
+
+                const techObserver = new IntersectionObserver(
+                    (entries) => {
+                        entries.forEach((entry) => {
+                            if (entry.isIntersecting && !techAnimated) {
+                                techAnimated = true;
+                                techFills.forEach((fill) => {
+                                    const level = parseInt(
+                                        fill.dataset.level,
+                                        10,
+                                    );
+                                    if (level) {
+                                        fill.style.width = level + "%";
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    { threshold: 0.25 },
+                );
+
+                techObserver.observe(techSection);
+
+                /* ============================================
+               PROJECTS — GitHub API
+               ============================================ */
+                const projectsGrid = document.getElementById("projectsGrid");
+                const GITHUB_USERNAME = "wpseomol"; // check spelling
+                const GITHUB_API = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=3`;
+
+                const fallbackProjects = [
+                    {
+                        name: "Laravel E-Commerce API",
+                        description:
+                            "A robust REST API for e-commerce with authentication, cart, orders, and payment integration.",
+                        language: "PHP",
+                        stargazers_count: 24,
+                        html_url:
+                            "https://github.com/wpseomol/laravel-ecommerce-api",
+                        updated_at: new Date().toISOString(),
+                    },
+                    {
+                        name: "Next.js Dashboard Starter",
+                        description:
+                            "Production-ready admin dashboard with authentication, dark mode, and real-time data tables.",
+                        language: "TypeScript",
+                        stargazers_count: 18,
+                        html_url:
+                            "https://github.com/wpseomol/nextjs-dashboard",
+                        updated_at: new Date().toISOString(),
+                    },
+                    {
+                        name: "MERN Task Manager",
+                        description:
+                            "Full-stack task management app with drag-and-drop, real-time updates, and team collaboration.",
+                        language: "JavaScript",
+                        stargazers_count: 31,
+                        html_url:
+                            "https://github.com/wpseomol/mern-task-manager",
+                        updated_at: new Date().toISOString(),
+                    },
+                ];
+
+                function renderProjects(projects) {
+                    projectsGrid.innerHTML = "";
+                    projects.forEach((repo, index) => {
+                        const card = document.createElement("div");
+                        card.className = "project-card fade-up";
+                        card.style.transitionDelay = index * 0.08 + "s";
+
+                        const langColor = repo.language
+                            ? getLangColor(repo.language)
+                            : "#6a7f9e";
+
+                        card.innerHTML = `
+                        <div class="top">
+                            <span class="repo-icon"><i class="fas fa-folder"></i></span>
+                            <span class="lang" style="color:${langColor};border-color:${langColor}33;">${repo.language || "N/A"}</span>
+                        </div>
+                        <h4><a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">${repo.name}</a></h4>
+                        <p>${repo.description || "No description provided."}</p>
+                        <div class="meta">
+                            <div class="stars">
+                                <i class="fas fa-star" style="color:#fbbf24;"></i>
+                                <span>${repo.stargazers_count || 0}</span>
+                                <i class="fas fa-code-fork" style="margin-left:8px;color:var(--text-muted);"></i>
+                                <span>${repo.forks_count || 0}</span>
+                            </div>
+                            <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer" class="link">
+                                View <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    `;
+                        projectsGrid.appendChild(card);
+                    });
+
+                    document
+                        .querySelectorAll(".project-card.fade-up")
+                        .forEach((el) => observer.observe(el));
+                }
+
+                function getLangColor(lang) {
+                    const colors = {
+                        JavaScript: "#f1e05a",
+                        TypeScript: "#3178c6",
+                        PHP: "#4f5d95",
+                        Python: "#3572A5",
+                        Java: "#b07219",
+                        Go: "#00ADD8",
+                        Rust: "#dea584",
+                        "C++": "#f34b7d",
+                        "C#": "#178600",
+                        Ruby: "#701516",
+                        Swift: "#ffac45",
+                        Kotlin: "#A97BFF",
+                        HTML: "#e34c26",
+                        CSS: "#563d7c",
+                        Shell: "#89e051",
+                        Vue: "#41b883",
+                        Dart: "#00B4AB",
+                    };
+                    return colors[lang] || "#6a7f9e";
+                }
+
+                function fetchGitHubProjects() {
+                    fetch(GITHUB_API)
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error(
+                                    `GitHub API responded with ${response.status}`,
+                                );
+                            }
+                            return response.json();
+                        })
+                        .then((data) => {
+                            if (data && data.length > 0) {
+                                renderProjects(data);
+                            } else {
+                                renderProjects(fallbackProjects);
+                            }
+                        })
+                        .catch((error) => {
+                            console.warn(
+                                "GitHub API fetch failed, using fallback projects.",
+                                error,
+                            );
+                            renderProjects(fallbackProjects);
+                        });
+                }
+
+                fetchGitHubProjects();
+
+                /* ============================================
+               CONTACT FORM — mailto:
+               ============================================ */
+                const contactForm = document.getElementById("contactForm");
+                const nameInput = document.getElementById("contactName");
+                const subjectInput = document.getElementById("contactSubject");
+                const detailsInput = document.getElementById("contactDetails");
+
+                const nameError = document.getElementById("nameError");
+                const subjectError = document.getElementById("subjectError");
+                const detailsError = document.getElementById("detailsError");
+
+                function validateField(input, errorEl, message) {
+                    if (input.value.trim() === "") {
+                        errorEl.textContent = message;
+                        errorEl.classList.add("visible");
+                        return false;
+                    } else {
+                        errorEl.classList.remove("visible");
+                        return true;
+                    }
+                }
+
+                contactForm.addEventListener("submit", function (e) {
+                    e.preventDefault();
+
+                    const isNameValid = validateField(
+                        nameInput,
+                        nameError,
+                        "Please enter your name.",
+                    );
+                    const isSubjectValid = validateField(
+                        subjectInput,
+                        subjectError,
+                        "Please enter a subject.",
+                    );
+                    const isDetailsValid = validateField(
+                        detailsInput,
+                        detailsError,
+                        "Please describe your project.",
+                    );
+
+                    if (!isNameValid || !isSubjectValid || !isDetailsValid) {
+                        return;
+                    }
+
+                    const subject = encodeURIComponent(
+                        subjectInput.value.trim(),
+                    );
+                    const body = encodeURIComponent(
+                        `Name: ${nameInput.value.trim()}\n` +
+                            `Subject: ${subjectInput.value.trim()}\n\n` +
+                            `Project Details:\n${detailsInput.value.trim()}\n\n` +
+                            `— Sent from wpseemol.com`,
+                    );
+
+                    const mailtoLink = `mailto:wpseemol@gmail.com?subject=${subject}&body=${body}`;
+                    window.location.href = mailtoLink;
+
+                    const btn = contactForm.querySelector(".btn-primary");
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Email Opened';
+                    btn.style.background = "#10b981";
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = "";
+                    }, 3000);
+                });
+
+                nameInput.addEventListener("blur", function () {
+                    validateField(this, nameError, "Please enter your name.");
+                });
+                subjectInput.addEventListener("blur", function () {
+                    validateField(
+                        this,
+                        subjectError,
+                        "Please enter a subject.",
+                    );
+                });
+                detailsInput.addEventListener("blur", function () {
+                    validateField(
+                        this,
+                        detailsError,
+                        "Please describe your project.",
+                    );
+                });
+
+                document.addEventListener("keydown", function (e) {
+                    if (
+                        e.key === "Escape" &&
+                        navLinks.classList.contains("open")
+                    ) {
+                        navLinks.classList.remove("open");
+                        navToggle.classList.remove("active");
+                        navToggle.setAttribute("aria-expanded", "false");
+                    }
+                });
+
+                document.addEventListener("click", function (e) {
+                    if (navLinks.classList.contains("open")) {
+                        const isClickInside =
+                            navLinks.contains(e.target) ||
+                            navToggle.contains(e.target);
+                        if (!isClickInside) {
+                            navLinks.classList.remove("open");
+                            navToggle.classList.remove("active");
+                            navToggle.setAttribute("aria-expanded", "false");
+                        }
+                    }
+                });
+            })();
+        </script>
+    </body>
+</html>
