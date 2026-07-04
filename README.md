@@ -2,7 +2,7 @@
 
 > A premium, production-ready, one-page personal portfolio website built with pure HTML, CSS, and JavaScript. Designed to attract high-value clients for Laravel, MERN, and Next.js development services.
 
-![Portfolio Screenshot](https://via.placeholder.com/1200x600/070b12/00d4ff?text=wpseemol+Portfolio)
+![Portfolio Screenshot](./images/Screenshot%202026-07-05%20004449.png)
 
 ## Table of Contents
 
