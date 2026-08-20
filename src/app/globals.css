@@ -1,0 +1,239 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-display: 'Bricolage Grotesque';
+    --font-body: 'Manrope';
+    --font-mono: 'JetBrains Mono';
+
+    /* Light — cool lavender paper, deliberately not cream */
+    --c-bg: 239 237 245;
+    --c-elev: 255 255 255;
+    --c-surface: 247 246 251;
+    --c-line: 22 18 44;
+    --c-line-a: 0.11;
+    --c-text: 20 18 31;
+    --c-muted: 92 85 120;
+
+    --glow-a: 108 76 245;
+    --glow-b: 229 70 139;
+    --sel: 108 76 245;
+
+    color-scheme: light;
+  }
+
+  .dark {
+    /* Dark — near-black with a violet cast */
+    --c-bg: 10 9 18;
+    --c-elev: 18 16 31;
+    --c-surface: 23 20 42;
+    --c-line: 255 255 255;
+    --c-line-a: 0.1;
+    --c-text: 237 235 247;
+    --c-muted: 162 156 191;
+
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: rgb(var(--c-line) / var(--c-line-a));
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: rgb(var(--c-bg));
+    color: rgb(var(--c-text));
+    font-family: var(--font-body), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  ::selection {
+    background: rgb(var(--sel) / 0.28);
+    color: rgb(var(--c-text));
+  }
+
+  :focus-visible {
+    outline: 2px solid #6c4cf5;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Thin, brand-tinted scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(var(--c-bg));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #6c4cf5, #e5468b);
+    border-radius: 99px;
+    border: 3px solid rgb(var(--c-bg));
+  }
+}
+
+@layer base {
+  /* Reveal targets start hidden ONLY when JS is running, so a failed script
+     or a no-JS crawler still sees every word. */
+  .js [data-reveal] {
+    visibility: hidden;
+  }
+  .js [data-word] {
+    transform: translateY(116%);
+  }
+}
+
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-shell px-5 sm:px-8;
+  }
+
+  /* The route-label structural device: every section is an endpoint. */
+  .route-label {
+    @apply inline-flex items-center gap-2 font-mono text-2xs uppercase tracking-[0.18em] text-muted;
+  }
+  .route-label .verb {
+    @apply rounded px-1.5 py-0.5 font-bold;
+    background: linear-gradient(135deg, rgb(108 76 245 / 0.16), rgb(229 70 139 / 0.16));
+    color: #7b5cf6;
+  }
+  .dark .route-label .verb {
+    color: #a690ff;
+  }
+
+  .card {
+    @apply relative rounded-card border bg-elev/70 backdrop-blur-sm;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease,
+      box-shadow 0.45s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgb(108 76 245 / 0.42);
+    box-shadow: 0 18px 44px -22px rgb(108 76 245 / 0.55);
+  }
+
+  .grad-text {
+    background: linear-gradient(102deg, #6c4cf5 0%, #9b5cf0 46%, #e5468b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease,
+      background-color 0.25s ease, color 0.25s ease;
+  }
+  .btn-primary {
+    background: linear-gradient(102deg, #6c4cf5, #e5468b);
+    color: #fff;
+    box-shadow: 0 10px 30px -12px rgb(108 76 245 / 0.85);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 38px -12px rgb(229 70 139 / 0.7);
+  }
+  .btn-ghost {
+    @apply border bg-elev/60 text-body backdrop-blur;
+  }
+  .btn-ghost:hover {
+    transform: translateY(-2px);
+    border-color: rgb(108 76 245 / 0.5);
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-full border px-3 py-1 font-mono text-2xs uppercase tracking-[0.12em] text-muted;
+  }
+
+  .hairline {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--c-line) / calc(var(--c-line-a) * 2.4)) 18%,
+      rgb(var(--c-line) / calc(var(--c-line-a) * 2.4)) 82%,
+      transparent
+    );
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  }
+}
+
+/* ---- Theme switch: circular wipe via the View Transitions API ---- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2147483646;
+}
+html.theme-wipe::view-transition-new(root) {
+  animation: theme-wipe-in 0.62s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes theme-wipe-in {
+  from {
+    clip-path: circle(0% at var(--wipe-x, 50%) var(--wipe-y, 0%));
+  }
+  to {
+    clip-path: circle(150% at var(--wipe-x, 50%) var(--wipe-y, 0%));
+  }
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

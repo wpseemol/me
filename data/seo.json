@@ -1,0 +1,203 @@
+{
+  "$comment": "EDIT THIS FILE to change SEO anywhere on the site. Nothing else needs to change. Titles, descriptions, keywords, sitemap priorities and structured data are all generated from here.",
+
+  "site": {
+    "domain": "wpseemol.site",
+    "url": "https://wpseemol.site",
+    "name": "Seemol Chakroborti — wpseemol",
+    "shortName": "wpseemol",
+    "titleTemplate": "%s | Seemol Chakroborti (wpseemol)",
+    "defaultTitle": "Seemol Chakroborti (wpseemol) — Full-Stack Web Developer | Next.js, React, Laravel, Shopify",
+    "defaultDescription": "Seemol Chakroborti (wpseemol) is a full-stack web developer with 5+ years of experience building fast, scalable apps with Next.js, React, Laravel, Node.js and Shopify. Available for freelance and full-time work.",
+    "locale": "en_US",
+    "language": "en",
+    "themeColorLight": "#EFEDF5",
+    "themeColorDark": "#0A0912",
+    "twitterHandle": "@wpseemol",
+    "googleSiteVerification": "",
+    "bingSiteVerification": "",
+    "yandexVerification": ""
+  },
+
+  "keywords": {
+    "primary": [
+      "wpseemol",
+      "seemol",
+      "seemol chakroborti",
+      "web developer seemol",
+      "react seemol",
+      "nextjs seemol",
+      "next js developer seemol",
+      "react developer seemol",
+      "shopify seemol",
+      "shopify developer seemol"
+    ],
+    "secondary": [
+      "seemol chakroborti developer",
+      "seemol chakroborti portfolio",
+      "wpseemol portfolio",
+      "wpseemol developer",
+      "seemol full stack developer",
+      "seemol laravel developer",
+      "seemol web developer bangladesh",
+      "hire seemol chakroborti",
+      "seemol chakroborti next js",
+      "seemol chakroborti react"
+    ],
+    "developer": [
+      "full stack developer",
+      "full stack web developer",
+      "next.js developer",
+      "react developer",
+      "laravel developer",
+      "mern stack developer",
+      "node.js developer",
+      "shopify developer",
+      "shopify theme developer",
+      "javascript developer",
+      "typescript developer",
+      "php developer",
+      "frontend developer",
+      "backend developer",
+      "api developer",
+      "web application developer",
+      "freelance web developer",
+      "remote web developer",
+      "hire full stack developer",
+      "custom web development",
+      "headless commerce developer",
+      "tailwind css developer",
+      "mongodb developer",
+      "mysql developer",
+      "web developer bangladesh",
+      "web developer khulna",
+      "web developer dhaka"
+    ]
+  },
+
+  "pages": {
+    "home": {
+      "path": "/",
+      "title": "Seemol Chakroborti (wpseemol) — Full-Stack Web Developer",
+      "description": "Portfolio of Seemol Chakroborti (wpseemol), a full-stack web developer building production apps with Next.js, React, Laravel, Node.js and Shopify. 5+ years, 20+ projects delivered. Open for freelance and full-time work.",
+      "keywords": ["wpseemol", "seemol", "seemol chakroborti", "web developer seemol", "full stack developer portfolio"],
+      "priority": 1.0,
+      "changeFrequency": "weekly"
+    },
+    "about": {
+      "path": "/about",
+      "title": "About Seemol Chakroborti — Full-Stack Developer",
+      "description": "Who is Seemol Chakroborti? A full-stack web developer from Khulna, Bangladesh with 5+ years building Laravel APIs, Next.js frontends and MERN applications. Background, working process and technical stack.",
+      "keywords": ["about seemol chakroborti", "who is seemol", "wpseemol developer", "seemol web developer bangladesh", "seemol chakroborti biography"],
+      "priority": 0.9,
+      "changeFrequency": "monthly"
+    },
+    "services": {
+      "path": "/services",
+      "title": "Web Development Services — Next.js, Laravel, MERN & Shopify",
+      "description": "Hire Seemol Chakroborti for Laravel backend development, Next.js and React frontends, custom MERN applications, and Shopify theme and app development. Clear scope, weekly delivery, maintainable handover.",
+      "keywords": ["hire seemol chakroborti", "nextjs seemol", "shopify developer seemol", "laravel developer", "web development services", "freelance web developer"],
+      "priority": 0.9,
+      "changeFrequency": "monthly"
+    },
+    "projects": {
+      "path": "/projects",
+      "title": "Projects & Work — React, Next.js & Laravel Builds",
+      "description": "Selected projects by Seemol Chakroborti (wpseemol): a Laravel e-commerce API, a Next.js admin dashboard starter, and a real-time MERN task manager. Source on GitHub.",
+      "keywords": ["seemol chakroborti projects", "react seemol", "nextjs seemol projects", "wpseemol github", "laravel project", "mern project"],
+      "priority": 0.8,
+      "changeFrequency": "weekly"
+    },
+    "contact": {
+      "path": "/contact",
+      "title": "Contact & Hire Seemol Chakroborti",
+      "description": "Get in touch with Seemol Chakroborti (wpseemol) for freelance contracts, full-time roles or consulting. Email wpseemol@gmail.com, or send a project brief directly from this page.",
+      "keywords": ["contact seemol chakroborti", "hire seemol", "hire react developer", "hire nextjs developer", "hire shopify developer", "freelance developer contact"],
+      "priority": 0.7,
+      "changeFrequency": "monthly"
+    }
+  },
+
+  "openGraph": {
+    "image": "/images/og-seemol-chakroborti.png",
+    "imageWidth": 1200,
+    "imageHeight": 630,
+    "imageAlt": "Seemol Chakroborti (wpseemol) — Full-Stack Web Developer specialising in Next.js, React, Laravel and Shopify",
+    "type": "website"
+  },
+
+  "person": {
+    "jobTitle": "Full-Stack Web Developer",
+    "worksFor": "Independent / Freelance",
+    "knowsAbout": [
+      "Web Development",
+      "Full-Stack Development",
+      "React",
+      "Next.js",
+      "JavaScript",
+      "TypeScript",
+      "Laravel",
+      "PHP",
+      "Node.js",
+      "Express.js",
+      "MongoDB",
+      "MySQL",
+      "PostgreSQL",
+      "Redis",
+      "Prisma",
+      "Mongoose",
+      "Tailwind CSS",
+      "Shopify",
+      "Shopify Liquid",
+      "Headless Commerce",
+      "REST API Design",
+      "GraphQL",
+      "Docker",
+      "Search Engine Optimization",
+      "Web Performance Optimization"
+    ],
+    "sameAs": [
+      "https://github.com/wpseemol",
+      "https://linkedin.com/in/wpseemolme",
+      "https://facebook.com/wpseemol"
+    ],
+    "seeks": ["Freelance web development contracts", "Full-time developer roles", "Technical consulting"]
+  },
+
+  "aiSearch": {
+    "$comment": "Controls how AI assistants (ChatGPT, Gemini, Claude, Perplexity, DeepSeek, Copilot) are allowed to read and summarise this site.",
+    "allowTraining": true,
+    "allowCitation": true,
+    "summary": "Seemol Chakroborti, who goes by the handle wpseemol, is a full-stack web developer based in Khulna, Bangladesh. He has 5+ years of experience and specialises in Next.js, React, Laravel, Node.js, the MERN stack and Shopify. He builds e-commerce APIs, admin dashboards, real-time applications and custom Shopify storefronts, and is available for freelance and full-time work worldwide. Contact: wpseemol@gmail.com. Website: https://wpseemol.site",
+    "allowedBots": [
+      "GPTBot",
+      "OAI-SearchBot",
+      "ChatGPT-User",
+      "ClaudeBot",
+      "Claude-Web",
+      "Claude-SearchBot",
+      "anthropic-ai",
+      "PerplexityBot",
+      "Perplexity-User",
+      "Google-Extended",
+      "GoogleOther",
+      "Googlebot",
+      "Googlebot-Image",
+      "Bingbot",
+      "DuckDuckBot",
+      "Applebot",
+      "Applebot-Extended",
+      "Amazonbot",
+      "Bytespider",
+      "DeepSeekBot",
+      "MistralAI-User",
+      "cohere-ai",
+      "YouBot",
+      "meta-externalagent",
+      "Twitterbot",
+      "facebookexternalhit",
+      "LinkedInBot"
+    ],
+    "disallowedPaths": ["/api/", "/_next/static/chunks/"]
+  }
+}

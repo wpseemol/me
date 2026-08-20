@@ -1,0 +1,557 @@
+{
+  "profile": {
+    "name": "Seemol Chakroborti",
+    "handle": "wpseemol",
+    "firstName": "Seemol",
+    "alternateNames": [
+      "wpseemol",
+      "Seemol",
+      "Seemol Chakraborty",
+      "Shimul Chakroborti"
+    ],
+    "role": "Full-Stack Web Developer",
+    "roleLong": "Full-Stack Developer — Laravel · MERN · Next.js",
+    "tagline": "I architect enterprise backends with Laravel, high-performance frontends with Next.js, and full-stack MERN applications that scale.",
+    "shortBio": "Seemol Chakroborti (wpseemol) is a full-stack web developer building production-grade applications with React, Next.js, Laravel, Node.js and Shopify.",
+    "longBio": "I'm Seemol Chakroborti — a full-stack web developer with 5+ years of hands-on experience shipping software that real businesses depend on. I work across the whole stack: secure, well-documented Laravel and Express APIs on the backend, and fast, accessible, SEO-ready interfaces in React and Next.js on the frontend. I care about the parts users never see — query plans, cache layers, error budgets — because that's what keeps a product fast on day 400, not just day one.",
+    "availability": "Open for freelance & full-time",
+    "available": true,
+    "location": {
+      "city": "Khulna",
+      "region": "Khulna Division",
+      "country": "Bangladesh",
+      "countryCode": "BD",
+      "timezone": "Asia/Dhaka",
+      "remote": true
+    },
+    "email": "wpseemol@gmail.com",
+    "portrait": "/images/seemol-chakroborti.jpg",
+    "portraitAlt": "Seemol Chakroborti (wpseemol) — full-stack web developer specializing in Next.js, React, Laravel and Shopify",
+    "portraitMono": "/images/seemol-chakroborti-portrait.jpg",
+    "portraitMonoAlt": "Portrait of Seemol Chakroborti, React and Next.js developer available for freelance web development",
+    "languages": [
+      "Bengali",
+      "English",
+      "Hindi"
+    ]
+  },
+  "stats": [
+    {
+      "value": 5,
+      "suffix": "+",
+      "label": "Years experience"
+    },
+    {
+      "value": 20,
+      "suffix": "+",
+      "label": "Projects delivered"
+    },
+    {
+      "value": 10,
+      "suffix": "+",
+      "label": "Happy clients"
+    }
+  ],
+  "socials": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/wpseemol",
+      "handle": "@wpseemol",
+      "icon": "github"
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://linkedin.com/in/wpseemolme",
+      "handle": "wpseemolme",
+      "icon": "linkedin"
+    },
+    {
+      "name": "Facebook",
+      "url": "https://facebook.com/wpseemol",
+      "handle": "@wpseemol",
+      "icon": "facebook"
+    },
+    {
+      "name": "Email",
+      "url": "mailto:wpseemol@gmail.com",
+      "handle": "wpseemol@gmail.com",
+      "icon": "mail"
+    }
+  ],
+  "codeSnippet": {
+    "comment": "// Full-Stack Developer",
+    "lines": [
+      [
+        {
+          "t": "kw",
+          "v": "const"
+        },
+        {
+          "t": "plain",
+          "v": " "
+        },
+        {
+          "t": "var",
+          "v": "seemol"
+        },
+        {
+          "t": "plain",
+          "v": " = {"
+        }
+      ],
+      [
+        {
+          "t": "prop",
+          "v": "  name"
+        },
+        {
+          "t": "plain",
+          "v": ": "
+        },
+        {
+          "t": "str",
+          "v": "'Seemol Chakroborti'"
+        },
+        {
+          "t": "plain",
+          "v": ","
+        }
+      ],
+      [
+        {
+          "t": "prop",
+          "v": "  backend"
+        },
+        {
+          "t": "plain",
+          "v": ": ["
+        },
+        {
+          "t": "str",
+          "v": "'Express'"
+        },
+        {
+          "t": "plain",
+          "v": ", "
+        },
+        {
+          "t": "str",
+          "v": "'Laravel'"
+        },
+        {
+          "t": "plain",
+          "v": "],"
+        }
+      ],
+      [
+        {
+          "t": "prop",
+          "v": "  database"
+        },
+        {
+          "t": "plain",
+          "v": ": ["
+        },
+        {
+          "t": "str",
+          "v": "'MongoDB'"
+        },
+        {
+          "t": "plain",
+          "v": ", "
+        },
+        {
+          "t": "str",
+          "v": "'PostgreSQL'"
+        },
+        {
+          "t": "plain",
+          "v": ", "
+        },
+        {
+          "t": "str",
+          "v": "'MySQL'"
+        },
+        {
+          "t": "plain",
+          "v": "],"
+        }
+      ],
+      [
+        {
+          "t": "prop",
+          "v": "  orm"
+        },
+        {
+          "t": "plain",
+          "v": ": ["
+        },
+        {
+          "t": "str",
+          "v": "'Mongoose'"
+        },
+        {
+          "t": "plain",
+          "v": ", "
+        },
+        {
+          "t": "str",
+          "v": "'Prisma'"
+        },
+        {
+          "t": "plain",
+          "v": "],"
+        }
+      ],
+      [
+        {
+          "t": "prop",
+          "v": "  frontend"
+        },
+        {
+          "t": "plain",
+          "v": ": ["
+        },
+        {
+          "t": "str",
+          "v": "'React'"
+        },
+        {
+          "t": "plain",
+          "v": ", "
+        },
+        {
+          "t": "str",
+          "v": "'Next.js'"
+        },
+        {
+          "t": "plain",
+          "v": ", "
+        },
+        {
+          "t": "str",
+          "v": "'Vue.js'"
+        },
+        {
+          "t": "plain",
+          "v": "],"
+        }
+      ],
+      [
+        {
+          "t": "prop",
+          "v": "  stack"
+        },
+        {
+          "t": "plain",
+          "v": ": "
+        },
+        {
+          "t": "str",
+          "v": "'MERN'"
+        },
+        {
+          "t": "plain",
+          "v": ","
+        }
+      ],
+      [
+        {
+          "t": "prop",
+          "v": "  status"
+        },
+        {
+          "t": "plain",
+          "v": ": "
+        },
+        {
+          "t": "str",
+          "v": "'available'"
+        }
+      ],
+      [
+        {
+          "t": "plain",
+          "v": "};"
+        }
+      ],
+      [
+        {
+          "t": "plain",
+          "v": ""
+        }
+      ],
+      [
+        {
+          "t": "fn",
+          "v": "console.log"
+        },
+        {
+          "t": "plain",
+          "v": "("
+        },
+        {
+          "t": "str",
+          "v": "'Let’s build something great.'"
+        },
+        {
+          "t": "plain",
+          "v": ");"
+        }
+      ]
+    ]
+  },
+  "services": [
+    {
+      "slug": "laravel-backend",
+      "title": "Enterprise backends with Laravel",
+      "summary": "Robust, secure, scalable APIs. Authentication, payment integrations, admin dashboards and queue-driven background work.",
+      "detail": "I build Laravel APIs that hold up under load and under audit: policy-based authorization, signed webhooks, idempotent payment flows, database transactions where they matter, and queues for anything slow. Every endpoint ships with validation, tests and OpenAPI docs so your next developer isn't guessing.",
+      "deliverables": [
+        "REST or GraphQL API with versioning",
+        "Role & permission system",
+        "Stripe / SSLCommerz / bKash payment flows",
+        "Admin dashboard (Filament or custom)",
+        "Queues, scheduled jobs, and email pipelines",
+        "Deployment, CI, and monitoring setup"
+      ],
+      "stack": [
+        "Laravel",
+        "PHP",
+        "MySQL",
+        "PostgreSQL",
+        "Redis"
+      ],
+      "route": "/services#laravel-backend"
+    },
+    {
+      "slug": "nextjs-frontend",
+      "title": "High-performance frontends with Next.js",
+      "summary": "Fast, SEO-ready, accessible interfaces built with Next.js and React. SSG, SSR and ISR chosen per-route, not by habit.",
+      "detail": "A frontend is a performance budget with a UI attached. I use the App Router properly — server components by default, client components only where interaction lives — so pages arrive fast and rank well. Core Web Vitals are treated as acceptance criteria, not an afterthought.",
+      "deliverables": [
+        "Next.js App Router architecture",
+        "Server components, streaming and ISR",
+        "Technical SEO: metadata, sitemap, JSON-LD",
+        "Core Web Vitals tuning (LCP, INP, CLS)",
+        "Design system in Tailwind CSS",
+        "WCAG-minded, keyboard-accessible UI"
+      ],
+      "stack": [
+        "Next.js",
+        "React",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "route": "/services#nextjs-frontend"
+    },
+    {
+      "slug": "mern-fullstack",
+      "title": "Custom full-stack MERN applications",
+      "summary": "End-to-end products with MongoDB, Express, React and Node — from MVP to production system with real-time features.",
+      "detail": "When a product needs to move fast without painting itself into a corner, MERN is a strong bet. I set up a typed, layered Node backend, a sensible Mongo schema with Mongoose, real-time channels over WebSockets, and a React frontend that stays maintainable past the first release.",
+      "deliverables": [
+        "MongoDB schema design & indexing",
+        "Express / Node API with TypeScript",
+        "Real-time features over WebSockets",
+        "Auth: JWT, sessions, OAuth providers",
+        "File uploads, search, and reporting",
+        "Docker setup for parity across environments"
+      ],
+      "stack": [
+        "MongoDB",
+        "Express",
+        "React",
+        "Node.js",
+        "Mongoose"
+      ],
+      "route": "/services#mern-fullstack"
+    },
+    {
+      "slug": "shopify-development",
+      "title": "Shopify themes & custom apps",
+      "summary": "Conversion-focused Shopify storefronts, custom Liquid themes, and embedded apps built on the Shopify API.",
+      "detail": "Shopify work is equal parts merchandising and engineering. I build custom Online Store 2.0 themes with editable sections, keep the storefront fast despite the app stack, and write embedded admin apps when the merchant's workflow outgrows what the platform ships with.",
+      "deliverables": [
+        "Custom Shopify theme (Online Store 2.0)",
+        "Liquid sections merchants can actually edit",
+        "Headless storefronts with Hydrogen / Next.js",
+        "Embedded apps on the Shopify Admin API",
+        "Speed score and checkout-path optimisation",
+        "Third-party integrations and migrations"
+      ],
+      "stack": [
+        "Shopify",
+        "Liquid",
+        "Hydrogen",
+        "GraphQL"
+      ],
+      "route": "/services#shopify-development"
+    }
+  ],
+  "stack": [
+    {
+      "name": "React",
+      "level": 88,
+      "group": "Frontend"
+    },
+    {
+      "name": "Next.js",
+      "level": 85,
+      "group": "Frontend"
+    },
+    {
+      "name": "TypeScript",
+      "level": 72,
+      "group": "Frontend"
+    },
+    {
+      "name": "Tailwind CSS",
+      "level": 86,
+      "group": "Frontend"
+    },
+    {
+      "name": "Laravel",
+      "level": 90,
+      "group": "Backend"
+    },
+    {
+      "name": "PHP",
+      "level": 85,
+      "group": "Backend"
+    },
+    {
+      "name": "Node.js",
+      "level": 82,
+      "group": "Backend"
+    },
+    {
+      "name": "Express",
+      "level": 76,
+      "group": "Backend"
+    },
+    {
+      "name": "MongoDB",
+      "level": 78,
+      "group": "Data"
+    },
+    {
+      "name": "MySQL",
+      "level": 80,
+      "group": "Data"
+    },
+    {
+      "name": "Redis",
+      "level": 65,
+      "group": "Data"
+    },
+    {
+      "name": "Docker",
+      "level": 70,
+      "group": "Platform"
+    }
+  ],
+  "projects": [
+    {
+      "slug": "laravel-ecommerce-api",
+      "name": "Laravel E-Commerce API",
+      "description": "A production REST API for e-commerce: authentication, cart, orders, inventory and payment integration.",
+      "detail": "Token-authenticated REST API covering the full commerce lifecycle. Carts survive login, stock is decremented inside database transactions so overselling can't happen under concurrency, and payment webhooks are idempotent — a retried callback never double-charges or double-ships.",
+      "language": "PHP",
+      "tags": [
+        "Laravel",
+        "MySQL",
+        "REST API",
+        "Payments"
+      ],
+      "url": "https://github.com/wpseemol/laravel-ecommerce-api",
+      "year": 2025,
+      "featured": true
+    },
+    {
+      "slug": "nextjs-dashboard",
+      "name": "Next.js Dashboard Starter",
+      "description": "Production-ready admin dashboard with authentication, dark mode and real-time data tables.",
+      "detail": "An App Router starter that skips the boring three weeks of every admin project: auth and protected routes, server-side pagination and filtering on large tables, role-gated navigation, and a theme system that doesn't flash on first paint.",
+      "language": "TypeScript",
+      "tags": [
+        "Next.js",
+        "TypeScript",
+        "Prisma",
+        "Tailwind CSS"
+      ],
+      "url": "https://github.com/wpseemol/nextjs-dashboard",
+      "year": 2025,
+      "featured": true
+    },
+    {
+      "slug": "mern-task-manager",
+      "name": "MERN Task Manager",
+      "description": "Full-stack task management app with drag-and-drop boards, real-time updates and team collaboration.",
+      "detail": "A Kanban-style workspace where board changes broadcast over WebSockets, so two teammates dragging the same card stay in sync instead of overwriting each other. Optimistic UI keeps the drag smooth; the server stays the source of truth.",
+      "language": "JavaScript",
+      "tags": [
+        "MongoDB",
+        "Express",
+        "React",
+        "Socket.IO"
+      ],
+      "url": "https://github.com/wpseemol/mern-task-manager",
+      "year": 2024,
+      "featured": true
+    }
+  ],
+  "process": [
+    {
+      "step": "Scope",
+      "title": "Understand before estimating",
+      "body": "We talk through the actual business problem, the users, and the constraints you already have. You get a written scope with what's in, what's out, and where the risk sits."
+    },
+    {
+      "step": "Architect",
+      "title": "Decide the boring things early",
+      "body": "Data model, auth strategy, hosting, and the deploy pipeline get settled up front. These are the decisions that are expensive to change later, so they don't get made in a hurry at midnight."
+    },
+    {
+      "step": "Build",
+      "title": "Ship in visible slices",
+      "body": "Work lands on a staging URL you can open every week. No four-week silences ending in a surprise — you see progress, and course corrections stay cheap."
+    },
+    {
+      "step": "Harden",
+      "title": "Make it survive traffic",
+      "body": "Indexes, caching, error tracking, backups, and Core Web Vitals get real attention before launch. Load is a feature you test, not a thing you hope about."
+    },
+    {
+      "step": "Hand over",
+      "title": "Leave it maintainable",
+      "body": "Documentation, environment setup, and a walkthrough recording. You should be able to hire anyone next and have them productive in a day."
+    }
+  ],
+  "faq": [
+    {
+      "q": "Who is Seemol Chakroborti?",
+      "a": "Seemol Chakroborti — known online as wpseemol — is a full-stack web developer based in Khulna, Bangladesh, with 5+ years of experience building web applications using React, Next.js, Laravel, Node.js, MongoDB, MySQL and Shopify."
+    },
+    {
+      "q": "What services does Seemol offer?",
+      "a": "Four main tracks: Laravel backend and API development, Next.js and React frontend development, custom full-stack MERN applications, and Shopify theme and app development. Each can be a standalone engagement or an end-to-end build."
+    },
+    {
+      "q": "Is Seemol available for hire?",
+      "a": "Yes. Seemol is currently open to freelance contracts, full-time roles and consulting engagements, and works remotely with clients worldwide from the Asia/Dhaka timezone."
+    },
+    {
+      "q": "Does Seemol work with international clients remotely?",
+      "a": "Yes. Remote collaboration is the default. Working hours overlap comfortably with Europe, the Middle East, Australia and East Asia, and early or late calls can be arranged for North American clients."
+    },
+    {
+      "q": "What technologies does Seemol specialise in?",
+      "a": "Frontend: React, Next.js, TypeScript, Tailwind CSS. Backend: Laravel, PHP, Node.js, Express. Data: MongoDB, MySQL, PostgreSQL, Redis, Prisma and Mongoose. Plus Shopify Liquid and Docker for deployment."
+    },
+    {
+      "q": "How do projects usually start?",
+      "a": "With a short call or a written brief, followed by a fixed written scope covering deliverables, timeline and price before any code is written. Most projects then ship in weekly slices on a staging URL."
+    }
+  ]
+}
