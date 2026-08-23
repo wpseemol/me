@@ -351,7 +351,7 @@ export function ProcessList() {
                 <li key={step.step} className="relative pb-9 last:pb-0">
                     <span
                         data-marker
-                        className="absolute -left-[35px] grid h-6 w-6 place-items-center rounded-full font-mono text-[10px] font-bold text-white"
+                        className="absolute -left-8.75 grid h-6 w-6 place-items-center rounded-full font-mono text-[10px] font-bold text-white"
                         style={{
                             background:
                                 "linear-gradient(140deg, var(--brand-600), var(--accent-500))",

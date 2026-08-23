@@ -121,7 +121,7 @@ export default function AboutPage() {
                                 className="absolute -inset-4 rounded-[30px] opacity-60 blur-2xl"
                                 style={{ background: "var(--grad)" }}
                             />
-                            <div className="relative overflow-hidden rounded-[24px] border">
+                            <div className="relative overflow-hidden rounded-3xl border">
                                 <Image
                                     src={p.portrait}
                                     alt={p.portraitAlt}

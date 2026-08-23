@@ -123,7 +123,7 @@ function CodeCard() {
     return (
         <div
             ref={cardRef}
-            className="card overflow-hidden !bg-[#060A16]/92 shadow-[0_30px_80px_-40px_rgb(var(--c-glow-a)/0.9)]"
+            className="card overflow-hidden bg-[#060A16]/92! shadow-[0_30px_80px_-40px_rgb(var(--c-glow-a)/0.9)]"
             style={{ transformStyle: "preserve-3d", perspective: 900 }}
         >
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
