@@ -12,7 +12,7 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
       onClick={(e) => toggle({ x: e.clientX, y: e.clientY })}
       aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'}
       title={dark ? 'Switch to light theme' : 'Switch to dark theme'}
-      className={`group relative grid h-10 w-10 place-items-center overflow-hidden rounded-full border bg-elev/70 backdrop-blur transition-all duration-300 ease-out hover:border-violet/50 hover:shadow-[0_0_0_4px_rgba(108,76,245,0.12)] ${className}`}
+      className={`group relative grid h-10 w-10 place-items-center overflow-hidden rounded-full border bg-elev/70 backdrop-blur-sm transition-all duration-300 ease-out hover:border-brand-500/50 hover:shadow-[0_0_0_4px_rgb(var(--c-glow-a)/0.14)] ${className}`}
     >
       {/* gradient bloom on hover */}
       <span
@@ -20,7 +20,7 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
         className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
           background:
-            'radial-gradient(circle at 50% 120%, rgba(229,70,139,0.30), transparent 65%)',
+            'radial-gradient(circle at 50% 120%, rgb(var(--c-glow-b) / 0.32), transparent 65%)',
         }}
       />
 
@@ -54,8 +54,8 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
           />
 
           <linearGradient id="tt-grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#8E76F8" />
-            <stop offset="100%" stopColor="#E5468B" />
+            <stop offset="0%" stopColor="var(--brand-400)" />
+            <stop offset="100%" stopColor="var(--accent-400)" />
           </linearGradient>
 
           {/* Sun rays — scale away in dark mode */}

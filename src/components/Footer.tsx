@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import site from '@/data/site.json';
 import { SOCIAL_ICONS } from './Icons';
+import Logo from './Logo';
 
 const NAV = [
   { href: '/', label: 'Home' },
@@ -19,14 +20,8 @@ export default function Footer() {
       <div className="shell py-14">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <Link href="/" className="flex items-center gap-2.5">
-              <span
-                className="grid h-9 w-9 place-items-center rounded-[11px] font-display text-lg font-extrabold text-white"
-                style={{ background: 'linear-gradient(135deg,#6C4CF5,#E5468B)' }}
-              >
-                S
-              </span>
-              <span className="font-display text-lg font-bold tracking-tight">wpseemol</span>
+            <Link href="/" aria-label="wpseemol — home" className="inline-block">
+              <Logo size="md" />
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">
               {p.name} — {p.role} building with Next.js, React, Laravel, the MERN stack and
@@ -44,7 +39,7 @@ export default function Footer() {
                     rel={s.icon === 'mail' ? undefined : 'noopener noreferrer me'}
                     aria-label={`${p.name} on ${s.name}`}
                     title={`${p.name} on ${s.name}`}
-                    className="grid h-10 w-10 place-items-center rounded-full border text-muted transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-violet/50 hover:text-body"
+                    className="grid h-10 w-10 place-items-center rounded-full border text-muted transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-brand-500/50 hover:text-body"
                   >
                     {Icon ? <Icon width={17} height={17} /> : null}
                   </a>
@@ -95,7 +90,7 @@ export default function Footer() {
             © {year} {p.name} · wpseemol.site
           </p>
           <p className="font-mono">
-            Built with Next.js, GSAP &amp; three.js
+            Built with Next.js, Tailwind v4, GSAP &amp; canvas
             <span className="mx-2 opacity-40">/</span>
             <a
               href={`mailto:${p.email}`}

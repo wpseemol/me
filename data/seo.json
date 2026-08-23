@@ -1,5 +1,5 @@
 {
-  "$comment": "EDIT THIS FILE to change SEO anywhere on the site. Nothing else needs to change. Titles, descriptions, keywords, sitemap priorities and structured data are all generated from here.",
+  "$comment": "EDIT THIS FILE to change SEO anywhere on the site. Nothing else needs to change. Titles, descriptions, keywords, sitemap priorities and structured data are all generated from here. Brand colours live in src/app/globals.css — themeColor below must be kept in step with --c-bg.",
 
   "site": {
     "domain": "wpseemol.site",
@@ -11,8 +11,8 @@
     "defaultDescription": "Seemol Chakroborti (wpseemol) is a full-stack web developer with 5+ years of experience building fast, scalable apps with Next.js, React, Laravel, Node.js and Shopify. Available for freelance and full-time work.",
     "locale": "en_US",
     "language": "en",
-    "themeColorLight": "#EFEDF5",
-    "themeColorDark": "#0A0912",
+    "themeColorLight": "#EEF2FA",
+    "themeColorDark": "#05070F",
     "twitterHandle": "@wpseemol",
     "googleSiteVerification": "",
     "bingSiteVerification": "",

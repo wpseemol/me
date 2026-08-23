@@ -4,20 +4,14 @@ import './globals.css';
 
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
-import ThreeBackground from '@/components/ThreeBackground';
+import CanvasField from '@/components/CanvasField';
+import Cursor from '@/components/Cursor';
+import Intro from '@/components/Intro';
+import SmoothScroll from '@/components/SmoothScroll';
 import { ThemeProvider, themeInitScript } from '@/components/ThemeProvider';
 
 import seo from '@/data/seo.json';
-import {
-  BASE_URL,
-  allKeywords,
-  abs,
-  graph,
-  personSchema,
-  websiteSchema,
-  profilePageSchema,
-  faqSchema,
-} from '@/lib/seo';
+import { BASE_URL, allKeywords, abs, graph, personSchema, websiteSchema } from '@/lib/seo';
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -107,14 +101,11 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  // One @graph node set for the whole site — search engines and LLM crawlers
-  // get the full picture from any entry page.
-  const jsonLd = graph([
-    personSchema(),
-    websiteSchema(),
-    profilePageSchema(),
-    faqSchema(),
-  ]);
+  // Only the two site-wide entities live here. Page-level nodes (WebPage,
+  // BreadcrumbList, FAQPage, ItemList) are emitted by each route, so their
+  // @ids stay unique and a crawler is never told that /contact is also the
+  // profile page.
+  const jsonLd = graph([personSchema(), websiteSchema()]);
 
   return (
     <html lang={seo.site.language} suppressHydrationWarning>
@@ -122,6 +113,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Loaded here rather than via an @import inside globals.css. A CSS
+            @import cannot start downloading until the stylesheet that contains
+            it has already arrived, which serialises two round trips onto the
+            critical path and shows up directly in LCP. */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        />
         <link rel="me" href="https://github.com/wpseemol" />
         <link rel="author" href="/about" />
         <link
@@ -137,7 +136,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <ThemeProvider>
-          <ThreeBackground />
+          <SmoothScroll />
+          <Intro />
+          <CanvasField />
+          <Cursor />
           <Nav />
           <main id="main">{children}</main>
           <Footer />

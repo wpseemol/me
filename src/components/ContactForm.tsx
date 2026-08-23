@@ -105,7 +105,7 @@ export default function ContactForm() {
       <div className="card p-8 text-center sm:p-10">
         <span
           className="mx-auto grid h-12 w-12 place-items-center rounded-full text-white"
-          style={{ background: 'linear-gradient(140deg,#6C4CF5,#E5468B)' }}
+          style={{ background: 'var(--grad)' }}
         >
           <CheckIcon width={22} height={22} />
         </span>
@@ -126,7 +126,7 @@ export default function ContactForm() {
   }
 
   const field =
-    'mt-2 w-full rounded-xl border bg-elev/60 px-4 py-3 text-sm outline-none backdrop-blur transition-colors duration-200 placeholder:text-muted/60 focus:border-violet/60';
+    'mt-2 w-full rounded-xl border bg-elev/60 px-4 py-3 text-sm outline-hidden backdrop-blur-sm transition-colors duration-200 placeholder:text-muted/60 focus:border-brand-500/60';
 
   return (
     <form onSubmit={onSubmit} noValidate className="card p-6 sm:p-8">
@@ -147,7 +147,7 @@ export default function ContactForm() {
             placeholder="Jane Doe"
           />
           {errors.name && (
-            <p id="name-error" className="mt-1.5 text-xs text-magenta">
+            <p id="name-error" className="mt-1.5 text-xs text-danger">
               {errors.name}
             </p>
           )}
@@ -170,7 +170,7 @@ export default function ContactForm() {
             placeholder="jane@company.com"
           />
           {errors.email && (
-            <p id="email-error" className="mt-1.5 text-xs text-magenta">
+            <p id="email-error" className="mt-1.5 text-xs text-danger">
               {errors.email}
             </p>
           )}
@@ -192,7 +192,7 @@ export default function ContactForm() {
           placeholder="Next.js storefront rebuild"
         />
         {errors.subject && (
-          <p id="subject-error" className="mt-1.5 text-xs text-magenta">
+          <p id="subject-error" className="mt-1.5 text-xs text-danger">
             {errors.subject}
           </p>
         )}
@@ -214,7 +214,7 @@ export default function ContactForm() {
           placeholder="What are you building, what's the deadline, and where is it stuck right now?"
         />
         {errors.message && (
-          <p id="message-error" className="mt-1.5 text-xs text-magenta">
+          <p id="message-error" className="mt-1.5 text-xs text-danger">
             {errors.message}
           </p>
         )}
@@ -248,7 +248,7 @@ export default function ContactForm() {
       </p>
 
       {note && status !== 'sending' && (
-        <p className={`mt-4 text-sm ${status === 'error' ? 'text-magenta' : 'text-muted'}`}>
+        <p className={`mt-4 text-sm ${status === 'error' ? 'text-danger' : 'text-muted'}`}>
           {note}
         </p>
       )}

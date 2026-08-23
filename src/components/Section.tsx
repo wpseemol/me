@@ -48,7 +48,12 @@ export function SectionHead({
       <RouteLabel verb={verb} path={path} />
       <h2 className="mt-4 text-[clamp(1.9rem,4.4vw,3.05rem)]">{title}</h2>
       {lede ? (
-        <p className="mt-4 text-[15px] leading-relaxed text-muted sm:text-base">{lede}</p>
+        <p
+          data-speakable
+          className="mt-4 text-[15px] leading-relaxed text-muted sm:text-base"
+        >
+          {lede}
+        </p>
       ) : null}
     </div>
   );
@@ -99,7 +104,10 @@ export function StatCounter({
         {shown}
         {suffix}
       </span>
-      <span className="mt-2 block font-mono text-2xs uppercase tracking-[0.14em] text-muted">
+      {/* Three of these sit in a ~100px column on a phone, and "Happy clients"
+          is the one that does not fit. Drop a point and tighten the tracking
+          below sm rather than letting it run past the grid. */}
+      <span className="mt-2 block font-mono text-[10px] uppercase tracking-[0.1em] text-muted sm:text-2xs sm:tracking-[0.14em]">
         {label}
       </span>
     </div>

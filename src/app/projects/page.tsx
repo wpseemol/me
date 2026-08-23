@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
 import site from '@/data/site.json';
-import { abs, breadcrumbSchema, graph, pageMetadata, projectsSchema } from '@/lib/seo';
+import {
+  abs,
+  breadcrumbSchema,
+  graph,
+  pageMetadata,
+  projectsSchema,
+  webPageSchema,
+} from '@/lib/seo';
 
 import Reveal from '@/components/Reveal';
 import { SectionHead } from '@/components/Section';
@@ -11,6 +18,7 @@ export const metadata: Metadata = pageMetadata('projects');
 
 export default function ProjectsPage() {
   const jsonLd = graph([
+    webPageSchema('projects'),
     projectsSchema(),
     breadcrumbSchema([
       { name: 'Home', path: '/' },
@@ -95,7 +103,7 @@ export default function ProjectsPage() {
                   href={p.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-violet-soft transition-colors hover:text-magenta"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-ink transition-colors hover:text-accent-500"
                 >
                   Source <ArrowUpRightIcon width={14} height={14} />
                 </a>

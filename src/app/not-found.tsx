@@ -41,7 +41,7 @@ export default function NotFound() {
                   <span className="block text-sm font-semibold">{l.label}</span>
                   <span className="mt-0.5 block font-mono text-2xs text-muted">{l.hint}</span>
                 </span>
-                <ArrowIcon width={16} height={16} className="text-violet-soft" />
+                <ArrowIcon width={16} height={16} className="text-brand-ink" />
               </Link>
             </li>
           ))}

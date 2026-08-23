@@ -206,6 +206,38 @@ export function faqSchema() {
   };
 }
 
+/**
+ * A WebPage node for a single route.
+ *
+ * Two things earn their place here. `isPartOf` and `about` tie every page back
+ * to the same WebSite and Person @ids, so crawlers read the site as one entity
+ * rather than five unrelated documents. `speakable` tells voice surfaces which
+ * parts are safe to read aloud — headline and lede, never navigation.
+ */
+export function webPageSchema(key: PageKey, extra: Record<string, unknown> = {}) {
+  const page = seo.pages[key];
+  const url = abs(page.path);
+
+  return {
+    '@type': 'WebPage',
+    '@id': `${url}#webpage`,
+    url,
+    name: page.title,
+    description: page.description,
+    inLanguage: seo.site.language,
+    isPartOf: { '@id': SITE_ID },
+    about: { '@id': PERSON_ID },
+    primaryImageOfPage: { '@id': `${BASE_URL}/#portrait` },
+    // Static export, so "modified" is honestly the build date.
+    dateModified: new Date().toISOString(),
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', '[data-speakable]'],
+    },
+    ...extra,
+  };
+}
+
 export function breadcrumbSchema(trail: { name: string; path: string }[]) {
   return {
     '@type': 'BreadcrumbList',

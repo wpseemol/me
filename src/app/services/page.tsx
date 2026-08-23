@@ -7,6 +7,7 @@ import {
   graph,
   pageMetadata,
   servicesSchema,
+  webPageSchema,
 } from '@/lib/seo';
 
 import Reveal from '@/components/Reveal';
@@ -18,6 +19,7 @@ export const metadata: Metadata = pageMetadata('services');
 
 export default function ServicesPage() {
   const jsonLd = graph([
+    webPageSchema('services'),
     ...servicesSchema(),
     breadcrumbSchema([
       { name: 'Home', path: '/' },
@@ -74,7 +76,7 @@ export default function ServicesPage() {
                   <div className="flex items-center gap-3">
                     <span
                       className="grid h-11 w-11 shrink-0 place-items-center rounded-[13px] font-mono text-sm font-bold text-white"
-                      style={{ background: `linear-gradient(${130 + i * 22}deg,#6C4CF5,#E5468B)` }}
+                      style={{ background: `linear-gradient(${130 + i * 22}deg,var(--brand-600), var(--accent-400))` }}
                     >
                       {String(i + 1).padStart(2, '0')}
                     </span>
@@ -108,7 +110,7 @@ export default function ServicesPage() {
                         <CheckIcon
                           width={15}
                           height={15}
-                          className="mt-1 shrink-0 text-violet-soft"
+                          className="mt-1 shrink-0 text-brand-ink"
                         />
                         <span>{d}</span>
                       </li>
@@ -116,7 +118,7 @@ export default function ServicesPage() {
                   </ul>
                   <Link
                     href={`/contact?service=${s.slug}`}
-                    className="mt-7 inline-flex items-center gap-1.5 border-t pt-5 text-sm font-semibold text-violet-soft transition-colors hover:text-magenta"
+                    className="mt-7 inline-flex items-center gap-1.5 border-t pt-5 text-sm font-semibold text-brand-ink transition-colors hover:text-accent-500"
                   >
                     Ask about this <ArrowIcon width={15} height={15} />
                   </Link>

@@ -8,6 +8,7 @@ import {
   graph,
   pageMetadata,
   personSchema,
+  webPageSchema,
 } from '@/lib/seo';
 
 import Reveal from '@/components/Reveal';
@@ -22,6 +23,7 @@ export default function AboutPage() {
 
   const jsonLd = graph([
     personSchema(),
+    webPageSchema('about'),
     breadcrumbSchema([
       { name: 'Home', path: '/' },
       { name: 'About', path: '/about' },
@@ -99,7 +101,7 @@ export default function AboutPage() {
             <figure className="relative mx-auto max-w-sm">
               <div
                 className="absolute -inset-4 rounded-[30px] opacity-60 blur-2xl"
-                style={{ background: 'linear-gradient(150deg,#6C4CF5,#E5468B)' }}
+                style={{ background: 'var(--grad)' }}
               />
               <div className="relative overflow-hidden rounded-[24px] border">
                 <Image
@@ -117,7 +119,7 @@ export default function AboutPage() {
               </figcaption>
             </figure>
 
-            <div className="mt-10 grid grid-cols-3 gap-5 border-t pt-8">
+            <div className="mt-10 grid grid-cols-3 gap-x-4 gap-y-5 border-t pt-8 sm:gap-x-5">
               {site.stats.map((s) => (
                 <StatCounter key={s.label} value={s.value} suffix={s.suffix} label={s.label} />
               ))}

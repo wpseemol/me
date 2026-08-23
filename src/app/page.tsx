@@ -1,7 +1,14 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import site from '@/data/site.json';
-import { pageMetadata } from '@/lib/seo';
+import {
+  breadcrumbSchema,
+  faqSchema,
+  graph,
+  pageMetadata,
+  profilePageSchema,
+  webPageSchema,
+} from '@/lib/seo';
 
 import Hero from '@/components/Hero';
 import Reveal from '@/components/Reveal';
@@ -20,8 +27,20 @@ import { ArrowIcon } from '@/components/Icons';
 export const metadata: Metadata = pageMetadata('home');
 
 export default function HomePage() {
+  const jsonLd = graph([
+    webPageSchema('home'),
+    profilePageSchema(),
+    breadcrumbSchema([{ name: 'Home', path: '/' }]),
+    faqSchema(),
+  ]);
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <Hero />
 
       <div className="mt-24">
@@ -51,7 +70,7 @@ export default function HomePage() {
         <Reveal className="mt-10">
           <Link
             href="/services"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-violet-soft transition-colors hover:text-magenta"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-brand-ink transition-colors hover:text-accent-500"
           >
             See how each engagement works <ArrowIcon width={16} height={16} />
           </Link>
