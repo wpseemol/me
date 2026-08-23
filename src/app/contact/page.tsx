@@ -15,6 +15,7 @@ import { SectionHead } from "@/components/Section";
 import ContactForm from "@/components/ContactForm";
 import { Faq } from "@/components/Blocks";
 import { SOCIAL_ICONS } from "@/components/Icons";
+import ScrambleText from "@/components/ScrambleText";
 
 export const metadata: Metadata = pageMetadata("contact");
 
@@ -58,8 +59,17 @@ export default function ContactPage() {
                             path="/contact"
                             title={
                                 <>
-                                    Let&apos;s build{" "}
-                                    <span className="grad-text">together</span>
+                                    <ScrambleText
+                                        text="Let's build"
+                                        duration={500}
+                                    />{" "}
+                                    <span className="grad-text">
+                                        {" "}
+                                        <ScrambleText
+                                            text="together"
+                                            duration={600}
+                                        />
+                                    </span>
                                 </>
                             }
                             lede="Tell me what the product has to do and where it's stuck. You'll get a written scope back — deliverables, timeline and price — before anyone writes code."
@@ -149,8 +159,13 @@ export default function ContactPage() {
                         path="/faq"
                         title={
                             <span id="contact-faq">
-                                Before you{" "}
-                                <span className="grad-text">write</span>
+                                <ScrambleText
+                                    text="Before you"
+                                    duration={500}
+                                />{" "}
+                                <span className="grad-text">
+                                    <ScrambleText text="write" duration={500} />
+                                </span>
                             </span>
                         }
                     />

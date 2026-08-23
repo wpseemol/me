@@ -11,3 +11,5 @@ next-env.d.ts
 *.tsbuildinfo
 npm-debug.log*
 yarn-error.log*
+
+.vercel
