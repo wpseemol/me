@@ -61,7 +61,7 @@ export default function AboutPage() {
                                     <ScrambleText
                                         text="Hi, I'm"
                                         duration={500}
-                                    />
+                                    />{" "}
                                     <span className="grad-text">
                                         <ScrambleText
                                             text="Seemol Chakroborti"

@@ -52,7 +52,7 @@ export default function ProjectsPage() {
                                 <ScrambleText
                                     text="Things I've"
                                     duration={500}
-                                />
+                                />{" "}
                                 <span className="grad-text">
                                     <ScrambleText text="built" duration={600} />
                                 </span>
@@ -95,7 +95,7 @@ export default function ProjectsPage() {
                         path="/projects/notes"
                         title={
                             <span id="notes-heading">
-                                <ScrambleText text="Build" duration={500} />
+                                <ScrambleText text="Build" duration={500} />{" "}
                                 <span className="grad-text">
                                     <ScrambleText text="notes" duration={600} />
                                 </span>

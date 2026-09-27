@@ -51,7 +51,7 @@ export default function ServicesPage() {
                                 <ScrambleText
                                     text="Services you can"
                                     duration={500}
-                                />
+                                />{" "}
                                 <span className="grad-text">
                                     <ScrambleText text="buy" duration={600} />
                                 </span>

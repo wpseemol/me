@@ -65,7 +65,6 @@ export default function ContactPage() {
                                         duration={500}
                                     />{" "}
                                     <span className="grad-text">
-                                        {" "}
                                         <ScrambleText
                                             text="together"
                                             duration={600}

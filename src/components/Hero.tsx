@@ -231,6 +231,9 @@ export default function Hero() {
                             id="hero-heading"
                             className="mt-6 text-[clamp(2.6rem,7.4vw,4.6rem)] leading-[0.98]"
                         >
+                            <span className="mb-4 block font-mono text-sm font-normal tracking-normal text-muted sm:text-[15px]">
+                                Seemol Chakroborti (wpseemol)
+                            </span>{" "}
                             <SplitReveal
                                 as="span"
                                 className="block"
@@ -239,7 +242,7 @@ export default function Hero() {
                                 delay={0.1}
                             >
                                 <ScrambleText text="Full-stack" />
-                            </SplitReveal>
+                            </SplitReveal>{" "}
 
                             <MaskReveal
                                 as="span"
@@ -256,9 +259,10 @@ export default function Hero() {
 
                         <LoadIn delay={0.42}>
                             <p className="mt-4 font-mono text-sm text-muted sm:text-[15px]">
-                                Laravel <span className="opacity-40">·</span>{" "}
-                                MERN <span className="opacity-40">·</span>{" "}
                                 Next.js <span className="opacity-40">·</span>{" "}
+                                Node.js <span className="opacity-40">·</span>{" "}
+                                React <span className="opacity-40">·</span>{" "}
+                                Laravel <span className="opacity-40">·</span>{" "}
                                 Shopify
                             </p>
                         </LoadIn>
@@ -269,10 +273,10 @@ export default function Hero() {
                             onLoad
                             delay={0.5}
                         >
-                            I&apos;m Seemol Chakroborti — I architect enterprise
-                            backends with Laravel, high-performance frontends
-                            with Next.js, and full-stack MERN applications that
-                            scale.
+                            I&apos;m Seemol Chakroborti (wpseemol) — I build
+                            high-performance frontends with Next.js and React,
+                            backends with Node.js and Laravel, and full-stack
+                            MERN applications that scale.
                         </SplitReveal>
 
                         <LoadIn

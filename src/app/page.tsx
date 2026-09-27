@@ -110,7 +110,6 @@ export default function HomePage() {
                                         duration={500}
                                     />{" "}
                                     <span className="grad-text">
-                                        {" "}
                                         <ScrambleText
                                             text="daily"
                                             duration={600}
