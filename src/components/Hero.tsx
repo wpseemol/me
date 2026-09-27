@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import site from "@/data/site.json";
+import { asset } from "@/lib/asset";
 import { introDone } from "@/lib/intro";
 import { LoadIn, MaskReveal, SplitReveal } from "./Reveal";
 import { StatCounter } from "./Section";
@@ -336,7 +337,7 @@ export default function Hero() {
                                 />
                                 <div className="relative overflow-hidden rounded-[22px] border">
                                     <Image
-                                        src={p.portraitMono}
+                                        src={asset(p.portraitMono)}
                                         alt={p.portraitMonoAlt}
                                         width={520}
                                         height={520}

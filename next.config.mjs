@@ -4,6 +4,9 @@ const nextConfig = {
     // Client-side routing still ships in the JS bundle, so links between pages
     // are soft navigations (no full reload), exactly like a normal Next app.
     output: "export",
+    // GitHub Pages serves a project repo from /<repo>, e.g. /me. Empty for a
+    // custom domain or a local build. Set by .github/workflows/deploy.yml.
+    basePath: process.env.NEXT_PUBLIC_BASE_PATH || "",
     reactStrictMode: true,
     poweredByHeader: false,
     // redirects() and headers() are server features and are ignored by

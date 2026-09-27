@@ -10,6 +10,7 @@ import {
     personSchema,
     webPageSchema,
 } from "@/lib/seo";
+import { asset } from "@/lib/asset";
 
 import Reveal from "@/components/Reveal";
 import { SectionHead, StatCounter } from "@/components/Section";
@@ -124,7 +125,7 @@ export default function AboutPage() {
                             />
                             <div className="relative overflow-hidden rounded-3xl border">
                                 <Image
-                                    src={p.portrait}
+                                    src={asset(p.portrait)}
                                     alt={p.portraitAlt}
                                     width={640}
                                     height={640}

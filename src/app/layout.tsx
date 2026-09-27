@@ -12,6 +12,7 @@ import { ThemeProvider, themeInitScript } from '@/components/ThemeProvider';
 
 import seo from '@/data/seo.json';
 import { BASE_URL, allKeywords, abs, graph, personSchema, websiteSchema } from '@/lib/seo';
+import { asset } from '@/lib/asset';
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -32,15 +33,15 @@ export const metadata: Metadata = {
     canonical: BASE_URL,
     languages: { 'en-US': BASE_URL, 'x-default': BASE_URL },
   },
-  manifest: '/manifest.webmanifest',
+  manifest: asset('/manifest.webmanifest'),
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
-      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
-      { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
+      { url: asset('/favicon.ico'), sizes: 'any' },
+      { url: asset('/favicon-96x96.png'), type: 'image/png', sizes: '96x96' },
+      { url: asset('/icon-192.png'), type: 'image/png', sizes: '192x192' },
+      { url: asset('/icon-512.png'), type: 'image/png', sizes: '512x512' },
     ],
-    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+    apple: [{ url: asset('/apple-touch-icon.png'), sizes: '180x180' }],
   },
   openGraph: {
     type: 'website',
@@ -122,12 +123,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
         />
         <link rel="me" href="https://github.com/wpseemol" />
-        <link rel="author" href="/about" />
+        <link rel="author" href={asset('/about')} />
         <link
           rel="sitemap"
           type="application/xml"
           title="Sitemap"
-          href="/sitemap.xml"
+          href={asset('/sitemap.xml')}
         />
         <script
           type="application/ld+json"
