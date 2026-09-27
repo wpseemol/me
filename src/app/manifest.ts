@@ -1,6 +1,9 @@
 import type { MetadataRoute } from 'next';
 import seo from '@/data/seo.json';
 
+// Required by `output: export` — emit this as a static file at build time.
+export const dynamic = "force-static";
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: seo.site.name,

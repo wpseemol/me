@@ -7,6 +7,13 @@ import { ArrowIcon, CheckIcon } from './Icons';
 
 type Status = 'idle' | 'sending' | 'sent' | 'mailto' | 'error';
 
+// Set these in .env.production before `npm run build` to get real inbox delivery.
+// Leave them empty and the form gracefully falls back to a mailto: link.
+//   Web3Forms:  ENDPOINT=https://api.web3forms.com/submit  + ACCESS_KEY=your-uuid
+//   Formspree:  ENDPOINT=https://formspree.io/f/xxxxxxx    (no access key)
+const FORM_ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT ?? '';
+const ACCESS_KEY = process.env.NEXT_PUBLIC_FORM_ACCESS_KEY ?? '';
+
 const SERVICE_LABEL: Record<string, string> = Object.fromEntries(
   site.services.map((s) => [s.slug, s.title]),
 );
@@ -67,32 +74,44 @@ export default function ContactForm() {
     e.preventDefault();
     if (!validate()) return;
 
+    // Honeypot: real people never fill a hidden field. Pretend it worked.
+    if (values.company.trim()) {
+      setStatus('sent');
+      return;
+    }
+
     setStatus('sending');
     setNote('');
 
+    // Static build — there is no /api/contact to post to. If a form service is
+    // configured we use it; otherwise open the visitor's mail app instead.
+    if (!FORM_ENDPOINT) {
+      setStatus('mailto');
+      openMailClient();
+      return;
+    }
+
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch(FORM_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          ...(ACCESS_KEY ? { access_key: ACCESS_KEY } : {}),
+          name: values.name,
+          email: values.email,
+          subject: `[Portfolio] ${values.subject}`,
+          message: values.message,
+        }),
       });
-      const data = await res.json();
 
       if (!res.ok) {
-        if (data.errors) setErrors(data.errors);
         setStatus('error');
-        setNote(data.error ?? 'Please fix the highlighted fields.');
+        setNote("Couldn't send that. Email me directly and it'll get through.");
         return;
       }
 
-      if (data.delivered) {
-        setStatus('sent');
-        setValues({ name: '', email: '', subject: '', message: '', company: '' });
-      } else {
-        // Email delivery isn't configured on the server yet.
-        setStatus('mailto');
-        openMailClient();
-      }
+      setStatus('sent');
+      setValues({ name: '', email: '', subject: '', message: '', company: '' });
     } catch {
       setStatus('mailto');
       setNote("Network hiccup — opening your email app instead.");

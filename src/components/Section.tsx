@@ -36,12 +36,16 @@ export function SectionHead({
     title,
     lede,
     align = "left",
+    as: Heading = "h2",
 }: {
     verb?: "GET" | "POST" | "PATCH";
     path: string;
     title: ReactNode;
     lede?: ReactNode;
     align?: "left" | "center";
+    /** Heading level. Pass "h1" on the first SectionHead of a page — every
+     *  page needs exactly one h1 and inner pages were shipping with none. */
+    as?: "h1" | "h2";
 }) {
     return (
         <div
@@ -52,7 +56,9 @@ export function SectionHead({
             }
         >
             <RouteLabel verb={verb} path={path} />
-            <h2 className="mt-4 text-[clamp(1.9rem,4.4vw,3.05rem)]">{title}</h2>
+            <Heading className="mt-4 text-[clamp(1.9rem,4.4vw,3.05rem)]">
+                {title}
+            </Heading>
             {lede ? (
                 <p
                     data-speakable

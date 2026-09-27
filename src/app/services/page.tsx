@@ -44,6 +44,7 @@ export default function ServicesPage() {
             <section className="shell pt-32 sm:pt-40">
                 <Reveal>
                     <SectionHead
+                        as="h1"
                         path="/services"
                         title={
                             <>

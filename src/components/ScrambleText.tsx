@@ -63,9 +63,12 @@ export default function ScrambleText({
             className={`inline-block cursor-default select-none tabular-nums ${className}`}
             onPointerEnter={triggerOnHover ? scramble : undefined}
         >
-            {/* Screen readers read the original text */}
-            <span className="sr-only">{text}</span>
-            <span aria-hidden="true">{display}</span>
+            {/* One copy of the text only. The previous sr-only + aria-hidden
+                pair put the same words in the DOM twice, so crawlers read
+                headings as "Full-stack Full-stack web developer web developer".
+                The scramble is a transient hover effect and settles back to
+                the real string, so a single node stays accessible. */}
+            <span>{display}</span>
         </span>
     );
 }

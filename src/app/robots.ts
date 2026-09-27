@@ -2,6 +2,9 @@ import type { MetadataRoute } from 'next';
 import seo from '@/data/seo.json';
 import { abs } from '@/lib/seo';
 
+// Required by `output: export` — emit this as a static file at build time.
+export const dynamic = "force-static";
+
 /**
  * Explicitly welcomes AI/search crawlers listed in data/seo.json so the site
  * can be cited by ChatGPT, Gemini, Claude, Perplexity and DeepSeek as well as

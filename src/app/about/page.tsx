@@ -53,6 +53,7 @@ export default function AboutPage() {
                 <div className="grid items-start gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
                     <Reveal>
                         <SectionHead
+                            as="h1"
                             path="/about"
                             title={
                                 <>

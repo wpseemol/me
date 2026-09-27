@@ -55,6 +55,7 @@ export default function ContactPage() {
                 <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
                     <Reveal direction="right">
                         <SectionHead
+                            as="h1"
                             verb="POST"
                             path="/contact"
                             title={

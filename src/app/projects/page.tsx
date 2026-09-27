@@ -45,6 +45,7 @@ export default function ProjectsPage() {
             <section className="shell pt-32 sm:pt-40">
                 <Reveal>
                     <SectionHead
+                        as="h1"
                         path="/projects"
                         title={
                             <>

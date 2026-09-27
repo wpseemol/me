@@ -120,12 +120,11 @@ export default function Logo({
           style={{ marginBottom: '0.12em' }}
         />
 
-        {/* The scramble would be read out as noise, so the real word is
-            exposed separately and the animated one is hidden. */}
-        <span className="sr-only">wpseemol</span>
-        <span aria-hidden="true" className="tracking-[-0.02em] tabular-nums">
-          {word}
-        </span>
+        {/* Single text node. Duplicating the brand word (sr-only + an
+            aria-hidden twin) made every page render "wpseemol wpseemol"
+            to crawlers, which reads as keyword stuffing on the one term
+            this site most needs to rank for. */}
+        <span className="tracking-[-0.02em] tabular-nums">{word}</span>
       </span>
 
       {withName ? (

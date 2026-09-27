@@ -8,8 +8,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "node --disable-wasm-trap-handler server.js",
+    "lint": "next lint",
+    "start:plain": "next start"
   },
   "overrides": {
     "postcss": "^8.5.26",

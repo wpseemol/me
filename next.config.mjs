@@ -1,54 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // Emit a folder of plain .html/.css/.js files — no Node server needed.
+    // Client-side routing still ships in the JS bundle, so links between pages
+    // are soft navigations (no full reload), exactly like a normal Next app.
+    output: "export",
     reactStrictMode: true,
     poweredByHeader: false,
+    // redirects() and headers() are server features and are ignored by
+    // `output: export`. They now live in public_html/.htaccess instead.
     compress: true,
     images: {
-        formats: ["image/avif", "image/webp"],
+        // No server = no on-demand image optimizer. Images are served as-is.
+        unoptimized: true,
         remotePatterns: [
             { protocol: "https", hostname: "avatars.githubusercontent.com" },
             { protocol: "https", hostname: "opengraph.githubassets.com" },
         ],
-    },
-    // These used to live in vercel.json, which cPanel ignores. Keeping them here
-    // means Next itself serves the redirects on any host.
-    async redirects() {
-        return [
-            { source: "/home", destination: "/", permanent: true },
-            { source: "/work", destination: "/projects", permanent: true },
-            { source: "/hire", destination: "/contact", permanent: true },
-            { source: "/hire-me", destination: "/contact", permanent: true },
-            { source: "/index.html", destination: "/", permanent: true },
-        ];
-    },
-    async headers() {
-        return [
-            {
-                source: "/:path*",
-                headers: [
-                    { key: "X-Content-Type-Options", value: "nosniff" },
-                    {
-                        key: "Referrer-Policy",
-                        value: "strict-origin-when-cross-origin",
-                    },
-                    { key: "X-Frame-Options", value: "SAMEORIGIN" },
-                    {
-                        key: "Permissions-Policy",
-                        value: "camera=(), microphone=(), geolocation=()",
-                    },
-                ],
-            },
-            {
-                // Let AI crawlers and Google Images cache the portrait aggressively.
-                source: "/images/:path*",
-                headers: [
-                    {
-                        key: "Cache-Control",
-                        value: "public, max-age=31536000, immutable",
-                    },
-                ],
-            },
-        ];
     },
 };
 
