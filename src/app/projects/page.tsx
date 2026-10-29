@@ -8,18 +8,22 @@ import {
     projectsSchema,
     webPageSchema,
 } from "@/lib/seo";
-import { getWorkingProjects } from "@/lib/working-projects";
+import {
+    getProjectsConfig,
+    getWorkingProjects,
+} from "@/lib/working-projects";
 
 import Reveal from "@/components/Reveal";
 import { SectionHead } from "@/components/Section";
 import { CtaBand, ProjectCard, TechMarquee } from "@/components/Blocks";
-import WorkingProjects from "@/components/WorkingProjects";
+import ProjectsPager from "@/components/ProjectsPager";
 import { ArrowUpRightIcon, GithubIcon } from "@/components/Icons";
 import ScrambleText from "@/components/ScrambleText";
 
 export const metadata: Metadata = pageMetadata("projects");
 
 export default function ProjectsPage() {
+    const { pageSize } = getProjectsConfig();
     const working = getWorkingProjects();
 
     const jsonLd = graph([
@@ -93,8 +97,19 @@ export default function ProjectsPage() {
                                 Working{" "}
                                 <span className="grad-text">now</span>
                             </h2>
+                            <p className="mt-3 max-w-prose text-sm text-muted">
+                                Live sites and GitHub builds from{" "}
+                                <code className="font-mono text-2xs">
+                                    data/projects/*.json
+                                </code>
+                                . Add another anytime — see{" "}
+                                <code className="font-mono text-2xs">
+                                    INSTRUCTIONS.md
+                                </code>
+                                .
+                            </p>
                         </Reveal>
-                        <WorkingProjects projects={working} />
+                        <ProjectsPager projects={working} pageSize={pageSize} />
                     </div>
                 ) : null}
 

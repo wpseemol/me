@@ -1,0 +1,24 @@
+{
+  "slug": "niyenin",
+  "name": "Niyenin",
+  "repo": "https://github.com/wpseemol/retail-market",
+  "github": "https://github.com/wpseemol/retail-market",
+  "homepage": "https://niyenin-frontend.vercel.app/",
+  "description": "Niyenin is a multi-vendor retail marketplace — sellers open their own stores, list products and fulfil orders, while shoppers buy from many vendors in one cart.",
+  "detail": "Built as the retail-market monorepo. Vendors register and manage their own catalogues; the admin layer handles vendor approval, commissions, payouts and reporting. Customers shop across vendors in a single checkout flow. Stack is TypeScript on the frontend with an Express API — deployed preview at niyenin-frontend.vercel.app.",
+  "screenshot": "/images/projects/niyenin.png",
+  "language": "TypeScript",
+  "languages": [
+    "TypeScript",
+    "Express",
+    "JavaScript",
+    "CSS",
+    "HTML",
+    "Docker"
+  ],
+  "stars": 0,
+  "created": "2026-09-14",
+  "updated": "2026-10-25",
+  "status": "live",
+  "featured": true
+}

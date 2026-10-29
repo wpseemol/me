@@ -9,7 +9,10 @@ import {
     profilePageSchema,
     webPageSchema,
 } from "@/lib/seo";
-import { getWorkingProjects } from "@/lib/working-projects";
+import {
+    getProjectsConfig,
+    getWorkingProjects,
+} from "@/lib/working-projects";
 
 import Hero from "@/components/Hero";
 import Reveal from "@/components/Reveal";
@@ -30,7 +33,11 @@ import ScrambleText from "@/components/ScrambleText";
 export const metadata: Metadata = pageMetadata("home");
 
 export default function HomePage() {
-    const working = getWorkingProjects();
+    const { homeLimit } = getProjectsConfig();
+    const working = getWorkingProjects({
+        featuredOnly: true,
+        limit: homeLimit || undefined,
+    });
 
     const jsonLd = graph([
         webPageSchema("home"),

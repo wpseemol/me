@@ -1,0 +1,24 @@
+{
+  "slug": "prodesiginity",
+  "name": "Prodesiginity",
+  "repo": "https://github.com/wpseemol/prodesiginity",
+  "github": "https://github.com/wpseemol/prodesiginity",
+  "homepage": "https://prodesignity.com/",
+  "description": "AI-assisted brand growth platform — helping brands scale e-commerce across Amazon, Shopify, Meta, Google and TikTok.",
+  "detail": "TypeScript app with a PHP backend layer for ProDesignity’s retainer studio: listings, creative, ads and SEO under one monthly engagement.",
+  "screenshot": "/images/projects/prodesiginity.png",
+  "language": "TypeScript",
+  "languages": [
+    "TypeScript",
+    "PHP",
+    "CSS",
+    "JavaScript",
+    "Dockerfile",
+    "HTML"
+  ],
+  "stars": 0,
+  "created": "2026-08-03",
+  "updated": "2026-10-13",
+  "status": "live",
+  "featured": true
+}

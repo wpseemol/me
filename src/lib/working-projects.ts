@@ -5,6 +5,7 @@ export type WorkingProject = {
     slug: string;
     name: string;
     description: string;
+    detail: string;
     homepage: string;
     github: string;
     screenshot: string;
@@ -15,66 +16,26 @@ export type WorkingProject = {
     updated: string;
     status: "live" | "repo" | string;
     featured: boolean;
-    body: string;
 };
 
-function parseFrontmatter(raw: string): {
-    data: Record<string, unknown>;
-    body: string;
-} {
-    const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
-    if (!match) return { data: {}, body: raw.trim() };
+export type ProjectsConfig = {
+    pageSize: number;
+    homeLimit: number;
+};
 
-    const data: Record<string, unknown> = {};
-    let lastKey: string | null = null;
+const PROJECTS_DIR = path.join(process.cwd(), "data", "projects");
 
-    for (const line of match[1].split(/\r?\n/)) {
-        if (!line.trim() || line.trimStart().startsWith("#")) continue;
-
-        if (/^\s+- /.test(line)) {
-            if (!lastKey) continue;
-            const list = Array.isArray(data[lastKey])
-                ? (data[lastKey] as unknown[])
-                : [];
-            list.push(line.replace(/^\s+- /, "").trim());
-            data[lastKey] = list;
-            continue;
-        }
-
-        const idx = line.indexOf(":");
-        if (idx === -1) continue;
-        const key = line.slice(0, idx).trim();
-        let value: unknown = line.slice(idx + 1).trim();
-        lastKey = key;
-
-        if (value === "") {
-            data[key] = [];
-            continue;
-        }
-
-        if (typeof value === "string") {
-            if (
-                (value.startsWith('"') && value.endsWith('"')) ||
-                (value.startsWith("'") && value.endsWith("'"))
-            ) {
-                value = value.slice(1, -1);
-            } else if (value === "true") value = true;
-            else if (value === "false") value = false;
-            else if (/^\d+$/.test(value)) value = Number(value);
-        }
-
-        data[key] = value;
-    }
-
-    return { data, body: match[2].trim() };
-}
+const DEFAULT_CONFIG: ProjectsConfig = {
+    pageSize: 4,
+    homeLimit: 4,
+};
 
 function asString(v: unknown, fallback = ""): string {
     return typeof v === "string" ? v : fallback;
 }
 
 function asNumber(v: unknown, fallback = 0): number {
-    return typeof v === "number" ? v : fallback;
+    return typeof v === "number" && Number.isFinite(v) ? v : fallback;
 }
 
 function asBool(v: unknown, fallback = true): boolean {
@@ -85,50 +46,83 @@ function asStringList(v: unknown): string[] {
     return Array.isArray(v) ? v.map(String) : [];
 }
 
-function normalize(data: Record<string, unknown>, body: string): WorkingProject | null {
-    const github = asString(data.github) || asString(data.repo);
+function normalize(raw: Record<string, unknown>): WorkingProject | null {
+    const github = asString(raw.github) || asString(raw.repo);
     const slug =
-        asString(data.slug) ||
+        asString(raw.slug) ||
         github.split("/").filter(Boolean).at(-1) ||
         "";
-    if (!slug || !github) return null;
+    if (!slug) return null;
 
-    const homepage = asString(data.homepage).trim();
+    const homepage = asString(raw.homepage).trim();
     const screenshot =
-        asString(data.screenshot).trim() ||
-        `/images/projects/${slug}.webp`;
+        asString(raw.screenshot).trim() ||
+        `/images/projects/${slug}.png`;
+    const description = asString(raw.description);
+    const detail = asString(raw.detail) || description;
 
     return {
         slug,
-        name: asString(data.name, slug),
-        description: asString(data.description),
+        name: asString(raw.name, slug),
+        description,
+        detail,
         homepage,
         github,
         screenshot,
-        language: asString(data.language, "Unknown"),
-        languages: asStringList(data.languages),
-        stars: asNumber(data.stars),
-        created: asString(data.created),
-        updated: asString(data.updated),
-        status: homepage ? "live" : asString(data.status, "repo"),
-        featured: asBool(data.featured, true),
-        body,
+        language: asString(raw.language, "Unknown"),
+        languages: asStringList(raw.languages),
+        stars: asNumber(raw.stars),
+        created: asString(raw.created),
+        updated: asString(raw.updated),
+        status: homepage ? "live" : asString(raw.status, "repo"),
+        featured: asBool(raw.featured, true),
     };
 }
 
-/** Read data/projects/*.md at build time — safe for `output: "export"`. */
-export function getWorkingProjects(): WorkingProject[] {
-    const dir = path.join(process.cwd(), "data", "projects");
-    if (!fs.existsSync(dir)) return [];
+export function getProjectsConfig(): ProjectsConfig {
+    const file = path.join(PROJECTS_DIR, "_config.json");
+    if (!fs.existsSync(file)) return { ...DEFAULT_CONFIG };
+    try {
+        const raw = JSON.parse(fs.readFileSync(file, "utf8")) as Partial<ProjectsConfig>;
+        return {
+            pageSize: Math.max(1, asNumber(raw.pageSize, DEFAULT_CONFIG.pageSize)),
+            homeLimit: Math.max(0, asNumber(raw.homeLimit, DEFAULT_CONFIG.homeLimit)),
+        };
+    } catch {
+        return { ...DEFAULT_CONFIG };
+    }
+}
 
-    return fs
-        .readdirSync(dir)
-        .filter((f) => f.endsWith(".md"))
+/** Read data/projects/*.json at build time — safe for `output: "export"`. */
+export function getWorkingProjects(options?: {
+    featuredOnly?: boolean;
+    limit?: number;
+}): WorkingProject[] {
+    if (!fs.existsSync(PROJECTS_DIR)) return [];
+
+    let list = fs
+        .readdirSync(PROJECTS_DIR)
+        .filter((f) => f.endsWith(".json") && !f.startsWith("_"))
         .map((f) => {
-            const raw = fs.readFileSync(path.join(dir, f), "utf8");
-            const { data, body } = parseFrontmatter(raw);
-            return normalize(data, body);
+            try {
+                const raw = JSON.parse(
+                    fs.readFileSync(path.join(PROJECTS_DIR, f), "utf8"),
+                ) as Record<string, unknown>;
+                return normalize(raw);
+            } catch {
+                return null;
+            }
         })
         .filter((p): p is WorkingProject => Boolean(p))
         .sort((a, b) => (b.updated || "").localeCompare(a.updated || ""));
+
+    if (options?.featuredOnly) {
+        list = list.filter((p) => p.featured);
+    }
+
+    if (options?.limit && options.limit > 0) {
+        list = list.slice(0, options.limit);
+    }
+
+    return list;
 }
