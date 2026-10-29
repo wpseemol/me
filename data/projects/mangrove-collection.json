@@ -5,8 +5,27 @@
   "github": "https://github.com/wpseemol/mangrove-collection",
   "homepage": "https://mangrove-collection.com",
   "description": "Fish marketplace storefront — fresh Sundarbans fish, crab, prawn and honey sold online with delivery across Bangladesh.",
-  "detail": "Monorepo with a Next.js storefront, Laravel API and merchant dashboard. Product search, cart, orders and admin tooling ship together for a real commerce operation.",
+  "detail": "Monorepo with a Next.js storefront, Laravel 12 API and Vite React merchant dashboard. Product search, cart, orders and admin tooling for a real commerce operation.",
   "screenshot": "/images/projects/mangrove-collection.png",
+  "framework": "Next.js + Laravel",
+  "cms": "Custom (no CMS)",
+  "stack": {
+    "frontend": "Next.js · React · TypeScript · Tailwind · TanStack Query · Zustand",
+    "backend": "Laravel 12 · PHP 8.2 · Sanctum",
+    "dashboard": "Vite · React · React Router · TipTap · Recharts",
+    "infra": "Docker · pnpm monorepo"
+  },
+  "technologies": [
+    "Next.js",
+    "React",
+    "TypeScript",
+    "Laravel",
+    "PHP",
+    "MySQL",
+    "Tailwind CSS",
+    "Vite",
+    "Docker"
+  ],
   "language": "TypeScript",
   "languages": [
     "TypeScript",

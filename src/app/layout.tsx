@@ -84,10 +84,25 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || seo.site.googleSiteVerification || undefined,
+    // Search Console wants ONLY the token — not "google-site-verification=…".
+    // Hosting env vars often paste the full meta content by mistake; strip that.
+    google: (() => {
+      const raw =
+        process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+        seo.site.googleSiteVerification ||
+        "";
+      const token = raw
+        .replace(/^google-site-verification\s*=\s*/i, "")
+        .trim();
+      return token || undefined;
+    })(),
     other: {
-      ...(seo.site.bingSiteVerification ? { 'msvalidate.01': seo.site.bingSiteVerification } : {}),
-      ...(seo.site.yandexVerification ? { 'yandex-verification': seo.site.yandexVerification } : {}),
+      ...(seo.site.bingSiteVerification
+        ? { "msvalidate.01": seo.site.bingSiteVerification }
+        : {}),
+      ...(seo.site.yandexVerification
+        ? { "yandex-verification": seo.site.yandexVerification }
+        : {}),
     },
   },
   other: {

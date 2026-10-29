@@ -50,8 +50,12 @@ function WorkingProjectCard({
     const primaryHref = project.homepage || project.github;
     const isLive = Boolean(project.homepage);
     const tags = (
-        project.languages.length ? project.languages : [project.language]
-    ).slice(0, 4);
+        project.technologies.length
+            ? project.technologies
+            : project.languages.length
+              ? project.languages
+              : [project.language]
+    ).slice(0, 5);
 
     const measureTravel = () => {
         const frame = frameRef.current;
@@ -234,6 +238,31 @@ function WorkingProjectCard({
                 <p className="mt-3 max-w-prose text-sm leading-relaxed text-muted">
                     {project.description || project.detail}
                 </p>
+
+                {(project.framework || project.cms) && (
+                    <dl className="mt-4 grid gap-1.5 font-mono text-2xs text-muted sm:grid-cols-2">
+                        {project.framework ? (
+                            <div>
+                                <dt className="inline uppercase tracking-[0.14em] opacity-60">
+                                    Framework{" "}
+                                </dt>
+                                <dd className="inline text-body">
+                                    {project.framework}
+                                </dd>
+                            </div>
+                        ) : null}
+                        {project.cms ? (
+                            <div>
+                                <dt className="inline uppercase tracking-[0.14em] opacity-60">
+                                    CMS{" "}
+                                </dt>
+                                <dd className="inline text-body">
+                                    {project.cms}
+                                </dd>
+                            </div>
+                        ) : null}
+                    </dl>
+                )}
 
                 <div className="mt-5 flex flex-wrap gap-1.5">
                     {tags.map((t) => (

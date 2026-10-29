@@ -94,6 +94,15 @@ function buildRecord(meta, languages, existing = {}) {
             description ||
             `${existing.name || titleCaseSlug(slug)} — synced from ${meta.html_url}.`,
         screenshot,
+        framework: existing.framework || "",
+        cms: existing.cms || "Custom (no CMS)",
+        stack: existing.stack || {
+            frontend: "",
+            backend: "",
+            dashboard: "",
+            infra: "",
+        },
+        technologies: existing.technologies || langList,
         language: meta.language || langList[0] || existing.language || "Unknown",
         languages: langList.length ? langList : existing.languages || [],
         stars: meta.stargazers_count ?? existing.stars ?? 0,

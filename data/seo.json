@@ -14,7 +14,7 @@
     "themeColorLight": "#EEF2FA",
     "themeColorDark": "#05070F",
     "twitterHandle": "@wpseemol",
-    "googleSiteVerification": "",
+    "googleSiteVerification": "flqEC-KkJiaEi9Z4s5rN7NNIiRKo2pjtBTiMtBoqy5Y",
     "bingSiteVerification": "",
     "yandexVerification": ""
   },
@@ -205,6 +205,6 @@
       "facebookexternalhit",
       "LinkedInBot"
     ],
-    "disallowedPaths": ["/api/", "/_next/static/chunks/"]
+    "disallowedPaths": ["/api/"]
   }
 }
