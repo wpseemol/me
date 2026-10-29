@@ -1,44 +1,44 @@
 {
-  "slug": "niyenin",
-  "name": "Niyenin",
-  "repo": "https://github.com/wpseemol/retail-market",
-  "github": "https://github.com/wpseemol/retail-market",
-  "homepage": "https://niyenin-frontend.vercel.app/",
-  "description": "Niyenin is a multi-vendor retail marketplace — sellers open their own stores, list products and fulfil orders, while shoppers buy from many vendors in one cart.",
-  "detail": "Built as the retail-market monorepo. Vendors register and manage catalogues; admin handles approvals, commissions, payouts and reporting. Customers checkout across vendors in one flow. Live preview: niyenin-frontend.vercel.app.",
-  "screenshot": "/images/projects/niyenin.png",
-  "framework": "Next.js",
-  "cms": "Custom (no CMS)",
-  "stack": {
-    "frontend": "Next.js · React · TypeScript · Tailwind · Redux Toolkit · next-auth",
-    "backend": "Express · Prisma · MySQL · JWT",
-    "dashboard": "Vite · React · React Router · Recharts · TipTap",
-    "infra": "Docker · pnpm monorepo · Vercel"
-  },
-  "technologies": [
-    "Next.js",
-    "React",
-    "TypeScript",
-    "Express",
-    "Prisma",
-    "MySQL",
-    "Redux Toolkit",
-    "Vite",
-    "Tailwind CSS",
-    "Docker"
-  ],
-  "language": "TypeScript",
-  "languages": [
-    "TypeScript",
-    "Express",
-    "JavaScript",
-    "CSS",
-    "HTML",
-    "Docker"
-  ],
-  "stars": 0,
-  "created": "2026-09-14",
-  "updated": "2026-10-25",
-  "status": "live",
-  "featured": true
+    "slug": "niyenin",
+    "name": "Niyenin",
+    "repo": "https://github.com/wpseemol/retail-market",
+    "github": "https://github.com/wpseemol/retail-market",
+    "homepage": "https://niyenin-frontend.vercel.app/",
+    "description": "Niyenin is a multi-vendor retail marketplace — sellers open their own stores, list products and fulfil orders, while shoppers buy from many vendors in one cart.",
+    "detail": "Built as the retail-market monorepo. Vendors register and manage catalogues; admin handles approvals, commissions, payouts and reporting. Customers checkout across vendors in one flow. Live preview: niyenin-frontend.vercel.app.",
+    "screenshot": "/images/projects/niyenin.webp",
+    "framework": "Next.js",
+    "cms": "Custom (no CMS)",
+    "stack": {
+        "frontend": "Next.js · React · TypeScript · Tailwind · Redux Toolkit · next-auth",
+        "backend": "Express · Prisma · MySQL · JWT",
+        "dashboard": "Vite · React · React Router · Recharts · TipTap",
+        "infra": "Docker · pnpm monorepo · Vercel"
+    },
+    "technologies": [
+        "Next.js",
+        "React",
+        "TypeScript",
+        "Express",
+        "Prisma",
+        "MySQL",
+        "Redux Toolkit",
+        "Vite",
+        "Tailwind CSS",
+        "Docker"
+    ],
+    "language": "TypeScript",
+    "languages": [
+        "TypeScript",
+        "Express",
+        "JavaScript",
+        "CSS",
+        "HTML",
+        "Docker"
+    ],
+    "stars": 0,
+    "created": "2026-09-14",
+    "updated": "2026-10-25",
+    "status": "live",
+    "featured": true
 }

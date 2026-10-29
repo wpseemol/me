@@ -1,44 +1,44 @@
 {
-  "slug": "prodesiginity",
-  "name": "Prodesiginity",
-  "repo": "https://github.com/wpseemol/prodesiginity",
-  "github": "https://github.com/wpseemol/prodesiginity",
-  "homepage": "https://prodesignity.com/",
-  "description": "AI-assisted brand growth platform — helping brands scale e-commerce across Amazon, Shopify, Meta, Google and TikTok.",
-  "detail": "ProDesignity studio site and ops stack: Next.js marketing frontend, Express + Prisma API, Vite React dashboard — listings, creative, ads and SEO under one retainer.",
-  "screenshot": "/images/projects/prodesiginity.png",
-  "framework": "Next.js + Express",
-  "cms": "Custom (no CMS)",
-  "stack": {
-    "frontend": "Next.js · React · TypeScript · Tailwind · GSAP · Three.js",
-    "backend": "Express · Prisma · MariaDB / MySQL · JWT",
-    "dashboard": "Vite · React · Hook Form",
-    "infra": "Docker · pnpm monorepo"
-  },
-  "technologies": [
-    "Next.js",
-    "React",
-    "TypeScript",
-    "Express",
-    "Prisma",
-    "MySQL",
-    "GSAP",
-    "Three.js",
-    "Vite",
-    "Tailwind CSS"
-  ],
-  "language": "TypeScript",
-  "languages": [
-    "TypeScript",
-    "PHP",
-    "CSS",
-    "JavaScript",
-    "Dockerfile",
-    "HTML"
-  ],
-  "stars": 0,
-  "created": "2026-08-03",
-  "updated": "2026-10-13",
-  "status": "live",
-  "featured": true
+    "slug": "prodesiginity",
+    "name": "Prodesiginity",
+    "repo": "https://github.com/wpseemol/prodesiginity",
+    "github": "https://github.com/wpseemol/prodesiginity",
+    "homepage": "https://prodesignity.com/",
+    "description": "AI-assisted brand growth platform — helping brands scale e-commerce across Amazon, Shopify, Meta, Google and TikTok.",
+    "detail": "ProDesignity studio site and ops stack: Next.js marketing frontend, Express + Prisma API, Vite React dashboard — listings, creative, ads and SEO under one retainer.",
+    "screenshot": "/images/projects/prodesiginity.webp",
+    "framework": "Next.js + Express",
+    "cms": "Custom (no CMS)",
+    "stack": {
+        "frontend": "Next.js · React · TypeScript · Tailwind · GSAP · Three.js",
+        "backend": "Express · Prisma · MariaDB / MySQL · JWT",
+        "dashboard": "Vite · React · Hook Form",
+        "infra": "Docker · pnpm monorepo"
+    },
+    "technologies": [
+        "Next.js",
+        "React",
+        "TypeScript",
+        "Express",
+        "Prisma",
+        "MySQL",
+        "GSAP",
+        "Three.js",
+        "Vite",
+        "Tailwind CSS"
+    ],
+    "language": "TypeScript",
+    "languages": [
+        "TypeScript",
+        "PHP",
+        "CSS",
+        "JavaScript",
+        "Dockerfile",
+        "HTML"
+    ],
+    "stars": 0,
+    "created": "2026-08-03",
+    "updated": "2026-10-13",
+    "status": "live",
+    "featured": true
 }
