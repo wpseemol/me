@@ -232,7 +232,7 @@ function WorkingProjectCard({
                 </h3>
 
                 <p className="mt-3 max-w-prose text-sm leading-relaxed text-muted">
-                    {project.description || project.body}
+                    {project.description || project.detail}
                 </p>
 
                 <div className="mt-5 flex flex-wrap gap-1.5">

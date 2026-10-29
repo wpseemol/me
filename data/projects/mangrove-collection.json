@@ -1,0 +1,24 @@
+{
+  "slug": "mangrove-collection",
+  "name": "Mangrove Collection",
+  "repo": "https://github.com/wpseemol/mangrove-collection",
+  "github": "https://github.com/wpseemol/mangrove-collection",
+  "homepage": "https://mangrove-collection.com",
+  "description": "Fish marketplace storefront — fresh Sundarbans fish, crab, prawn and honey sold online with delivery across Bangladesh.",
+  "detail": "Monorepo with a Next.js storefront, Laravel API and merchant dashboard. Product search, cart, orders and admin tooling ship together for a real commerce operation.",
+  "screenshot": "/images/projects/mangrove-collection.png",
+  "language": "TypeScript",
+  "languages": [
+    "TypeScript",
+    "PHP",
+    "Blade",
+    "CSS",
+    "JavaScript",
+    "Shell"
+  ],
+  "stars": 0,
+  "created": "2024-01-28",
+  "updated": "2026-10-08",
+  "status": "live",
+  "featured": true
+}

@@ -206,7 +206,7 @@ export function projectsSchema() {
   const live = working.map((p) => ({
     '@type': 'SoftwareApplication' as const,
     name: p.name,
-    description: p.description,
+    description: p.detail || p.description,
     url: p.homepage || p.github,
     codeRepository: p.github,
     image: abs(p.screenshot),
