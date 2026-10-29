@@ -8,16 +8,20 @@ import {
     projectsSchema,
     webPageSchema,
 } from "@/lib/seo";
+import { getWorkingProjects } from "@/lib/working-projects";
 
 import Reveal from "@/components/Reveal";
 import { SectionHead } from "@/components/Section";
 import { CtaBand, ProjectCard, TechMarquee } from "@/components/Blocks";
+import WorkingProjects from "@/components/WorkingProjects";
 import { ArrowUpRightIcon, GithubIcon } from "@/components/Icons";
 import ScrambleText from "@/components/ScrambleText";
 
 export const metadata: Metadata = pageMetadata("projects");
 
 export default function ProjectsPage() {
+    const working = getWorkingProjects();
+
     const jsonLd = graph([
         webPageSchema("projects"),
         projectsSchema(),
@@ -29,7 +33,10 @@ export default function ProjectsPage() {
             "@type": "CollectionPage",
             url: abs("/projects"),
             name: "Projects by Seemol Chakroborti",
-            description: site.projects.map((p) => p.name).join(" · "),
+            description: [
+                ...working.map((p) => p.name),
+                ...site.projects.map((p) => p.name),
+            ].join(" · "),
         },
     ]);
 
@@ -74,6 +81,22 @@ export default function ProjectsPage() {
                         <ArrowUpRightIcon width={15} height={15} />
                     </a>
                 </Reveal>
+
+                {working.length > 0 ? (
+                    <div className="mt-14">
+                        <Reveal>
+                            <p className="route-label">
+                                <span className="verb">GET</span>
+                                <span>/projects/live</span>
+                            </p>
+                            <h2 className="mt-3 text-2xl sm:text-3xl">
+                                Working{" "}
+                                <span className="grad-text">now</span>
+                            </h2>
+                        </Reveal>
+                        <WorkingProjects projects={working} />
+                    </div>
+                ) : null}
 
                 <Reveal
                     className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3"

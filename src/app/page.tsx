@@ -9,6 +9,7 @@ import {
     profilePageSchema,
     webPageSchema,
 } from "@/lib/seo";
+import { getWorkingProjects } from "@/lib/working-projects";
 
 import Hero from "@/components/Hero";
 import Reveal from "@/components/Reveal";
@@ -22,12 +23,15 @@ import {
     StackBars,
     TechMarquee,
 } from "@/components/Blocks";
+import WorkingProjects from "@/components/WorkingProjects";
 import { ArrowIcon } from "@/components/Icons";
 import ScrambleText from "@/components/ScrambleText";
 
 export const metadata: Metadata = pageMetadata("home");
 
 export default function HomePage() {
+    const working = getWorkingProjects();
+
     const jsonLd = graph([
         webPageSchema("home"),
         profilePageSchema(),
@@ -47,6 +51,37 @@ export default function HomePage() {
             <div className="mt-24">
                 <TechMarquee />
             </div>
+
+            {/* --------------------------------------------- recent / live work */}
+            {working.length > 0 ? (
+                <section
+                    className="shell py-24 sm:py-28"
+                    aria-labelledby="working-heading"
+                >
+                    <Reveal>
+                        <SectionHead
+                            path="/projects"
+                            title={
+                                <span id="working-heading">
+                                    <ScrambleText
+                                        text="Recent"
+                                        duration={500}
+                                    />{" "}
+                                    <span className="grad-text">
+                                        <ScrambleText
+                                            text="working projects"
+                                            duration={600}
+                                        />
+                                    </span>
+                                </span>
+                            }
+                            lede="Live products I'm shipping now — open the site or jump into the GitHub repo."
+                        />
+                    </Reveal>
+
+                    <WorkingProjects projects={working} />
+                </section>
+            ) : null}
 
             {/* ------------------------------------------------------- services */}
             <section
