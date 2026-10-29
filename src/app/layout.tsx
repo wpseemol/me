@@ -23,7 +23,11 @@ export const metadata: Metadata = {
   description: seo.site.defaultDescription,
   keywords: allKeywords(),
   applicationName: seo.site.shortName,
-  authors: [{ name: 'Seemol Chakroborti', url: BASE_URL }],
+  authors: [
+    { name: 'Seemol Chakroborti', url: BASE_URL },
+    { name: 'Seemol', url: BASE_URL },
+    { name: 'wpseemol', url: 'https://github.com/wpseemol' },
+  ],
   creator: 'Seemol Chakroborti',
   publisher: 'Seemol Chakroborti',
   generator: 'Next.js',

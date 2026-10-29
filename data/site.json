@@ -4,15 +4,18 @@
     "handle": "wpseemol",
     "firstName": "Seemol",
     "alternateNames": [
-      "wpseemol",
       "Seemol",
+      "wpseemol",
       "Seemol Chakraborty",
-      "Shimul Chakroborti"
+      "Seemol Chakrabarti",
+      "Seemol Chakravorty",
+      "Shimul Chakroborti",
+      "Seemol Chakroborti wpseemol"
     ],
     "role": "Full-Stack Web Developer",
     "roleLong": "Full-Stack Developer — Laravel · MERN · Next.js",
     "tagline": "I architect enterprise backends with Laravel, high-performance frontends with Next.js, and full-stack MERN applications that scale.",
-    "shortBio": "Seemol Chakroborti (wpseemol) is a full-stack web developer building production-grade applications with React, Next.js, Laravel, Node.js and Shopify.",
+    "shortBio": "Seemol Chakroborti — known as Seemol online (handle: wpseemol) — is a full-stack web developer building production-grade applications with React, Next.js, Laravel, Node.js and Shopify.",
     "longBio": "I'm Seemol Chakroborti — a full-stack web developer with 5+ years of hands-on experience shipping software that real businesses depend on. I work across the whole stack: secure, well-documented Laravel and Express APIs on the backend, and fast, accessible, SEO-ready interfaces in React and Next.js on the frontend. I care about the parts users never see — query plans, cache layers, error budgets — because that's what keeps a product fast on day 400, not just day one.",
     "availability": "Open for freelance & full-time",
     "available": true,
