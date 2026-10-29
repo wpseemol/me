@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "node --disable-wasm-trap-handler server.js",
     "lint": "next lint",
-    "start:plain": "next start"
+    "start:plain": "next start",
+    "sync:projects": "node scripts/sync-projects.mjs"
   },
   "overrides": {
     "postcss": "^8.5.26",

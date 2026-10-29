@@ -232,7 +232,7 @@ const LANG_COLOR: Record<string, string> = {
 
 export function ProjectCard({ project }: { project: Project }) {
     return (
-        <article className="card group flex flex-col p-6 sm:p-7">
+        <article className="card group relative flex flex-col p-6 sm:p-7">
             <div className="flex items-center justify-between gap-3">
                 <span className="inline-flex items-center gap-2 font-mono text-2xs text-muted">
                     <span
@@ -250,7 +250,18 @@ export function ProjectCard({ project }: { project: Project }) {
                 </span>
             </div>
 
-            <h3 className="mt-4 text-lg sm:text-xl">{project.name}</h3>
+            <h3 className="mt-4 text-lg sm:text-xl">
+                <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-inherit after:absolute after:inset-0 after:z-[1] after:content-['']"
+                >
+                    <span className="relative z-[2] transition-colors duration-300 group-hover:text-brand-ink">
+                        {project.name}
+                    </span>
+                </a>
+            </h3>
             <p className="mt-3 text-sm leading-relaxed text-muted">
                 {project.detail}
             </p>
@@ -267,7 +278,7 @@ export function ProjectCard({ project }: { project: Project }) {
                 href={project.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center gap-1.5 border-t pt-5 text-sm font-semibold text-brand-ink transition-colors hover:text-accent-500"
+                className="relative z-[2] mt-6 inline-flex items-center gap-1.5 border-t pt-5 text-sm font-semibold text-brand-ink transition-colors hover:text-accent-500"
             >
                 View source on GitHub
                 <ArrowUpRightIcon
