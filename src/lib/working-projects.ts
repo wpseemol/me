@@ -7,6 +7,7 @@ export type WorkingProject = {
     description: string;
     homepage: string;
     github: string;
+    screenshot: string;
     language: string;
     languages: string[];
     stars: number;
@@ -93,6 +94,9 @@ function normalize(data: Record<string, unknown>, body: string): WorkingProject 
     if (!slug || !github) return null;
 
     const homepage = asString(data.homepage).trim();
+    const screenshot =
+        asString(data.screenshot).trim() ||
+        `/images/projects/${slug}.webp`;
 
     return {
         slug,
@@ -100,6 +104,7 @@ function normalize(data: Record<string, unknown>, body: string): WorkingProject 
         description: asString(data.description),
         homepage,
         github,
+        screenshot,
         language: asString(data.language, "Unknown"),
         languages: asStringList(data.languages),
         stars: asNumber(data.stars),
@@ -111,9 +116,9 @@ function normalize(data: Record<string, unknown>, body: string): WorkingProject 
     };
 }
 
-/** Read /db/*.md at build time — safe for `output: "export"`. */
+/** Read data/projects/*.md at build time — safe for `output: "export"`. */
 export function getWorkingProjects(): WorkingProject[] {
-    const dir = path.join(process.cwd(), "db");
+    const dir = path.join(process.cwd(), "data", "projects");
     if (!fs.existsSync(dir)) return [];
 
     return fs

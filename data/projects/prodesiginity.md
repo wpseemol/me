@@ -5,6 +5,7 @@ name: Prodesiginity
 description: We are helping brand to grow with AI.
 homepage: "https://prodesignity.com/"
 github: "https://github.com/wpseemol/prodesiginity"
+screenshot: /images/projects/prodesiginity.webp
 language: TypeScript
 languages:
   - TypeScript

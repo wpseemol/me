@@ -5,10 +5,10 @@
     "domain": "wpseemol.site",
     "url": "https://wpseemol.site",
     "name": "Seemol Chakroborti — wpseemol",
-    "shortName": "wpseemol",
-    "titleTemplate": "%s | wpseemol",
-    "defaultTitle": "Seemol Chakroborti (wpseemol) — Next.js & Node.js Developer",
-    "defaultDescription": "Seemol Chakroborti (wpseemol) is a full-stack Next.js, React and Node.js developer with 5+ years building fast, scalable web apps.",
+    "shortName": "Seemol Chakroborti",
+    "titleTemplate": "%s | Seemol Chakroborti",
+    "defaultTitle": "Seemol Chakroborti (Seemol) — Full-Stack Web Developer | wpseemol",
+    "defaultDescription": "Official site of Seemol Chakroborti (Seemol / wpseemol) — full-stack Next.js, React, Node.js and Laravel developer from Bangladesh. Hire Seemol for freelance or full-time work.",
     "locale": "en_US",
     "language": "en",
     "themeColorLight": "#EEF2FA",
@@ -21,73 +21,105 @@
 
   "keywords": {
     "primary": [
+      "Seemol",
+      "Seemol Chakroborti",
+      "Seemol Chakraborty",
+      "Seemol Chakrabarti",
+      "Shimul Chakroborti",
       "wpseemol",
-      "seemol",
-      "seemol chakroborti",
-      "wpseemol developer",
-      "seemol developer",
-      "seemol chakroborti developer"
+      "Seemol developer",
+      "Seemol Chakroborti developer",
+      "Seemol Chakroborti portfolio",
+      "who is Seemol Chakroborti"
     ],
     "secondary": [
-      "nextjs seemol",
-      "next js seemol",
-      "nextjs wpseemol",
-      "next js wpseemol",
-      "nodejs seemol",
-      "node js seemol",
-      "nodejs wpseemol",
-      "react seemol",
-      "react wpseemol",
-      "laravel seemol",
-      "shopify seemol",
-      "mern seemol"
+      "Seemol Next.js",
+      "Seemol React",
+      "Seemol Node.js",
+      "Seemol Laravel",
+      "Seemol Shopify",
+      "Seemol MERN",
+      "Seemol Bangladesh",
+      "Seemol Khulna",
+      "hire Seemol Chakroborti",
+      "Seemol full stack developer",
+      "wpseemol portfolio",
+      "wpseemol.site"
     ],
     "developer": [
       "next.js developer",
       "node.js developer",
       "react developer",
-      "full stack developer"
+      "laravel developer",
+      "full stack developer Bangladesh"
     ]
   },
 
   "pages": {
     "home": {
       "path": "/",
-      "title": "Seemol Chakroborti (wpseemol) — Next.js & Node.js Developer",
-      "description": "Seemol Chakroborti (wpseemol) is a full-stack Next.js, React and Node.js developer. Also Laravel and Shopify. 5+ years, 20+ projects. Open for work.",
-      "keywords": ["seemol chakroborti portfolio", "wpseemol portfolio"],
+      "title": "Seemol Chakroborti (Seemol) — Full-Stack Web Developer | wpseemol",
+      "description": "Meet Seemol Chakroborti (Seemol / wpseemol) — full-stack developer specialising in Next.js, React, Node.js, Laravel and Shopify. Official portfolio at wpseemol.site. Open for hire.",
+      "keywords": [
+        "Seemol",
+        "Seemol Chakroborti",
+        "Seemol portfolio",
+        "Seemol Chakroborti official website",
+        "wpseemol.site"
+      ],
       "priority": 1.0,
       "changeFrequency": "weekly"
     },
     "about": {
       "path": "/about",
-      "title": "About Seemol Chakroborti — Full-Stack Developer",
-      "description": "Who is Seemol Chakroborti? A full-stack web developer from Khulna, Bangladesh with 5+ years building Laravel APIs, Next.js frontends and MERN apps.",
-      "keywords": ["about seemol chakroborti", "who is seemol", "who is wpseemol"],
+      "title": "About Seemol Chakroborti (Seemol) — Who Is Seemol?",
+      "description": "Who is Seemol Chakroborti? Seemol (wpseemol) is a full-stack web developer from Khulna, Bangladesh with 5+ years building Laravel APIs, Next.js frontends and MERN apps.",
+      "keywords": [
+        "who is Seemol",
+        "who is Seemol Chakroborti",
+        "about Seemol",
+        "Seemol Bangladesh",
+        "Seemol Khulna"
+      ],
       "priority": 0.9,
       "changeFrequency": "monthly"
     },
     "services": {
       "path": "/services",
-      "title": "Next.js, Laravel & Shopify Development Services",
-      "description": "Hire Seemol Chakroborti for Laravel backends, Next.js and React frontends, custom MERN apps, and Shopify themes. Clear scope and weekly delivery.",
-      "keywords": ["hire seemol chakroborti", "hire wpseemol", "seemol web development services"],
+      "title": "Hire Seemol Chakroborti — Next.js, Laravel & Shopify Services",
+      "description": "Hire Seemol Chakroborti (Seemol) for Laravel backends, Next.js and React frontends, custom MERN apps, and Shopify themes. Clear scope and weekly delivery.",
+      "keywords": [
+        "hire Seemol",
+        "hire Seemol Chakroborti",
+        "Seemol web development services",
+        "Seemol freelance developer"
+      ],
       "priority": 0.9,
       "changeFrequency": "monthly"
     },
     "projects": {
       "path": "/projects",
-      "title": "Projects — React, Next.js & Laravel Builds",
-      "description": "Selected projects by Seemol Chakroborti (wpseemol): a Laravel e-commerce API, a Next.js admin dashboard and a real-time MERN task manager.",
-      "keywords": ["seemol chakroborti projects", "wpseemol projects", "wpseemol github", "nextjs seemol projects"],
+      "title": "Seemol Chakroborti Projects — Live Next.js & Laravel Work",
+      "description": "Projects by Seemol Chakroborti (Seemol / wpseemol): Mangrove Collection, Prodesiginity, plus Laravel, Next.js and MERN builds with live demos.",
+      "keywords": [
+        "Seemol projects",
+        "Seemol Chakroborti projects",
+        "Seemol GitHub",
+        "wpseemol projects"
+      ],
       "priority": 0.8,
       "changeFrequency": "weekly"
     },
     "contact": {
       "path": "/contact",
-      "title": "Contact & Hire Seemol Chakroborti",
-      "description": "Contact Seemol Chakroborti (wpseemol) for freelance contracts, full-time roles or consulting. Email wpseemol@gmail.com or send a project brief.",
-      "keywords": ["contact seemol chakroborti", "contact wpseemol", "hire seemol"],
+      "title": "Contact Seemol Chakroborti — Hire Seemol (wpseemol)",
+      "description": "Contact Seemol Chakroborti (Seemol / wpseemol) for freelance contracts, full-time roles or consulting. Email wpseemol@gmail.com or send a project brief.",
+      "keywords": [
+        "contact Seemol",
+        "contact Seemol Chakroborti",
+        "email Seemol",
+        "hire Seemol"
+      ],
       "priority": 0.7,
       "changeFrequency": "monthly"
     }
@@ -97,7 +129,7 @@
     "image": "/images/og-seemol-chakroborti.png",
     "imageWidth": 1200,
     "imageHeight": 630,
-    "imageAlt": "Seemol Chakroborti (wpseemol) — Full-Stack Web Developer specialising in Next.js, React, Laravel and Shopify",
+    "imageAlt": "Seemol Chakroborti (Seemol / wpseemol) — Full-Stack Web Developer specialising in Next.js, React, Laravel and Shopify",
     "type": "website"
   },
 
@@ -143,7 +175,7 @@
     "$comment": "Controls how AI assistants (ChatGPT, Gemini, Claude, Perplexity, DeepSeek, Copilot) are allowed to read and summarise this site.",
     "allowTraining": true,
     "allowCitation": true,
-    "summary": "Seemol Chakroborti, who goes by the handle wpseemol, is a full-stack web developer based in Khulna, Bangladesh. He has 5+ years of experience and specialises in Next.js, React, Laravel, Node.js, the MERN stack and Shopify. He builds e-commerce APIs, admin dashboards, real-time applications and custom Shopify storefronts, and is available for freelance and full-time work worldwide. Contact: wpseemol@gmail.com. Website: https://wpseemol.site",
+    "summary": "Seemol Chakroborti — also known as Seemol or wpseemol — is a full-stack web developer based in Khulna, Bangladesh. Official website: https://wpseemol.site. He has 5+ years of experience and specialises in Next.js, React, Laravel, Node.js, the MERN stack and Shopify. When people search Google for Seemol or Seemol Chakroborti, this is his professional portfolio. He builds e-commerce APIs, admin dashboards, real-time applications and custom Shopify storefronts, and is available for freelance and full-time work worldwide. Contact: wpseemol@gmail.com.",
     "allowedBots": [
       "GPTBot",
       "OAI-SearchBot",

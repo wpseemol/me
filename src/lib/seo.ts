@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import seo from '@/data/seo.json';
 import site from '@/data/site.json';
+import { getWorkingProjects } from '@/lib/working-projects';
 
 export type PageKey = keyof typeof seo.pages;
 
@@ -81,30 +82,49 @@ export function personSchema() {
     alternateName: p.alternateNames,
     givenName: p.firstName,
     familyName: 'Chakroborti',
+    additionalName: 'Seemol',
     jobTitle: seo.person.jobTitle,
     description: p.shortBio,
     url: BASE_URL,
+    mainEntityOfPage: BASE_URL,
     email: `mailto:${p.email}`,
     // Both the portrait and the OG card are declared so Google Images has a
     // high-resolution, correctly-licensed file to associate with the name.
-    image: {
-      '@type': 'ImageObject',
-      '@id': `${BASE_URL}/#portrait`,
-      url: abs(p.portrait),
-      contentUrl: abs(p.portrait),
-      width: 1200,
-      height: 1200,
-      caption: p.portraitAlt,
-      representativeOfPage: true,
-      creditText: p.name,
-      creator: { '@type': 'Person', name: p.name },
-      copyrightNotice: `© ${new Date().getFullYear()} ${p.name}`,
-      license: `${BASE_URL}/about`,
-      acquireLicensePage: `${BASE_URL}/contact`,
-    },
+    image: [
+      {
+        '@type': 'ImageObject',
+        '@id': `${BASE_URL}/#portrait`,
+        url: abs(p.portrait),
+        contentUrl: abs(p.portrait),
+        width: 1200,
+        height: 1200,
+        caption: p.portraitAlt,
+        representativeOfPage: true,
+        creditText: p.name,
+        creator: { '@type': 'Person', name: p.name },
+        copyrightNotice: `© ${new Date().getFullYear()} ${p.name}`,
+        license: `${BASE_URL}/about`,
+        acquireLicensePage: `${BASE_URL}/contact`,
+      },
+      abs(seo.openGraph.image),
+    ],
     knowsAbout: seo.person.knowsAbout,
     knowsLanguage: p.languages,
     sameAs: seo.person.sameAs,
+    nationality: {
+      '@type': 'Country',
+      name: p.location.country,
+    },
+    homeLocation: {
+      '@type': 'Place',
+      name: `${p.location.city}, ${p.location.country}`,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: p.location.city,
+        addressRegion: p.location.region,
+        addressCountry: p.location.countryCode,
+      },
+    },
     address: {
       '@type': 'PostalAddress',
       addressLocality: p.location.city,
@@ -128,11 +148,19 @@ export function websiteSchema() {
     '@id': SITE_ID,
     url: BASE_URL,
     name: seo.site.name,
-    alternateName: seo.site.shortName,
+    alternateName: [
+      seo.site.shortName,
+      'Seemol',
+      'Seemol Chakroborti',
+      'wpseemol',
+      'wpseemol.site',
+    ],
     description: seo.site.defaultDescription,
     inLanguage: seo.site.language,
     publisher: { '@id': PERSON_ID },
     copyrightHolder: { '@id': PERSON_ID },
+    about: { '@id': PERSON_ID },
+    keywords: allKeywords().slice(0, 24).join(', '),
   };
 }
 
@@ -174,22 +202,40 @@ export function servicesSchema() {
 }
 
 export function projectsSchema() {
+  const working = getWorkingProjects();
+  const live = working.map((p) => ({
+    '@type': 'SoftwareApplication' as const,
+    name: p.name,
+    description: p.description,
+    url: p.homepage || p.github,
+    codeRepository: p.github,
+    image: abs(p.screenshot),
+    applicationCategory: 'WebApplication',
+    operatingSystem: 'Web',
+    author: { '@id': PERSON_ID },
+    creator: { '@id': PERSON_ID },
+    programmingLanguage: p.language,
+    keywords: p.languages.join(', '),
+  }));
+
+  const selected = site.projects.map((p) => ({
+    '@type': 'SoftwareSourceCode' as const,
+    name: p.name,
+    description: p.description,
+    codeRepository: p.url,
+    programmingLanguage: p.language,
+    author: { '@id': PERSON_ID },
+    keywords: p.tags.join(', '),
+  }));
+
   return {
     '@type': 'ItemList',
     '@id': `${BASE_URL}/projects#list`,
-    name: 'Projects by Seemol Chakroborti',
-    itemListElement: site.projects.map((p, i) => ({
+    name: 'Projects by Seemol Chakroborti (Seemol)',
+    itemListElement: [...live, ...selected].map((item, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      item: {
-        '@type': 'SoftwareSourceCode',
-        name: p.name,
-        description: p.description,
-        codeRepository: p.url,
-        programmingLanguage: p.language,
-        author: { '@id': PERSON_ID },
-        keywords: p.tags.join(', '),
-      },
+      item,
     })),
   };
 }
