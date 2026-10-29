@@ -212,28 +212,31 @@ export default function HomePage() {
                 className="shell py-24 sm:py-28"
                 aria-labelledby="process-heading"
             >
-                <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-                    <Reveal direction="right">
-                        <SectionHead
-                            verb="PATCH"
-                            path="/process"
-                            title={
-                                <span id="process-heading">
-                                    <ScrambleText
-                                        text="How a project"
-                                        duration={500}
-                                    />{" "}
-                                    <span className="grad-text">
+                <div className="grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+                    {/* Sticky outside Reveal — transforms on Reveal would kill sticky. */}
+                    <div className="lg:sticky lg:top-28 lg:self-start">
+                        <Reveal direction="right">
+                            <SectionHead
+                                verb="PATCH"
+                                path="/process"
+                                title={
+                                    <span id="process-heading">
                                         <ScrambleText
-                                            text="actually runs"
-                                            duration={600}
-                                        />
+                                            text="How a project"
+                                            duration={500}
+                                        />{" "}
+                                        <span className="grad-text">
+                                            <ScrambleText
+                                                text="actually runs"
+                                                duration={600}
+                                            />
+                                        </span>
                                     </span>
-                                </span>
-                            }
-                            lede="No four-week silences. Work lands on a staging URL you can open every week."
-                        />
-                    </Reveal>
+                                }
+                                lede="No four-week silences. Work lands on a staging URL you can open every week."
+                            />
+                        </Reveal>
+                    </div>
                     <Reveal direction="left" delay={0.1}>
                         <div className="lg:pl-4">
                             <ProcessList />
