@@ -1,6 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 
+export type ProjectStack = {
+    frontend: string;
+    backend: string;
+    dashboard: string;
+    infra: string;
+};
+
 export type WorkingProject = {
     slug: string;
     name: string;
@@ -9,6 +16,13 @@ export type WorkingProject = {
     homepage: string;
     github: string;
     screenshot: string;
+    /** Primary app framework, e.g. "Next.js" or "Next.js + Laravel". */
+    framework: string;
+    /** CMS used to build the product — "Custom (no CMS)", "WordPress", "Shopify", etc. */
+    cms: string;
+    stack: ProjectStack;
+    /** Chip list shown on the card (prefer over raw languages). */
+    technologies: string[];
     language: string;
     languages: string[];
     stars: number;
@@ -46,6 +60,16 @@ function asStringList(v: unknown): string[] {
     return Array.isArray(v) ? v.map(String) : [];
 }
 
+function asStack(v: unknown): ProjectStack {
+    const o = v && typeof v === "object" ? (v as Record<string, unknown>) : {};
+    return {
+        frontend: asString(o.frontend),
+        backend: asString(o.backend),
+        dashboard: asString(o.dashboard),
+        infra: asString(o.infra),
+    };
+}
+
 function normalize(raw: Record<string, unknown>): WorkingProject | null {
     const github = asString(raw.github) || asString(raw.repo);
     const slug =
@@ -60,6 +84,9 @@ function normalize(raw: Record<string, unknown>): WorkingProject | null {
         `/images/projects/${slug}.png`;
     const description = asString(raw.description);
     const detail = asString(raw.detail) || description;
+    const languages = asStringList(raw.languages);
+    const technologies = asStringList(raw.technologies);
+    const chips = technologies.length ? technologies : languages;
 
     return {
         slug,
@@ -69,8 +96,12 @@ function normalize(raw: Record<string, unknown>): WorkingProject | null {
         homepage,
         github,
         screenshot,
+        framework: asString(raw.framework),
+        cms: asString(raw.cms, "Custom (no CMS)"),
+        stack: asStack(raw.stack),
+        technologies: chips,
         language: asString(raw.language, "Unknown"),
-        languages: asStringList(raw.languages),
+        languages,
         stars: asNumber(raw.stars),
         created: asString(raw.created),
         updated: asString(raw.updated),

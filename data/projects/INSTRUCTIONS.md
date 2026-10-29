@@ -1,9 +1,12 @@
 # How to add a project
 
-Projects live as **one JSON file per project** in this folder (`data/projects/`).
-The site reads them at **build time** (static export) — no server database.
+`data/projects/` is **JSON storage for your portfolio cards** — not a CMS.
+WordPress / Shopify / Laravel Filament would be what a *product* was built with;
+those values go **inside** each project JSON (`framework`, `cms`, `stack`).
 
-Ignore `INSTRUCTIONS.md` and any file that does not end in `.json`.
+The site reads these files at **build time** (static export).
+
+Ignore `INSTRUCTIONS.md` and any file that does not end in `.json` (except `_config.json`).
 
 ---
 
@@ -27,34 +30,21 @@ Minimal example (GitHub only — no live site yet):
   "description": "One short sentence for the card.",
   "detail": "Longer note about what you built and why it matters.",
   "screenshot": "/images/projects/my-project.png",
+  "framework": "Next.js",
+  "cms": "Custom (no CMS)",
+  "stack": {
+    "frontend": "Next.js · React · TypeScript",
+    "backend": "Express · Prisma · MySQL",
+    "dashboard": "Vite · React",
+    "infra": "Docker"
+  },
+  "technologies": ["Next.js", "React", "Express", "Prisma", "MySQL"],
   "language": "TypeScript",
   "languages": ["TypeScript", "React"],
   "stars": 0,
   "created": "2026-01-15",
   "updated": "2026-10-29",
   "status": "repo",
-  "featured": true
-}
-```
-
-Live site example — set `homepage` and `status: "live"`:
-
-```json
-{
-  "slug": "niyenin",
-  "name": "Niyenin",
-  "repo": "https://github.com/wpseemol/retail-market",
-  "github": "https://github.com/wpseemol/retail-market",
-  "homepage": "https://niyenin-frontend.vercel.app/",
-  "description": "Multi-vendor retail marketplace.",
-  "detail": "Vendors, cart, admin commissions…",
-  "screenshot": "/images/projects/niyenin.png",
-  "language": "TypeScript",
-  "languages": ["TypeScript", "Express", "CSS"],
-  "stars": 0,
-  "created": "2026-09-14",
-  "updated": "2026-10-25",
-  "status": "live",
   "featured": true
 }
 ```
@@ -72,8 +62,12 @@ Live site example — set `homepage` and `status: "live"`:
 | `description` | yes | Short card blurb. |
 | `detail` | no | Longer body (projects page / SEO). |
 | `screenshot` | yes* | Path under `public/`, e.g. `/images/projects/slug.png`. |
+| `framework` | yes | App framework(s), e.g. `Next.js`, `Next.js + Laravel`. |
+| `cms` | yes | `Custom (no CMS)`, `WordPress`, `Shopify`, `Strapi`, etc. |
+| `stack` | no | `{ frontend, backend, dashboard, infra }` short strings. |
+| `technologies` | yes | Chip list on the card (preferred over `languages`). |
 | `language` | yes | Primary language label. |
-| `languages` | no | Tag chips (array of strings). |
+| `languages` | no | Fallback chips / GitHub language mix. |
 | `stars` | no | GitHub stars (number). |
 | `created` / `updated` | no | `YYYY-MM-DD` — sorts newest first by `updated`. |
 | `status` | no | `"live"` if `homepage` set, else `"repo"`. |
