@@ -38,6 +38,31 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
+      # configure-pages does not flip an existing "Deploy from a branch" (Jekyll)
+      # site to workflow mode. Without this, GitHub's legacy "pages build and
+      # deployment" job races us and republishes README.md over the Next export.
+      - name: Ensure Pages source is GitHub Actions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -sS -X PUT \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/pages" \
+            -d '{"build_type":"workflow"}' \
+            -o /tmp/pages-source.json -w "%{http_code}" > /tmp/pages-source.status
+          status=$(cat /tmp/pages-source.status)
+          echo "PUT /pages → HTTP ${status}"
+          cat /tmp/pages-source.json
+          case "$status" in
+            204|200) echo "Pages source is workflow (GitHub Actions)." ;;
+            *)
+              echo "::warning::Could not set build_type=workflow (HTTP ${status})."
+              echo "Set it manually: Settings → Pages → Source → GitHub Actions"
+              ;;
+          esac
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
