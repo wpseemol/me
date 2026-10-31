@@ -3,7 +3,7 @@
     "name": "Niyenin",
     "repo": "https://github.com/wpseemol/retail-market",
     "github": "https://github.com/wpseemol/retail-market",
-    "homepage": "https://niyenin-frontend.vercel.app/",
+    "homepage": "https://www.niyenin.com/",
     "description": "Niyenin is a multi-vendor retail marketplace — sellers open their own stores, list products and fulfil orders, while shoppers buy from many vendors in one cart.",
     "detail": "Built as the retail-market monorepo. Vendors register and manage catalogues; admin handles approvals, commissions, payouts and reporting. Customers checkout across vendors in one flow. Live preview: niyenin-frontend.vercel.app.",
     "screenshot": "/images/projects/niyenin.webp",
