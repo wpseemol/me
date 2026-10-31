@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
+import NextTopLoader from 'nextjs-toploader';
 import './globals.css';
 
 import Nav from '@/components/Nav';
@@ -156,6 +157,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <ThemeProvider>
+          <NextTopLoader
+            color="var(--brand)"
+            height={2}
+            showSpinner={false}
+            shadow="0 0 10px var(--brand),0 0 5px var(--brand)"
+          />
           <SmoothScroll />
           <Intro />
           <CanvasField />
