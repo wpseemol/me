@@ -1,100 +1,58 @@
 "use client";
 
-import {
-  motion,
-  useMotionTemplate,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
 import type { SheetContent } from "./skillsData";
 import { SKILL_ACCENT, SKILL_ICON } from "@/components/ui/SkillIcons";
 
 type BookPageProps = {
-  /** 0 = flat on the right, 1 = fully turned (−180°) */
-  progress: MotionValue<number>;
   front: SheetContent;
   back: SheetContent;
+  /** Higher = later in the stack (under earlier sheets while unturned). */
   stackIndex: number;
   sheetCount: number;
 };
 
 /**
  * One double-sided leaf hinged on the spine (right half only).
- * Never spans the full book width — keeps a strict 2-page spread.
+ * GSAP owns rotateY — this markup stays static.
  */
 export default function BookPage({
-  progress,
   front,
   back,
   stackIndex,
   sheetCount,
 }: BookPageProps) {
-  const rotateY = useTransform(progress, [0, 1], [0, -180]);
-  // Paper curl + lift through the fold (book page with weight).
-  const skewY = useTransform(progress, [0, 0.5, 1], [0, -4, 0]);
-  const liftZ = useTransform(progress, [0, 0.5, 1], [0, 26, 0]);
-
-  const zIndex = useTransform(progress, (p) =>
-    p < 0.5 ? sheetCount - stackIndex + 20 : stackIndex + 3,
-  );
-
-  // Lighting: shade builds mid-turn, clears when flat.
-  const shadeOpacity = useTransform(progress, [0, 0.5, 1], [0, 0.45, 0.08]);
-  const curlOpacity = useTransform(progress, [0, 0.45, 0.55, 1], [0, 0.7, 0.7, 0.12]);
-  const frontShade = useMotionTemplate`linear-gradient(90deg, rgba(0,0,0,${shadeOpacity}) 0%, transparent 52%)`;
-  const backHighlight = useMotionTemplate`linear-gradient(270deg, rgba(255,255,255,${curlOpacity}) 0%, transparent 48%, rgba(0,0,0,0.22) 100%)`;
-
   return (
-    <motion.div
+    <div
+      data-book-sheet
+      data-sheet-index={stackIndex}
       className="book-sheet pointer-events-none absolute inset-y-0 left-1/2 w-1/2 will-change-transform"
       style={{
-        rotateY,
-        skewY,
-        z: liftZ,
-        zIndex,
         transformOrigin: "left center",
         transformStyle: "preserve-3d",
+        zIndex: sheetCount - stackIndex + 20,
       }}
     >
-      {/* Front — current chapter (recto) */}
       <div
-        className="book-page book-sheet-face absolute inset-0 overflow-hidden rounded-r-xl border border-l-0"
+        className="book-page book-sheet-face book-sheet-face--front absolute inset-0 overflow-hidden rounded-r-xl border border-l-0"
         style={{
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-          transform: "rotateY(0deg) translateZ(1px)",
-          zIndex: 2,
           boxShadow:
             "8px 16px 36px -16px rgb(0 0 0 / 0.45), inset 10px 0 18px rgb(0 0 0 / 0.04)",
         }}
       >
         <PageFace content={front} side="right" />
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{ background: frontShade }}
-        />
+        <div aria-hidden className="book-sheet-shade" data-sheet-shade />
+        <div aria-hidden className="book-sheet-curl" data-sheet-curl />
       </div>
 
-      {/* Back — verso after the turn */}
       <div
-        className="book-page-back book-sheet-face absolute inset-0 overflow-hidden rounded-l-xl border"
+        className="book-page-back book-sheet-face book-sheet-face--back absolute inset-0 overflow-hidden rounded-l-xl border"
         style={{
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-          transform: "rotateY(180deg) translateZ(1px)",
-          zIndex: 1,
           boxShadow: "inset -10px 0 20px rgb(0 0 0 / 0.08)",
         }}
       >
         <PageFace content={back} side="left" verso />
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{ background: backHighlight }}
-        />
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -114,11 +72,58 @@ export function PageFace({
       }`}
     >
       {content.kind === "intro" && <IntroFace content={content} />}
+      {content.kind === "group" && <GroupFace content={content} />}
       {content.kind === "skill" && (
         <SkillFace content={content} compact={verso} />
       )}
       {content.kind === "notes" && <NotesFace content={content} />}
     </div>
+  );
+}
+
+function GroupFace({
+  content,
+}: {
+  content: Extract<SheetContent, { kind: "group" }>;
+}) {
+  return (
+    <>
+      <p className="book-muted shrink-0 font-mono text-[10px] uppercase tracking-[0.18em]">
+        Chapter
+      </p>
+      <h3 className="book-ink mt-3 shrink-0 font-display text-xl leading-tight sm:text-2xl">
+        {content.title}
+      </h3>
+      <p className="book-body mt-2 shrink-0 text-[12px] leading-relaxed sm:text-sm">
+        {content.lede}
+      </p>
+      <ul className="mt-4 min-h-0 flex-1 space-y-3 overflow-auto">
+        {content.skills.map((skill, i) => (
+          <li key={skill.name} className="min-w-0">
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="book-ink font-mono text-[11px] font-semibold sm:text-xs">
+                <span className="book-muted mr-2 tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                {skill.name}
+              </p>
+              <span className="book-muted font-mono text-[10px]">
+                {skill.level}%
+              </span>
+            </div>
+            <p className="book-body mt-0.5 line-clamp-2 text-[11px] leading-snug">
+              {skill.blurb}
+            </p>
+            <div className="book-track mt-1.5 h-1 overflow-hidden rounded-full">
+              <div
+                className="h-full rounded-full bg-brand-500"
+                style={{ width: `${skill.level}%` }}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
 
@@ -275,9 +280,7 @@ function NotesFace({
       <p className="book-ink mt-4 font-display text-lg leading-snug sm:text-xl">
         {content.body}
       </p>
-      <p className="book-muted mt-auto font-mono text-[10px]">
-        @{content.handle}
-      </p>
+      <p className="book-muted mt-auto font-mono text-[10px]">@{content.handle}</p>
     </>
   );
 }
