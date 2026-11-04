@@ -276,7 +276,7 @@ function DesktopSkillBook() {
     >
       <div
         ref={pinRef}
-        className="flex min-h-[100svh] flex-col items-center justify-center overflow-x-clip py-3 sm:py-5"
+        className="flex min-h-svh flex-col items-center justify-center overflow-x-clip py-3 sm:py-5"
       >
         <p
           ref={labelRef}
@@ -305,7 +305,7 @@ function DesktopSkillBook() {
 
           <div
             ref={bookRef}
-            className="relative mx-auto aspect-[5/4] w-full max-h-[min(56svh,480px)]"
+            className="relative mx-auto aspect-5/4 w-full max-h-[min(56svh,480px)]"
             style={{ transformStyle: "preserve-3d" }}
           >
             {/* Soft jacket under the spread only — not a second book */}
@@ -335,7 +335,7 @@ function DesktopSkillBook() {
               className="absolute inset-0 rounded-2xl"
               style={{ transformStyle: "preserve-3d" }}
             >
-              <div className="book-page absolute inset-y-0 left-0 z-[1] w-1/2 overflow-hidden rounded-l-2xl border border-r-0">
+              <div className="book-page absolute inset-y-0 left-0 z-1 w-1/2 overflow-hidden rounded-l-2xl border border-r-0">
                 <div className="relative flex h-full min-h-0 flex-col overflow-hidden p-5 sm:p-7 md:p-8">
                   <p className="book-muted shrink-0 font-mono text-[10px] uppercase tracking-[0.18em]">
                     {LEFT_ENDPAPER.eyebrow}
@@ -357,7 +357,7 @@ function DesktopSkillBook() {
                 className="book-binding absolute inset-y-[2%] left-1/2 z-40 w-[3px] -translate-x-1/2 rounded-full"
               />
 
-              <div className="book-page absolute inset-y-0 left-1/2 z-[1] w-1/2 overflow-hidden rounded-r-2xl border border-l-0">
+              <div className="book-page absolute inset-y-0 left-1/2 z-1 w-1/2 overflow-hidden rounded-r-2xl border border-l-0">
                 <div className="relative flex h-full min-h-0 flex-col overflow-hidden p-5 sm:p-7 md:p-8">
                   <p className="book-muted shrink-0 font-mono text-[10px] uppercase tracking-[0.18em]">
                     {RIGHT_BASE.eyebrow}

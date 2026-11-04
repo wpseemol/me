@@ -221,7 +221,7 @@ export function ServiceCard({
             />
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -bottom-6 -left-4 opacity-[0.14] transition-all duration-500 group-hover:opacity-30 group-hover:scale-110"
+                className="pointer-events-none absolute -bottom-6 -left-4 opacity-14 transition-all duration-500 group-hover:opacity-30 group-hover:scale-110"
             >
                 <AccentIcon width={88} height={88} className={accent.tint} />
             </div>
@@ -347,9 +347,9 @@ export function ProjectCard({ project }: { project: Project }) {
                     href={project.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-inherit after:absolute after:inset-0 after:z-[1] after:content-['']"
+                    className="text-inherit after:absolute after:inset-0 after:z-1 after:content-['']"
                 >
-                    <span className="relative z-[2] transition-colors duration-300 group-hover:text-brand-ink">
+                    <span className="relative z-2 transition-colors duration-300 group-hover:text-brand-ink">
                         {project.name}
                     </span>
                 </a>
@@ -370,7 +370,7 @@ export function ProjectCard({ project }: { project: Project }) {
                 href={project.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative z-[2] mt-6 inline-flex items-center gap-1.5 border-t pt-5 text-sm font-semibold text-brand-ink transition-colors hover:text-accent-500"
+                className="relative z-2 mt-6 inline-flex items-center gap-1.5 border-t pt-5 text-sm font-semibold text-brand-ink transition-colors hover:text-accent-500"
             >
                 View source on GitHub
                 <ArrowUpRightIcon
@@ -551,7 +551,7 @@ export function CtaBand() {
             <div className="relative overflow-hidden rounded-card border p-8 text-center sm:p-14">
                 <div
                     aria-hidden
-                    className="absolute inset-0 opacity-[0.16]"
+                    className="absolute inset-0 opacity-16"
                     style={{ background: "var(--grad)" }}
                 />
                 <div className="relative">

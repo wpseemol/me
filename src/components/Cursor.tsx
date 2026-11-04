@@ -80,7 +80,7 @@ export default function Cursor() {
   }, []);
 
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[90] hidden md:block">
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-90 hidden md:block">
       <div
         ref={dotRef}
         className="absolute top-0 left-0 h-1.5 w-1.5 rounded-full bg-accent-400 opacity-0"

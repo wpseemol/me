@@ -74,6 +74,7 @@ export default function SkillsStage() {
     };
 
     const syncField = (index: number, progress: number, pulse: boolean) => {
+      if (!pinStRef.current?.isActive) return;
       const name = SKILLS[index]?.name ?? "";
       setFieldAtmosphere({
         accent: SKILL_ACCENT[name] ?? "#1b63ff",
@@ -91,7 +92,7 @@ export default function SkillsStage() {
       const progress = (index + 0.5) / Math.max(total, 1);
 
       tl?.kill();
-      syncField(index, progress, true);
+      syncField(index, progress, !instant);
 
       if (instant || reduced) {
         gsap.set(panel, { y: 0, x: 0, opacity: 1 });
@@ -158,7 +159,15 @@ export default function SkillsStage() {
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onToggle: (self) => {
-          if (!self.isActive) clearFieldAtmosphere();
+          if (!self.isActive) {
+            clearFieldAtmosphere();
+            return;
+          }
+          const idx = Math.min(
+            total - 1,
+            Math.floor(self.progress * total + 1e-6),
+          );
+          syncField(idx, self.progress, true);
         },
         onUpdate: (self) => {
           if (barRef.current) {
@@ -175,7 +184,9 @@ export default function SkillsStage() {
             Math.floor(self.progress * total + 1e-6),
           );
           show(idx);
-          setFieldAtmosphere({ progress: self.progress, intensity: 1 });
+          if (self.isActive) {
+            setFieldAtmosphere({ progress: self.progress, intensity: 1 });
+          }
         },
         onRefresh: (self) => {
           if (barRef.current) {
@@ -262,7 +273,7 @@ export default function SkillsStage() {
     >
       <div
         ref={pinRef}
-        className="relative flex min-h-[100svh] flex-col justify-center py-10 sm:py-12"
+        className="relative flex min-h-svh flex-col justify-center py-10 sm:py-12"
       >
         <div className="shell">
           <div className="mx-auto max-w-3xl text-center">

@@ -429,7 +429,7 @@ export default function CanvasField() {
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
 
       <div
-        className="absolute inset-0 opacity-[0.14] dark:opacity-[0.2]"
+        className="absolute inset-0 opacity-14 dark:opacity-20"
         style={{
           backgroundImage:
             'linear-gradient(rgb(var(--c-glow-a) / 0.32) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--c-glow-a) / 0.32) 1px, transparent 1px)',

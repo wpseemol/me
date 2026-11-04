@@ -130,6 +130,7 @@ export default function WorkingProjectStage({
         };
 
         const syncField = (index: number, progress: number, pulse: boolean) => {
+            if (!pinStRef.current?.isActive) return;
             const p = projects[index];
             if (!p) return;
             setFieldAtmosphere({
@@ -146,7 +147,7 @@ export default function WorkingProjectStage({
             const dir = index >= last ? 1 : -1;
             const progress = (index + 0.5) / Math.max(total, 1);
 
-            syncField(index, progress, true);
+            syncField(index, progress, !instant);
 
             if (instant || reduced) {
                 gsap.set(card, { y: 0, x: 0, opacity: 1, rotate: 0 });
@@ -231,14 +232,37 @@ export default function WorkingProjectStage({
                 scrub: 0.55,
                 anticipatePin: 1,
                 invalidateOnRefresh: true,
+                onToggle: (self) => {
+                    if (!self.isActive) {
+                        clearFieldAtmosphere();
+                        return;
+                    }
+                    const idx = Math.min(
+                        total - 1,
+                        Math.floor(self.progress * total + 1e-6),
+                    );
+                    syncField(idx, self.progress, true);
+                },
                 onUpdate: (self) => {
                     // Ignore scrub updates while a click is driving Lenis scroll
-                    if (clickLockRef.current !== null) return;
+                    if (clickLockRef.current !== null) {
+                        setFieldAtmosphere({
+                            progress: self.progress,
+                            intensity: 1,
+                        });
+                        return;
+                    }
                     const idx = Math.min(
                         total - 1,
                         Math.floor(self.progress * total + 1e-6),
                     );
                     show(idx);
+                    if (self.isActive) {
+                        setFieldAtmosphere({
+                            progress: self.progress,
+                            intensity: 1,
+                        });
+                    }
                 },
                 onRefresh: (self) => {
                     if (clickLockRef.current !== null) return;
@@ -362,7 +386,7 @@ export default function WorkingProjectStage({
         >
             <div
                 ref={pinRef}
-                className="shell flex min-h-[100svh] flex-col items-center py-8 sm:py-10"
+                className="shell flex min-h-svh flex-col items-center py-8 sm:py-10"
             >
                 <div className="flex w-full max-w-3xl shrink-0 flex-col items-center text-center">
                     <p

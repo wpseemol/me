@@ -210,7 +210,7 @@ export default function ProjectPagePreview({
   return (
     <div
       ref={frameRef}
-      className={`group/preview relative z-[3] aspect-[16/10] cursor-ns-resize overflow-hidden bg-surface touch-none ${className}`}
+      className={`group/preview relative z-3 aspect-16/10 cursor-ns-resize overflow-hidden bg-surface touch-none ${className}`}
     >
       <div
         ref={shotRef}
@@ -237,14 +237,14 @@ export default function ProjectPagePreview({
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-10 bg-gradient-to-b from-elev/80 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 z-1 h-10 bg-gradient-to-b from-elev/80 to-transparent"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-20 bg-gradient-to-t from-elev via-elev/70 to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-1 h-20 bg-gradient-to-t from-elev via-elev/70 to-transparent"
       />
 
-      <div className="pointer-events-none absolute left-3 top-3 z-[2]">
+      <div className="pointer-events-none absolute left-3 top-3 z-2">
         {live ? (
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-elev/85 px-2.5 py-0.5 font-mono text-2xs uppercase tracking-[0.14em] text-brand-ink backdrop-blur-sm">
             <span className="relative flex h-1.5 w-1.5">
@@ -258,7 +258,7 @@ export default function ProjectPagePreview({
         )}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-3 bottom-3 z-[2] flex items-end justify-between gap-3">
+      <div className="pointer-events-none absolute inset-x-3 bottom-3 z-2 flex items-end justify-between gap-3">
         <div
           className={`rounded-full border border-white/15 bg-elev/90 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] backdrop-blur-sm transition-all duration-300 ${
             scrolling || canScroll

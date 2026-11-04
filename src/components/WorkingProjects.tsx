@@ -67,7 +67,7 @@ function WorkingProjectCard({
         className="border-b"
       />
 
-      <div className="relative z-[1] flex flex-1 flex-col p-6 sm:p-7">
+      <div className="relative z-1 flex flex-1 flex-col p-6 sm:p-7">
         <div className="flex items-start justify-between gap-4">
           <span className="inline-flex items-center gap-2 font-mono text-2xs text-muted">
             <span
@@ -127,7 +127,7 @@ function WorkingProjectCard({
           ))}
         </div>
 
-        <div className="relative z-[2] mt-auto flex flex-wrap items-center gap-x-5 gap-y-3 border-t pt-5">
+        <div className="relative z-2 mt-auto flex flex-wrap items-center gap-x-5 gap-y-3 border-t pt-5">
           {isLive ? (
             <a
               href={project.homepage}

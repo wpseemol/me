@@ -91,7 +91,7 @@ export default function Intro() {
     <div
       ref={rootRef}
       aria-hidden="true"
-      className="fixed inset-0 z-[100] flex items-center justify-center"
+      className="fixed inset-0 z-100 flex items-center justify-center"
     >
       <div className="absolute inset-0 flex">
         {[0, 1, 2].map((i) => (
