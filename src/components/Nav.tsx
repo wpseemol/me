@@ -19,19 +19,26 @@ const LINKS = [
 
 export default function Nav() {
     const pathname = usePathname();
-    const [scrolled, setScrolled] = useState(false);
+    const [atTop, setAtTop] = useState(true);
     const [open, setOpen] = useState(false);
     const barRef = useRef<HTMLDivElement>(null);
+    const atTopRef = useRef(true);
 
     useEffect(() => {
-        // The progress bar is written straight to the DOM instead of through React
+        // Progress bar is written straight to the DOM instead of through React
         // state — re-rendering the whole header on every scroll frame is the
         // single most common cause of a janky sticky nav.
+        // Header only shows at the page top; it slides away once you leave.
         const onScroll = () => {
-            setScrolled(window.scrollY > 12);
+            const y = window.scrollY;
+            const visible = y <= 12;
+            if (visible !== atTopRef.current) {
+                atTopRef.current = visible;
+                setAtTop(visible);
+            }
             const max =
                 document.documentElement.scrollHeight - window.innerHeight;
-            const p = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+            const p = max > 0 ? Math.min(y / max, 1) : 0;
             if (barRef.current) barRef.current.style.transform = `scaleX(${p})`;
         };
         onScroll();
@@ -92,8 +99,10 @@ export default function Nav() {
             </a>
 
             <header
-                className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-                    scrolled
+                className={`fixed inset-x-0 top-0 z-50 transition-[transform,background-color,border-color,backdrop-filter] duration-500 ${
+                    open || atTop ? "translate-y-0" : "-translate-y-full"
+                } ${
+                    open
                         ? "border-b bg-ink/85 backdrop-blur-xl supports-backdrop-filter:bg-ink/72"
                         : "border-b border-transparent"
                 }`}
