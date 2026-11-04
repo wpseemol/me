@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  motion,
-  useMotionValueEvent,
-  useScroll,
-  useSpring,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
-import BookPage, { PageFace } from "./BookPage";
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
+import Image from "next/image";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { PageFace } from "./BookPage";
 import {
   FLIP_SHEETS,
   LEFT_ENDPAPER,
@@ -17,12 +19,16 @@ import {
   meta,
   profile,
 } from "./skillsData";
+import { asset } from "@/lib/asset";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const SHEET_COUNT = FLIP_SHEETS.length;
 
 /**
- * Physical hardcover → open spread → page turns.
- * Closed pose matches a real book (cover + spine + thick page block).
+ * Sticky hardcover Skill Book — GSAP ScrollTrigger pin + scrub.
+ * Closed pose matches a real book (spine, canvas page-block, ajar cover).
+ * Scroll opens the cover, then turns each leaf with gravity easing.
  */
 export default function SkillBookSection() {
   const [isMobile, setIsMobile] = useState(false);
@@ -41,306 +47,443 @@ export default function SkillBookSection() {
 
 function DesktopSkillBook() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
+  const pinRef = useRef<HTMLDivElement>(null);
+  const bookRef = useRef<HTMLDivElement>(null);
+  const coverRef = useRef<HTMLDivElement>(null);
+  const leftRef = useRef<HTMLDivElement>(null);
+  const edgesRef = useRef<HTMLDivElement>(null);
+  const ribbonRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLParagraphElement>(null);
+  const leafRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const edgeCanvasRef = useRef<HTMLCanvasElement>(null);
+  const topCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const progress = useSpring(scrollYProgress, {
-    stiffness: 88,
-    damping: 28,
-    mass: 0.6,
-    restDelta: 0.0004,
-  });
+  usePaintPageEdges(edgeCanvasRef, "fore");
+  usePaintPageEdges(topCanvasRef, "head");
 
-  // 0–0.18 closed hardcover pose
-  // 0.18–0.38 face camera + cover opens
-  // 0.40–1 page turns
-  const poseT = useTransform(progress, [0.02, 0.2], [0, 1], { clamp: true });
-  const openT = useTransform(progress, [0.18, 0.38], [0, 1], { clamp: true });
-  const TURN_START = 0.4;
-  const turnSpan = (0.97 - TURN_START) / SHEET_COUNT;
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+    const pin = pinRef.current;
+    const book = bookRef.current;
+    const cover = coverRef.current;
+    if (!section || !pin || !book || !cover) return;
 
-  // Closed = three-quarter hardcover. Open = front-facing spread.
-  const bookRotateY = useTransform(poseT, [0, 1], [-32, 0]);
-  const bookRotateX = useTransform(poseT, [0, 1], [14, 2]);
-  const bookRotateZ = useTransform(poseT, [0, 1], [-4, 0]);
-  const bookScale = useTransform(poseT, [0, 1], [0.92, 1]);
+    const leaves = leafRefs.current.filter(Boolean) as HTMLDivElement[];
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Cover hinged at spine — slightly ajar when closed (like the reference).
-  const coverRotate = useTransform(openT, [0, 1], [-8, -168]);
-  const coverZ = useTransform(openT, [0, 0.45, 1], [18, 36, 10]);
+    const ctx = gsap.context(() => {
+      gsap.set(book, {
+        rotateX: 16,
+        rotateY: -22,
+        rotateZ: -4,
+        xPercent: 24,
+        transformOrigin: "50% 50%",
+        force3D: true,
+      });
+      gsap.set(cover, {
+        rotateY: -14,
+        transformOrigin: "left center",
+        force3D: true,
+      });
+      gsap.set(leftRef.current, { opacity: 0 });
+      gsap.set(leaves, {
+        rotateY: 0,
+        transformOrigin: "left center",
+        force3D: true,
+      });
+      leaves.forEach((leaf, i) => {
+        gsap.set(leaf, { zIndex: SHEET_COUNT - i + 20 });
+      });
+      gsap.set(progressRef.current, { scaleX: 0.04, transformOrigin: "left center" });
 
-  // Closed block is a single volume; open expands to a full spread.
-  const closedOpacity = useTransform(openT, [0, 0.35], [1, 0]);
-  const spreadOpacity = useTransform(openT, [0.28, 0.7], [0, 1]);
-  const blockDepth = useTransform(poseT, [0, 1], [1, 0.35]);
-  const groundOpacity = useTransform(poseT, [0, 1], [0.9, 0.45]);
+      if (reduced) {
+        gsap.set(book, { rotateX: 2, rotateY: 0, rotateZ: 0, xPercent: 0 });
+        gsap.set(cover, { rotateY: -176, opacity: 0 });
+        gsap.set(leftRef.current, { opacity: 1 });
+        gsap.set(edgesRef.current, { opacity: 0 });
+        gsap.set(ribbonRef.current, { opacity: 0 });
+        return;
+      }
 
-  const ranges = useMemo(
-    () =>
-      FLIP_SHEETS.map((_, i) => {
-        const a = TURN_START + i * turnSpan;
-        const b = a + turnSpan * 0.88;
-        return [a, b] as [number, number];
-      }),
-    [turnSpan],
-  );
+      const setLabel = (text: string) => {
+        if (labelRef.current) labelRef.current.textContent = text;
+      };
 
-  const [label, setLabel] = useState("Closed · Skill book");
-  const indicatorWidth = useTransform(progress, [0, 1], ["4%", "100%"]);
+      const tl = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: `+=${Math.max(380, 140 + SHEET_COUNT * 55)}%`,
+          pin: pin,
+          scrub: 0.65,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const p = self.progress;
+            if (progressRef.current) {
+              gsap.set(progressRef.current, {
+                scaleX: 0.04 + p * 0.96,
+              });
+            }
+            if (p < 0.08) setLabel("Closed · Skill book");
+            else if (p < 0.28) setLabel("Opening…");
+            else if (p < 0.34) setLabel(meta.introTitle);
+            else {
+              const turnStart = 0.34;
+              const turnSpan = (0.96 - turnStart) / SHEET_COUNT;
+              const idx = Math.min(
+                SHEET_COUNT - 1,
+                Math.max(0, Math.floor((p - turnStart) / turnSpan)),
+              );
+              const sheet = FLIP_SHEETS[idx];
+              if (!sheet) setLabel("Turning page…");
+              else if (sheet.front.kind === "intro") setLabel(meta.introTitle);
+              else if (sheet.front.kind === "skill")
+                setLabel(sheet.front.skill.name);
+              else setLabel("Turning page…");
+            }
+          },
+        },
+      });
 
-  useMotionValueEvent(progress, "change", (v) => {
-    if (v < 0.18) setLabel("Closed · Skill book");
-    else if (v < 0.38) setLabel("Opening…");
-    else if (v < TURN_START + 0.02) setLabel(meta.introTitle);
-    else {
-      const idx = Math.min(
-        SHEET_COUNT - 1,
-        Math.max(0, Math.floor((v - TURN_START) / turnSpan)),
+      // 0 → ~0.28  straighten + gravity cover open
+      tl.to(
+        book,
+        {
+          rotateX: 2,
+          rotateY: 0,
+          rotateZ: 0,
+          xPercent: 0,
+          duration: 2.4,
+          ease: "power2.inOut",
+        },
+        0,
       );
-      const sheet = FLIP_SHEETS[idx];
-      if (!sheet) setLabel("Turning page…");
-      else if (sheet.front.kind === "intro") setLabel(meta.introTitle);
-      else if (sheet.front.kind === "skill") setLabel(sheet.front.skill.name);
-      else setLabel("Turning page…");
-    }
-  });
+      tl.to(
+        cover,
+        {
+          rotateY: -176,
+          duration: 2.6,
+          ease: "power3.inOut",
+        },
+        0.05,
+      );
+      tl.to(
+        edgesRef.current,
+        { opacity: 0, duration: 1.1, ease: "power1.out" },
+        0.45,
+      );
+      tl.to(
+        ribbonRef.current,
+        { opacity: 0, y: 12, duration: 0.7, ease: "power1.out" },
+        0.35,
+      );
+      tl.to(
+        leftRef.current,
+        { opacity: 1, duration: 0.9, ease: "power1.out" },
+        0.7,
+      );
+      tl.to(
+        cover,
+        { opacity: 0, duration: 0.45, ease: "power1.out" },
+        2.35,
+      );
+
+      // Page turns — gravity ease (slow → fast → settle)
+      leaves.forEach((leaf, i) => {
+        const start = 2.7 + i * 1.15;
+        tl.to(
+          leaf,
+          {
+            rotateY: -180,
+            duration: 1.05,
+            ease: "power2.inOut",
+            onUpdate: function onFlip() {
+              const ry = Number(gsap.getProperty(leaf, "rotateY"));
+              leaf.style.zIndex = String(
+                ry > -90 ? SHEET_COUNT - i + 20 : i + 3,
+              );
+            },
+          },
+          start,
+        );
+      });
+
+      tl.to({}, { duration: 0.4 }); // tail settle
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[460vh]"
+      className="relative"
       aria-labelledby="skill-book-live"
     >
-      <div className="sticky top-0 flex min-h-[100svh] flex-col items-center justify-center overflow-hidden py-10">
+      <div
+        ref={pinRef}
+        className="flex min-h-[100svh] flex-col items-center justify-center overflow-hidden py-8"
+      >
         <p
+          ref={labelRef}
           id="skill-book-live"
-          className="mb-6 font-mono text-2xs uppercase tracking-[0.16em] text-muted"
+          className="mb-5 font-mono text-2xs uppercase tracking-[0.16em] text-muted"
           aria-live="polite"
         >
-          {label}
+          Closed · Skill book
         </p>
 
-        <div className="relative mx-auto w-full max-w-[880px] px-4 sm:px-8">
+        <div className="relative mx-auto w-full max-w-[880px] px-4 sm:px-6">
           <div
             aria-hidden
-            className="absolute -inset-16 rounded-[56px] opacity-40 blur-3xl"
+            className="pointer-events-none absolute -inset-16 rounded-[48px] opacity-35 blur-3xl"
             style={{
               background:
-                "radial-gradient(circle at 50% 55%, rgb(var(--c-glow-a) / 0.28), transparent 68%)",
+                "radial-gradient(circle at 48% 58%, rgb(var(--c-glow-a) / 0.3), transparent 68%)",
             }}
           />
 
           <div
-            className="relative mx-auto flex aspect-[1.35/1] w-full items-center justify-center"
-            style={{
-              perspective: 1800,
-              perspectiveOrigin: "50% 55%",
-            }}
+            className="relative mx-auto aspect-[1.35/1] w-full"
+            style={{ perspective: 1400, perspectiveOrigin: "46% 60%" }}
           >
-            {/* Soft ground shadow */}
-            <motion.div
+            {/* Table shadow */}
+            <div
               aria-hidden
-              className="absolute bottom-[6%] left-[18%] right-[12%] h-12 rounded-[100%] bg-black/45 blur-2xl dark:bg-black/65"
-              style={{ opacity: groundOpacity }}
+              className="absolute -bottom-8 left-[12%] right-[8%] h-16 rounded-[100%] bg-black/55 blur-2xl dark:bg-black/75"
             />
 
-            <motion.div
-              className="hardcover relative h-[86%] w-[58%] will-change-transform sm:w-[52%]"
-              style={{
-                rotateY: bookRotateY,
-                rotateX: bookRotateX,
-                rotateZ: bookRotateZ,
-                scale: bookScale,
-                transformStyle: "preserve-3d",
-                transformOrigin: "50% 60%",
-              }}
+            <div
+              ref={bookRef}
+              className="absolute inset-0 will-change-transform"
+              style={{ transformStyle: "preserve-3d" }}
             >
-              {/* ===== CLOSED HARDCOVER VOLUME ===== */}
-              <motion.div
-                className="absolute inset-0"
-                style={{
-                  opacity: closedOpacity,
-                  transformStyle: "preserve-3d",
-                  pointerEvents: "none",
-                }}
+              {/* Jacket / boards under pages */}
+              <div
+                aria-hidden
+                className="book-jacket pointer-events-none absolute inset-0 -m-2.5 rounded-[16px] sm:-m-3"
+              />
+
+              <div
+                className="absolute inset-0 rounded-[12px]"
+                style={{ transformStyle: "preserve-3d" }}
               >
-                {/* Back board */}
+                {/* Left page */}
                 <div
-                  className="hardcover-board absolute inset-0 rounded-[10px]"
-                  style={{
-                    transform: "translateZ(-22px)",
-                    background:
-                      "linear-gradient(145deg, var(--brand-950), var(--brand-800))",
-                    boxShadow: "inset 0 0 0 1px rgb(0 0 0 / 0.35)",
-                  }}
-                />
-
-                {/* Thick page block (text block) */}
-                <motion.div
-                  className="absolute inset-y-[3%] left-[4%] right-[3%]"
-                  style={{
-                    transformStyle: "preserve-3d",
-                    scaleX: blockDepth,
-                    transformOrigin: "left center",
-                  }}
+                  ref={leftRef}
+                  className="book-page absolute inset-y-0 left-0 h-full w-1/2 overflow-hidden rounded-l-[12px] border border-r-0"
+                  style={{ boxShadow: "inset -14px 0 24px rgb(0 0 0 / 0.12)" }}
                 >
-                  {/* Pages body */}
-                  <div
-                    className="absolute inset-0 rounded-sm"
-                    style={{
-                      transform: "translateZ(0px)",
-                      background: "var(--book-page)",
-                      boxShadow: "inset 0 0 20px rgb(0 0 0 / 0.08)",
-                    }}
-                  />
-                  {/* Fore-edge (right) — stacked paper */}
-                  <div
-                    className="hardcover-pages absolute inset-y-0 -right-[18px] w-[18px] rounded-r-[3px] sm:-right-[22px] sm:w-[22px]"
-                    style={{
-                      transform: "rotateY(90deg)",
-                      transformOrigin: "left center",
-                    }}
-                  />
-                  {/* Head band (top edge of pages) */}
-                  <div
-                    className="hardcover-pages-top absolute -top-[14px] right-0 left-0 h-[14px] sm:-top-[16px] sm:h-[16px]"
-                    style={{
-                      transform: "rotateX(90deg)",
-                      transformOrigin: "bottom center",
-                    }}
-                  />
-                </motion.div>
-
-                {/* Spine */}
-                <div
-                  className="hardcover-spine absolute inset-y-0 left-0 w-[26px] rounded-l-[10px] sm:w-[32px]"
-                  style={{
-                    transform: "rotateY(-90deg) translateZ(0px)",
-                    transformOrigin: "left center",
-                  }}
-                >
-                  <p className="absolute inset-x-0 top-1/2 origin-center -translate-y-1/2 rotate-180 text-center font-mono text-[8px] tracking-[0.2em] text-white/50 [writing-mode:vertical-rl]">
-                    SKILL BOOK
-                  </p>
+                  <div className="flex h-full flex-col p-5 sm:p-7 md:p-8">
+                    <p className="book-muted font-mono text-[10px] uppercase tracking-[0.18em]">
+                      {LEFT_ENDPAPER.eyebrow}
+                    </p>
+                    <p className="book-ink book-rule mt-5 border-t pt-5 font-display text-xl leading-snug sm:text-2xl">
+                      {LEFT_ENDPAPER.body}
+                    </p>
+                    <p className="book-muted mt-auto font-mono text-[10px]">
+                      {LEFT_ENDPAPER.footer}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Ribbon bookmark */}
+                {/* Right base */}
+                <div
+                  className="book-page absolute inset-y-0 right-0 h-full w-1/2 overflow-hidden rounded-r-[12px] border border-l-0"
+                  style={{ boxShadow: "inset 12px 0 20px rgb(0 0 0 / 0.06)" }}
+                >
+                  <div className="flex h-full flex-col p-5 sm:p-7 md:p-8">
+                    <p className="book-muted font-mono text-[10px] uppercase tracking-[0.16em]">
+                      {RIGHT_BASE.eyebrow}
+                    </p>
+                    <h3 className="book-ink mt-4 font-display text-xl sm:text-2xl">
+                      {RIGHT_BASE.title}
+                    </h3>
+                    <p className="book-body mt-3 text-[12px] leading-relaxed sm:text-sm">
+                      {RIGHT_BASE.body}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Open spine */}
                 <div
                   aria-hidden
-                  className="absolute bottom-[-18px] left-[18%] z-20 h-10 w-[10px] rounded-b-sm"
+                  className="pointer-events-none absolute inset-y-0 left-1/2 z-30 w-10 -translate-x-1/2"
                   style={{
                     background:
-                      "linear-gradient(180deg, var(--brand-400), var(--brand-600))",
-                    boxShadow: "1px 2px 6px rgb(0 0 0 / 0.35)",
-                    transform: "translateZ(24px)",
+                      "linear-gradient(to right, rgba(0,0,0,0.42), transparent 42%, transparent 58%, rgba(0,0,0,0.42))",
                   }}
                 />
-              </motion.div>
-
-              {/* Front cover — hinged at the spine */}
-              <motion.div
-                className="absolute inset-0 origin-left will-change-transform"
-                style={{
-                  rotateY: coverRotate,
-                  z: coverZ,
-                  transformStyle: "preserve-3d",
-                }}
-              >
                 <div
-                  className="hardcover-cover absolute inset-0 overflow-hidden rounded-[10px]"
-                  style={{
-                    backfaceVisibility: "hidden",
-                    WebkitBackfaceVisibility: "hidden",
-                    transform: "translateZ(24px)",
-                  }}
-                >
+                  aria-hidden
+                  className="book-binding pointer-events-none absolute inset-y-3 left-1/2 z-[31] w-[5px] -translate-x-1/2 rounded-sm"
+                />
+
+                {/* Flip leaves */}
+                {FLIP_SHEETS.map((sheet, i) => (
                   <div
-                    className="absolute inset-0"
+                    key={sheet.id}
+                    ref={(el) => {
+                      leafRefs.current[i] = el;
+                    }}
+                    className="pointer-events-none absolute inset-y-0 left-1/2 w-1/2 will-change-transform"
+                    style={{ transformStyle: "preserve-3d" }}
+                  >
+                    <div
+                      className="book-page absolute inset-0 overflow-hidden rounded-r-xl border border-l-0"
+                      style={{
+                        backfaceVisibility: "hidden",
+                        WebkitBackfaceVisibility: "hidden",
+                        transform: "translateZ(1px)",
+                        boxShadow:
+                          "8px 16px 36px -16px rgb(0 0 0 / 0.45), inset 10px 0 18px rgb(0 0 0 / 0.04)",
+                      }}
+                    >
+                      <PageFace content={sheet.front} side="right" />
+                    </div>
+                    <div
+                      className="book-page-back absolute inset-0 overflow-hidden rounded-l-xl border"
+                      style={{
+                        backfaceVisibility: "hidden",
+                        WebkitBackfaceVisibility: "hidden",
+                        transform: "rotateY(180deg) translateZ(1px)",
+                        boxShadow: "inset -10px 0 20px rgb(0 0 0 / 0.08)",
+                      }}
+                    >
+                      <PageFace content={sheet.back} side="left" verso />
+                    </div>
+                  </div>
+                ))}
+
+                {/* —— Closed hardcover extras (canvas page block) —— */}
+                <div
+                  ref={edgesRef}
+                  className="pointer-events-none absolute inset-0 z-[60]"
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  {/* Spine board left of cover */}
+                  <div
+                    aria-hidden
+                    className="hardcover-spine absolute inset-y-0 left-1/2 w-[16px] -translate-x-full rounded-l-[7px]"
+                  />
+                  {/* Fore-edge canvas */}
+                  <div className="absolute inset-y-[2%] right-[-26px] w-[26px] overflow-hidden rounded-r-[4px] shadow-[4px_0_16px_rgb(0_0_0_/0.35)]">
+                    <canvas
+                      ref={edgeCanvasRef}
+                      className="h-full w-full"
+                      aria-hidden
+                    />
+                  </div>
+                  {/* Head-edge canvas */}
+                  <div className="absolute right-0 top-[-11px] h-[11px] w-1/2 overflow-hidden rounded-t-[2px]">
+                    <canvas
+                      ref={topCanvasRef}
+                      className="h-full w-full"
+                      aria-hidden
+                    />
+                  </div>
+                  {/* Paper peek under ajar cover */}
+                  <div
+                    aria-hidden
+                    className="absolute inset-y-[6%] left-[52%] right-[5%] rounded-r-[8px]"
                     style={{
-                      background:
-                        "linear-gradient(155deg, var(--brand-950) 0%, var(--brand-800) 40%, var(--brand-600) 100%)",
+                      background: "var(--book-page)",
+                      boxShadow: "inset 0 0 0 1px rgb(0 0 0 / 0.08)",
+                      transform: "translateZ(-1px)",
                     }}
                   />
-                  {/* Hinge groove */}
-                  <div
-                    aria-hidden
-                    className="absolute inset-y-3 left-[10px] w-[3px] rounded-full bg-black/35"
-                  />
-                  <div
-                    aria-hidden
-                    className="absolute inset-3 rounded-[8px] border border-white/10"
-                  />
-                  <div className="absolute inset-0 flex flex-col justify-between p-5 text-white sm:p-7">
-                    <div>
-                      <div className="inline-flex items-center gap-2 rounded-md border border-white/15 bg-black/35 px-2.5 py-1 font-mono text-[10px] text-white/80">
-                        <span className="h-1.5 w-1.5 rounded-full bg-accent-400" />
-                        skills.json
-                      </div>
-                      <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.22em] text-white/60">
-                        {meta.eyebrow}
-                      </p>
-                      <p className="mt-3 font-display text-[1.85rem] leading-none sm:text-[2.2rem]">
-                        {meta.title}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-display text-lg leading-tight">
-                        {profile.name}
-                      </p>
-                      <p className="mt-1 font-mono text-[10px] text-white/55">
-                        @{profile.handle}
-                      </p>
-                      <p className="mt-4 font-mono text-[10px] text-white/40">
-                        scroll to open →
-                      </p>
-                    </div>
-                  </div>
                 </div>
 
-                {/* Inside of front cover */}
+                {/* Ribbon */}
                 <div
-                  className="absolute inset-0 overflow-hidden rounded-[10px]"
+                  ref={ribbonRef}
+                  aria-hidden
+                  className="pointer-events-none absolute bottom-[-24px] right-[30%] z-[85] h-12 w-[12px]"
                   style={{
-                    backfaceVisibility: "hidden",
-                    WebkitBackfaceVisibility: "hidden",
-                    transform: "rotateY(180deg) translateZ(24px)",
                     background:
-                      "linear-gradient(145deg, var(--brand-900), var(--brand-700))",
+                      "linear-gradient(180deg, #d4283a 0%, #9b1b2a 62%, #6e1220 100%)",
+                    clipPath:
+                      "polygon(0 0, 100% 0, 100% 76%, 50% 100%, 0 76%)",
+                    boxShadow: "1px 6px 12px rgb(0 0 0 / 0.45)",
                   }}
+                />
+
+                {/* Cover — right half, hinged at spine */}
+                <div
+                  ref={coverRef}
+                  className="absolute inset-y-0 left-1/2 z-[75] w-1/2 will-change-transform"
+                  style={{ transformStyle: "preserve-3d" }}
                 >
-                  <div className="flex h-full flex-col justify-end p-6 text-white/70">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.16em]">
-                      Inside cover
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed">
-                      {meta.insideCover}
-                    </p>
+                  <div
+                    className="hardcover-cover absolute inset-0 overflow-hidden rounded-r-[12px]"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden",
+                      transform: "translateZ(2px)",
+                    }}
+                  >
+                    <Image
+                      src={asset("/images/skill-book-cover.jpg")}
+                      alt=""
+                      fill
+                      sizes="(max-width: 900px) 48vw, 440px"
+                      className="object-cover"
+                      priority
+                    />
+                    {/* Hinge groove */}
+                    <div
+                      aria-hidden
+                      className="absolute inset-y-0 left-0 w-6"
+                      style={{
+                        background:
+                          "linear-gradient(90deg, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.2) 50%, transparent)",
+                      }}
+                    />
+                    <div
+                      aria-hidden
+                      className="absolute inset-y-6 left-[17px] w-[2px] rounded-full bg-black/45"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent p-4 pt-10 sm:p-5">
+                      <p className="font-mono text-[10px] text-white/55">
+                        @{profile.handle} · scroll to open
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    className="absolute inset-0 overflow-hidden rounded-l-[12px]"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden",
+                      transform: "rotateY(180deg) translateZ(2px)",
+                      background:
+                        "linear-gradient(145deg, var(--brand-900), var(--brand-700))",
+                    }}
+                  >
+                    <div className="flex h-full flex-col justify-end p-5 text-white/75 sm:p-6">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.16em]">
+                        Inside cover
+                      </p>
+                      <p className="mt-2 text-sm leading-relaxed">
+                        {meta.insideCover}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </motion.div>
-
-              {/* ===== OPEN READING SPREAD ===== */}
-              <motion.div
-                className="absolute inset-y-[-4%] left-[-48%] right-[-2%]"
-                style={{
-                  opacity: spreadOpacity,
-                  transformStyle: "preserve-3d",
-                  transform: "translateZ(8px)",
-                }}
-              >
-                <OpenSpread progress={progress} ranges={ranges} openT={openT} />
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="relative z-10 mt-8 flex w-full max-w-xs flex-col items-center gap-2 px-4">
           <div className="book-track h-1 w-full overflow-hidden rounded-full">
-            <motion.div
-              className="h-full rounded-full bg-brand-500"
-              style={{ width: indicatorWidth }}
+            <div
+              ref={progressRef}
+              className="h-full origin-left rounded-full bg-brand-500"
+              style={{ width: "100%", transform: "scaleX(0.04)" }}
             />
           </div>
         </div>
@@ -349,115 +492,84 @@ function DesktopSkillBook() {
   );
 }
 
-function OpenSpread({
-  progress,
-  ranges,
-  openT,
-}: {
-  progress: MotionValue<number>;
-  ranges: [number, number][];
-  openT: MotionValue<number>;
-}) {
-  return (
-    <div
-      className="absolute inset-0 overflow-visible rounded-[12px]"
-      style={{ transformStyle: "preserve-3d" }}
-    >
-      <div
-        aria-hidden
-        className="book-jacket pointer-events-none absolute inset-0 -m-2 rounded-[16px]"
-      />
+/** Canvas-painted paper stack (fore-edge or head-edge). */
+function usePaintPageEdges(
+  canvasRef: RefObject<HTMLCanvasElement | null>,
+  kind: "fore" | "head",
+) {
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-      <div
-        className="book-page absolute inset-y-0 left-0 h-full w-1/2 overflow-hidden rounded-l-[12px] border border-r-0"
-        style={{ boxShadow: "inset -14px 0 26px rgb(0 0 0 / 0.12)" }}
-      >
-        <div className="flex h-full flex-col p-5 sm:p-7">
-          <p className="book-muted font-mono text-[10px] uppercase tracking-[0.18em]">
-            {LEFT_ENDPAPER.eyebrow}
-          </p>
-          <p className="book-ink book-rule mt-4 border-t pt-4 font-display text-xl leading-snug sm:text-2xl">
-            {LEFT_ENDPAPER.body}
-          </p>
-          <p className="book-muted mt-auto font-mono text-[10px]">
-            {LEFT_ENDPAPER.footer}
-          </p>
-        </div>
-      </div>
+    const paint = () => {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const w = parent.clientWidth;
+      const h = parent.clientHeight;
+      if (w < 2 || h < 2) return;
 
-      <div
-        className="book-page absolute inset-y-0 right-0 h-full w-1/2 overflow-hidden rounded-r-[12px] border border-l-0"
-        style={{ boxShadow: "inset 12px 0 22px rgb(0 0 0 / 0.06)" }}
-      >
-        <div className="flex h-full flex-col p-5 sm:p-7">
-          <p className="book-muted font-mono text-[10px] uppercase tracking-[0.16em]">
-            {RIGHT_BASE.eyebrow}
-          </p>
-          <h3 className="book-ink mt-3 font-display text-xl sm:text-2xl">
-            {RIGHT_BASE.title}
-          </h3>
-          <p className="book-body mt-3 text-[12px] leading-relaxed sm:text-sm">
-            {RIGHT_BASE.body}
-          </p>
-        </div>
-      </div>
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
 
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-1/2 z-30 w-10 -translate-x-1/2"
-        style={{
-          background:
-            "linear-gradient(to right, rgba(0,0,0,0.45), transparent 42%, transparent 58%, rgba(0,0,0,0.45))",
-        }}
-      />
-      <div
-        aria-hidden
-        className="book-binding pointer-events-none absolute inset-y-3 left-1/2 z-[31] w-[5px] -translate-x-1/2 rounded-sm"
-      />
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      {FLIP_SHEETS.map((sheet, i) => (
-        <FlipLeaf
-          key={sheet.id}
-          sheet={sheet}
-          index={i}
-          progress={progress}
-          range={ranges[i]!}
-          openT={openT}
-        />
-      ))}
-    </div>
-  );
-}
+      const dark = document.documentElement.classList.contains("dark");
+      const a = dark ? "#2a3348" : "#f4efe4";
+      const b = dark ? "#1c2436" : "#e2d8c8";
+      const shade = dark ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0.22)";
 
-function FlipLeaf({
-  sheet,
-  index,
-  progress,
-  range,
-  openT,
-}: {
-  sheet: (typeof FLIP_SHEETS)[number];
-  index: number;
-  progress: MotionValue<number>;
-  range: [number, number];
-  openT: MotionValue<number>;
-}) {
-  const local = useTransform(progress, range, [0, 1], { clamp: true });
-  const gravity = useTransform([local, openT], ([t, open]) => {
-    if (Number(open) < 0.9) return 0;
-    const x = Math.min(1, Math.max(0, Number(t)));
-    return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-  });
+      if (kind === "fore") {
+        const step = 2.4;
+        for (let y = 0; y < h; y += step) {
+          ctx.fillStyle = Math.floor(y / step) % 2 === 0 ? a : b;
+          ctx.fillRect(0, y, w, step);
+        }
+        // Depth shade from spine side
+        const grad = ctx.createLinearGradient(0, 0, w, 0);
+        grad.addColorStop(0, shade);
+        grad.addColorStop(0.45, "transparent");
+        grad.addColorStop(1, dark ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.08)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        // Speckles
+        ctx.globalAlpha = 0.12;
+        for (let i = 0; i < 40; i++) {
+          ctx.fillStyle = dark ? "#fff" : "#000";
+          ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1);
+        }
+        ctx.globalAlpha = 1;
+      } else {
+        const step = 2.4;
+        for (let x = 0; x < w; x += step) {
+          ctx.fillStyle = Math.floor(x / step) % 2 === 0 ? a : b;
+          ctx.fillRect(x, 0, step, h);
+        }
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, shade);
+        grad.addColorStop(1, "transparent");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+      }
+    };
 
-  return (
-    <BookPage
-      progress={gravity}
-      front={sheet.front}
-      back={sheet.back}
-      stackIndex={index}
-      sheetCount={SHEET_COUNT}
-    />
-  );
+    paint();
+    const ro = new ResizeObserver(paint);
+    if (canvas.parentElement) ro.observe(canvas.parentElement);
+    const mo = new MutationObserver(paint);
+    mo.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => {
+      ro.disconnect();
+      mo.disconnect();
+    };
+  }, [canvasRef, kind]);
 }
 
 function MobileSkillBook() {
@@ -473,9 +585,23 @@ function MobileSkillBook() {
         >
           {meta.title}
         </p>
+        <div className="relative mx-auto max-w-sm">
+          <div
+            className="hardcover-cover relative overflow-hidden rounded-2xl border"
+            style={{ aspectRatio: "3/4" }}
+          >
+            <Image
+              src={asset("/images/skill-book-cover.jpg")}
+              alt={meta.title}
+              fill
+              className="object-cover"
+              sizes="400px"
+            />
+          </div>
+        </div>
         <div
-          className="book-page overflow-hidden rounded-2xl border"
-          style={{ minHeight: 440 }}
+          className="book-page mt-5 overflow-hidden rounded-2xl border"
+          style={{ minHeight: 420 }}
         >
           <PageFace content={faces[index]!} side="right" />
         </div>

@@ -535,38 +535,50 @@
     inset 2px 0 4px rgb(255 255 255 / 0.08);
 }
 .hardcover-pages {
-  background: repeating-linear-gradient(
-    180deg,
-    #f4efe6 0 1.5px,
-    #e4dccf 1.5px 3px
-  );
-  box-shadow: inset 0 0 6px rgb(0 0 0 / 0.15);
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.28), transparent 40%),
+    repeating-linear-gradient(
+      180deg,
+      #f7f1e6 0 2px,
+      #e8dfd0 2px 3.5px
+    );
+  box-shadow:
+    4px 0 14px rgb(0 0 0 / 0.28),
+    inset 0 0 6px rgb(0 0 0 / 0.12);
 }
 .dark .hardcover-pages {
-  background: repeating-linear-gradient(
-    180deg,
-    #2a3348 0 1.5px,
-    #1c2436 1.5px 3px
-  );
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.35), transparent 40%),
+    repeating-linear-gradient(
+      180deg,
+      #2a3348 0 2px,
+      #1c2436 2px 3.5px
+    );
 }
 .hardcover-pages-top {
-  background: repeating-linear-gradient(
-    90deg,
-    #f4efe6 0 1.5px,
-    #e4dccf 1.5px 3px
-  );
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / 0.18), transparent 55%),
+    repeating-linear-gradient(
+      90deg,
+      #f7f1e6 0 2px,
+      #e8dfd0 2px 3.5px
+    );
+  box-shadow: 0 -2px 8px rgb(0 0 0 / 0.15);
 }
 .dark .hardcover-pages-top {
-  background: repeating-linear-gradient(
-    90deg,
-    #2a3348 0 1.5px,
-    #1c2436 1.5px 3px
-  );
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / 0.25), transparent 55%),
+    repeating-linear-gradient(
+      90deg,
+      #2a3348 0 2px,
+      #1c2436 2px 3.5px
+    );
 }
 .hardcover-cover {
   box-shadow:
-    12px 28px 50px -18px rgb(0 0 0 / 0.55),
-    inset 0 1px 0 rgb(255 255 255 / 0.12);
+    14px 30px 55px -16px rgb(0 0 0 / 0.6),
+    0 0 0 1px rgb(0 0 0 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.14);
 }
 .hardcover-board {
   box-shadow: 0 18px 40px -20px rgb(0 0 0 / 0.5);
