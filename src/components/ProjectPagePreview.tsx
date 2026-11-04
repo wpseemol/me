@@ -200,8 +200,8 @@ export default function ProjectPagePreview({
           draggable={false}
           className="pointer-events-none block w-full max-w-none select-none"
           style={{ height: "auto" }}
-          onLoadingComplete={(img) => {
-            imgRef.current = img;
+          onLoad={(e) => {
+            imgRef.current = e.currentTarget;
             const travel = measureTravel();
             setCanScroll(travel > 16);
           }}

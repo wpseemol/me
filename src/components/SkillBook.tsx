@@ -10,16 +10,30 @@ import skillsData from "@/data/skills.json";
 import { asset } from "@/lib/asset";
 import { SKILL_ACCENT, SKILL_ICON } from "@/components/ui/SkillIcons";
 
+const PAPER_GRAVITY = "paperGravity";
+const COVER_LIFT = "coverLift";
+
+function ensureCustomEase(name: string, path: string) {
+  try {
+    // Reuse on Fast Refresh — recreating the same id can throw.
+    if (CustomEase.get(name)) return;
+    CustomEase.create(name, path);
+  } catch {
+    // Built-in fallback is resolved when parsing below.
+  }
+}
+
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, CustomEase);
-  // Paper with weight: hangs, falls through the fold, then soft-settles.
-  CustomEase.create(
-    "paperGravity",
-    "M0,0 C0.12,0.02 0.2,0.18 0.28,0.42 0.4,0.78 0.52,0.94 0.68,0.98 0.82,1 0.92,1 1,1",
+  // Gravity: cling → free-fall past the fold → soft land.
+  // Each cubic needs its own `C` or GSAP throws "Invalid CustomEase".
+  ensureCustomEase(
+    PAPER_GRAVITY,
+    "M0,0 C0.08,0.02 0.14,0.08 0.22,0.28 C0.34,0.62 0.42,0.9 0.55,0.97 C0.72,1 0.86,1 1,1",
   );
-  CustomEase.create(
-    "coverLift",
-    "M0,0 C0.16,0.08 0.28,0.55 0.45,0.82 0.62,0.96 0.78,1 1,1",
+  ensureCustomEase(
+    COVER_LIFT,
+    "M0,0 C0.16,0.06 0.26,0.45 0.42,0.78 C0.58,0.96 0.76,1 1,1",
   );
 }
 
@@ -30,9 +44,10 @@ type Sheet =
   | { kind: "skill"; skill: Skill; index: number };
 
 /**
- * Centered skill book: closed cover → open → chapter → skill pages → close.
- * Page turns use a gravity ease + mid-flip lift so paper feels weighted.
- * Content lives in data/skills.json so each skill can be edited without code.
+ * Skill book scroll story:
+ * 1) Stay closed as a code file
+ * 2) Scroll peels the cover off the file
+ * 3) Only then do pages turn (no early flips, no end close)
  */
 export default function SkillBook() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -42,8 +57,8 @@ export default function SkillBook() {
   const spreadRef = useRef<HTMLDivElement>(null);
   const edgesRef = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const labelRef = useRef("Closed · Skill book");
-  const [label, setLabel] = useState("Closed · Skill book");
+  const labelRef = useRef("Closed · skills.json");
+  const [label, setLabel] = useState("Closed · skills.json");
 
   const skills = skillsData.skills as Skill[];
   const meta = skillsData.meta;
@@ -67,8 +82,10 @@ export default function SkillBook() {
   );
 
   const sheetCount = sheets.length;
-  // Open + one band per sheet + close. Extra height per band = slower, stickier turns.
-  const bands = sheetCount + 2;
+  // hold closed → open cover → one band per page (no final close)
+  const HOLD_BAND = 0.85;
+  const OPEN_BAND = 1;
+  const bands = HOLD_BAND + OPEN_BAND + sheetCount;
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -81,8 +98,8 @@ export default function SkillBook() {
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const pages = pageRefs.current.filter(Boolean) as HTMLDivElement[];
-    const paperEase = gsap.parseEase("paperGravity");
-    const coverEase = gsap.parseEase("coverLift");
+    const paperEase = CustomEase.get(PAPER_GRAVITY) || gsap.parseEase("power3.inOut");
+    const coverEase = CustomEase.get(COVER_LIFT) || gsap.parseEase("power2.inOut");
 
     const setLive = (next: string) => {
       if (labelRef.current === next) return;
@@ -92,26 +109,32 @@ export default function SkillBook() {
 
     const applyProgress = (p: number) => {
       const raw = p * bands;
-      const openT = gsap.utils.clamp(0, 1, raw);
-      const turnPhase = gsap.utils.clamp(0, sheetCount, raw - 1);
-      const closeT = gsap.utils.clamp(0, 1, raw - (sheetCount + 1));
+      // Phase A: stay closed as a file
+      const held = raw <= HOLD_BAND;
+      // Phase B: cover lifts off the file (only after hold)
+      const openT = gsap.utils.clamp(0, 1, (raw - HOLD_BAND) / OPEN_BAND);
+      // Phase C: pages turn only after cover is open
+      const turnPhase = gsap.utils.clamp(
+        0,
+        sheetCount,
+        raw - HOLD_BAND - OPEN_BAND,
+      );
 
-      let coverAngle: number;
-      if (closeT > 0.001) {
-        coverAngle = gsap.utils.interpolate(-172, -2, coverEase(closeT));
-      } else {
-        coverAngle = gsap.utils.interpolate(0, -172, coverEase(openT));
-      }
+      const coverPaper = coverEase(openT);
+      const coverAngle = gsap.utils.interpolate(0, -172, coverPaper);
+      const coverPeel = Math.sin(coverPaper * Math.PI);
+      const coverUp = openT < 0.92;
 
       gsap.set(cover, {
         rotateY: coverAngle,
-        z: closeT > 0.04 || openT < 0.9 ? 28 : 2,
-        zIndex: closeT > 0.04 || openT < 0.9 ? 40 : 2,
+        z: coverUp ? 18 + coverPeel * 22 : 2,
+        rotateX: coverPeel * -5,
+        zIndex: coverUp ? 40 : 2,
       });
 
-      const openAmount = coverEase(openT) * (1 - coverEase(closeT) * 0.94);
-      const zoom = 0.93 + openAmount * 0.13 - closeT * 0.04;
-      const shiftX = openAmount * 5 - closeT * 5;
+      const openAmount = coverEase(openT);
+      const zoom = 0.92 + openAmount * 0.14;
+      const shiftX = openAmount * 5;
 
       gsap.set(book, {
         scale: zoom,
@@ -124,12 +147,8 @@ export default function SkillBook() {
         width: gsap.utils.interpolate(46, 100, openAmount) + "%",
       });
 
-      // Fore-edge only when nearly closed — avoids the grey side-bar glitch.
-      const edgeShow = gsap.utils.clamp(
-        0,
-        1,
-        Math.max(1 - openT, closeT) * 1.35 - 0.55,
-      );
+      // Fore-edge = closed file thickness; fades away as the cover opens.
+      const edgeShow = gsap.utils.clamp(0, 1, 1 - openT * 1.35);
       gsap.set(edges, {
         opacity: edgeShow,
         scaleY: 0.96 + edgeShow * 0.04,
@@ -137,26 +156,35 @@ export default function SkillBook() {
       });
 
       pages.forEach((sheet, i) => {
-        const local = gsap.utils.clamp(0, 1, turnPhase - i);
-        const paper = paperEase(local);
-        // Soft peel only — keep pages packed to the spine (no big z “unpack”).
+        // Pages stay flat until the cover is fully out of the way.
+        const local =
+          openT < 0.98 ? 0 : gsap.utils.clamp(0, 1, turnPhase - i);
+        // Gravity remap — hang, fall hard through mid-fold, settle.
+        const paper = gsap.utils.clamp(0, 1, paperEase(local));
         const peel = Math.sin(paper * Math.PI);
+        // Extra fall weight after the fold (page dropping onto the left).
+        const drop = paper > 0.5 ? Math.pow((paper - 0.5) * 2, 1.35) : 0;
 
         gsap.set(sheet, {
           rotateY: paper * -180,
-          z: peel * 10,
+          // Lift then settle — reads as paper with mass, not a flat spin.
+          z: peel * 28 - drop * 6,
+          rotateX: peel * -7 + drop * 1.5,
           zIndex: local < 0.5 ? sheetCount - i + 14 : i + 1,
         });
 
         sheet.querySelectorAll<HTMLElement>("[data-book-shade]").forEach((shade) => {
-          gsap.set(shade, { opacity: peel * 0.5 });
+          gsap.set(shade, { opacity: 0.15 + peel * 0.55 });
+        });
+        sheet.querySelectorAll<HTMLElement>("[data-book-curl]").forEach((curl) => {
+          gsap.set(curl, { opacity: peel * 0.85 });
         });
       });
 
-      if (closeT > 0.55) setLive("Closed · Skill book");
-      else if (openT < 0.82) setLive("Opening…");
+      if (held || openT < 0.04) setLive("Closed · skills.json");
+      else if (openT < 0.98) setLive("Opening cover…");
       else if (turnPhase < 0.15) setLive(meta.introTitle);
-      else if (turnPhase >= sheetCount - 0.08) setLive("Last page · closing soon");
+      else if (turnPhase >= sheetCount - 0.05) setLive("Last page");
       else {
         const idx = Math.min(
           skills.length - 1,
@@ -167,7 +195,8 @@ export default function SkillBook() {
     };
 
     if (reduced) {
-      applyProgress(0.22);
+      // Open to the intro page — skip the scroll theatre.
+      applyProgress((HOLD_BAND + OPEN_BAND + 0.15) / bands);
       return;
     }
 
@@ -175,10 +204,10 @@ export default function SkillBook() {
       ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        // Longer pin distance = each page hangs longer before gravity takes it.
-        end: () => `+=${bands * window.innerHeight * 1.05}`,
+        end: () => `+=${bands * window.innerHeight * 1.12}`,
         pin: true,
-        scrub: 1.15,
+        // Heavier scrub = more inertia / gravity feel on wheel jumps.
+        scrub: 1.45,
         anticipatePin: 1,
         onUpdate: (self) => applyProgress(self.progress),
         onRefresh: (self) => applyProgress(self.progress),
@@ -221,13 +250,13 @@ export default function SkillBook() {
           {label}
         </p>
 
-        <div ref={stageRef} className="relative mx-auto w-full max-w-[920px]">
+        <div ref={stageRef} className="relative mx-auto w-full max-w-[940px]">
           <div
             aria-hidden
-            className="absolute -inset-10 rounded-[48px] opacity-55 blur-3xl"
+            className="absolute -inset-12 rounded-[52px] opacity-50 blur-3xl"
             style={{
               background:
-                "radial-gradient(circle at 50% 42%, rgb(var(--c-glow-a) / 0.32), transparent 68%)",
+                "radial-gradient(circle at 50% 40%, rgb(var(--c-glow-a) / 0.3), transparent 70%)",
             }}
           />
 
@@ -235,14 +264,14 @@ export default function SkillBook() {
             ref={bookRef}
             className="relative mx-auto aspect-[4/3] w-full will-change-transform"
             style={{
-              perspective: 2800,
-              perspectiveOrigin: "50% 48%",
+              perspective: 3000,
+              perspectiveOrigin: "50% 46%",
               transformStyle: "preserve-3d",
             }}
           >
             <div
               aria-hidden
-              className="absolute -bottom-4 left-[12%] right-[12%] h-8 rounded-[100%] bg-black/35 blur-xl dark:bg-black/55"
+              className="absolute -bottom-5 left-[10%] right-[10%] h-10 rounded-[100%] bg-black/40 blur-2xl dark:bg-black/60"
             />
 
             <div
@@ -253,22 +282,24 @@ export default function SkillBook() {
               <div
                 ref={edgesRef}
                 aria-hidden
-                className="book-fore-edge pointer-events-none absolute inset-y-[4%] right-0 z-[4] w-[10px] overflow-hidden rounded-r-[10px] will-change-transform"
+                className="book-fore-edge pointer-events-none absolute inset-y-[4%] right-0 z-[4] w-[10px] overflow-hidden rounded-r-[8px] will-change-transform"
               />
 
-              {/* Left endpaper — always under turned pages */}
+              {/* Left endpaper */}
               <div
-                className="book-page absolute inset-y-0 left-0 w-1/2 overflow-hidden rounded-l-[16px] border border-r-0"
-                style={{ boxShadow: "inset -10px 0 18px rgb(0 0 0 / 0.08)" }}
+                className="book-page absolute inset-y-0 left-0 w-1/2 overflow-hidden rounded-l-[12px] border border-r-0"
+                style={{ boxShadow: "inset -12px 0 22px rgb(0 0 0 / 0.1)" }}
               >
                 <div className="flex h-full flex-col justify-between p-5 sm:p-7">
                   <div>
                     <p className="book-muted font-mono text-[10px] uppercase tracking-[0.18em]">
                       {profile.handle} · {meta.leftLeafTitle}
                     </p>
-                    <p className="book-ink mt-6 font-display text-xl leading-tight sm:text-2xl">
-                      {meta.leftLeafBody}
-                    </p>
+                    <div className="book-rule mt-4 border-t pt-4">
+                      <p className="book-ink font-display text-xl leading-tight sm:text-2xl">
+                        {meta.leftLeafBody}
+                      </p>
+                    </div>
                   </div>
                   <p className="book-muted font-mono text-[10px]">
                     {skills.length} skills · scroll to turn
@@ -276,13 +307,17 @@ export default function SkillBook() {
                 </div>
               </div>
 
-              {/* Spine trough — keeps the spread looking packed, not floating */}
+              {/* Spine trough + binding strip */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-y-1 left-1/2 z-[36] w-8 -translate-x-1/2"
+                className="book-binding pointer-events-none absolute inset-y-2 left-1/2 z-[35] w-[7px] -translate-x-1/2 rounded-sm"
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-y-1 left-1/2 z-[36] w-11 -translate-x-1/2"
                 style={{
                   background:
-                    "linear-gradient(90deg, rgb(0 0 0 / 0.18), rgb(0 0 0 / 0.05) 40%, rgb(0 0 0 / 0.05) 60%, rgb(0 0 0 / 0.2))",
+                    "linear-gradient(90deg, rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.04) 40%, rgb(0 0 0 / 0.04) 60%, rgb(0 0 0 / 0.24))",
                 }}
               />
 
@@ -303,13 +338,14 @@ export default function SkillBook() {
                   >
                     {/* Recto — right page */}
                     <div
-                      className="book-page book-sheet-face book-sheet-face--front absolute inset-0 overflow-hidden rounded-r-[16px] border border-l-0"
+                      className="book-page book-sheet-face book-sheet-face--front absolute inset-0 overflow-hidden rounded-r-[12px] border border-l-0"
                       style={{
                         boxShadow:
-                          "8px 16px 40px -18px rgb(0 0 0 / 0.45), inset 12px 0 20px rgb(0 0 0 / 0.04)",
+                          "10px 18px 42px -18px rgb(0 0 0 / 0.5), inset 12px 0 20px rgb(0 0 0 / 0.04)",
                       }}
                     >
                       <div className="book-sheet-shade z-10" data-book-shade aria-hidden />
+                      <div className="book-sheet-curl z-10" data-book-curl aria-hidden />
                       <div className="relative flex h-full flex-col overflow-hidden p-3.5 sm:p-5 md:p-6">
                         {page.kind === "intro" ? (
                           <>
@@ -371,7 +407,7 @@ export default function SkillBook() {
                             <h4 className="book-ink mt-0.5 text-xl leading-none sm:text-2xl">
                               {skill.name}
                             </h4>
-                            <p className="book-body mt-1.5 line-clamp-2 text-[11px] font-medium leading-snug sm:text-xs">
+                            <p className="book-body book-rule mt-2 line-clamp-2 border-b pb-2 text-[11px] font-medium leading-snug sm:text-xs">
                               {skill.blurb}
                             </p>
 
@@ -436,14 +472,15 @@ export default function SkillBook() {
                       </div>
                     </div>
 
-                    {/* Verso — readable left page after the turn (not a mirrored front) */}
+                    {/* Verso — readable left page after the turn */}
                     <div
-                      className="book-page-back book-sheet-face book-sheet-face--back absolute inset-0 overflow-hidden rounded-l-[16px] border"
+                      className="book-page-back book-sheet-face book-sheet-face--back absolute inset-0 overflow-hidden rounded-l-[12px] border"
                       style={{
                         boxShadow: "inset 10px 0 24px rgb(0 0 0 / 0.08)",
                       }}
                     >
                       <div className="book-sheet-shade z-10" data-book-shade aria-hidden />
+                      <div className="book-sheet-curl z-10" data-book-curl aria-hidden />
                       {skill ? (
                         <VersoSkill skill={skill} />
                       ) : (
@@ -473,12 +510,16 @@ export default function SkillBook() {
                 style={{ transformStyle: "preserve-3d", zIndex: 40 }}
               >
                 <div
-                  className="book-sheet-face book-sheet-face--front absolute inset-0 overflow-hidden rounded-[16px] border"
+                  className="book-sheet-face book-sheet-face--front absolute inset-0 overflow-hidden rounded-[14px] border"
                   style={{
                     boxShadow:
-                      "12px 22px 50px -16px rgb(0 0 0 / 0.55), inset 0 1px 0 rgb(255 255 255 / 0.12)",
+                      "14px 26px 56px -16px rgb(0 0 0 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.14)",
                   }}
                 >
+                  <div
+                    aria-hidden
+                    className="book-binding absolute inset-y-0 left-0 z-10 w-3"
+                  />
                   <Image
                     src={asset("/images/skill-book-cover.jpg")}
                     alt=""
@@ -497,7 +538,12 @@ export default function SkillBook() {
                   />
                   <div className="absolute inset-0 flex flex-col justify-between p-5 text-white sm:p-7">
                     <div>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/65">
+                      {/* Closed state reads like a code file until scroll opens it */}
+                      <div className="inline-flex items-center gap-2 rounded-md border border-white/15 bg-black/35 px-2.5 py-1 font-mono text-[10px] text-white/75 backdrop-blur-sm">
+                        <span className="h-1.5 w-1.5 rounded-full bg-accent-400" />
+                        skills.json
+                      </div>
+                      <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white/65">
                         {meta.eyebrow}
                       </p>
                       <p className="mt-3 font-display text-[1.7rem] leading-none sm:text-[2.1rem]">
@@ -511,15 +557,18 @@ export default function SkillBook() {
                       <p className="mt-1 font-mono text-[10px] text-white/60">
                         @{profile.handle} · {profile.role}
                       </p>
+                      <p className="mt-3 font-mono text-[10px] text-white/45">
+                        scroll to open →
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 <div
-                  className="book-sheet-face book-sheet-face--back absolute inset-0 overflow-hidden rounded-l-[16px] border"
+                  className="book-sheet-face book-sheet-face--back absolute inset-0 overflow-hidden rounded-l-[12px] border"
                   style={{
                     background:
-                      "linear-gradient(135deg, var(--brand-800), var(--brand-600))",
+                      "linear-gradient(145deg, var(--brand-900), var(--brand-700) 55%, var(--brand-600))",
                   }}
                 >
                   <div className="flex h-full flex-col justify-end p-5 text-white/70">
