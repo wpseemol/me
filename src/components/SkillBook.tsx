@@ -124,9 +124,16 @@ export default function SkillBook() {
         width: gsap.utils.interpolate(46, 100, openAmount) + "%",
       });
 
+      // Fore-edge only when nearly closed — avoids the grey side-bar glitch.
+      const edgeShow = gsap.utils.clamp(
+        0,
+        1,
+        Math.max(1 - openT, closeT) * 1.35 - 0.55,
+      );
       gsap.set(edges, {
-        opacity: 1 - openAmount * 0.88,
-        scaleY: 0.9 + (1 - openAmount) * 0.1,
+        opacity: edgeShow,
+        scaleY: 0.96 + edgeShow * 0.04,
+        x: (1 - edgeShow) * -8,
       });
 
       pages.forEach((sheet, i) => {
@@ -246,12 +253,7 @@ export default function SkillBook() {
               <div
                 ref={edgesRef}
                 aria-hidden
-                className="absolute inset-y-[3%] right-[-14px] z-[5] w-[14px] overflow-hidden rounded-r-[4px] will-change-transform"
-                style={{
-                  background:
-                    "repeating-linear-gradient(180deg, var(--book-edge-a) 0 2px, var(--book-edge-b) 2px 3px)",
-                  boxShadow: "2px 0 8px rgb(0 0 0 / 0.25)",
-                }}
+                className="book-fore-edge pointer-events-none absolute inset-y-[4%] right-0 z-[4] w-[10px] overflow-hidden rounded-r-[10px] will-change-transform"
               />
 
               {/* Left endpaper — always under turned pages */}
