@@ -20,19 +20,19 @@ function hostLabel(url: string) {
   }
 }
 
-/** Scattered deck poses for inactive project cards (playing-card feel). */
+/** Offsets from stage center — keeps the hero card visually centered. */
 const SCATTER = [
-  { x: "-34%", y: "10%", rotate: -16, scale: 0.72 },
-  { x: "36%", y: "-8%", rotate: 14, scale: 0.7 },
-  { x: "-28%", y: "-22%", rotate: -9, scale: 0.66 },
-  { x: "30%", y: "20%", rotate: 18, scale: 0.68 },
-  { x: "-8%", y: "28%", rotate: -5, scale: 0.64 },
-  { x: "12%", y: "-28%", rotate: 8, scale: 0.62 },
+  { x: -210, y: 36, rotate: -14, scale: 0.7 },
+  { x: 220, y: -28, rotate: 12, scale: 0.68 },
+  { x: -170, y: -90, rotate: -8, scale: 0.64 },
+  { x: 180, y: 78, rotate: 15, scale: 0.66 },
+  { x: -60, y: 110, rotate: -5, scale: 0.62 },
+  { x: 70, y: -110, rotate: 7, scale: 0.6 },
 ] as const;
 
 /**
- * Featured working project stays center-stage.
- * Other projects fan out behind it like a scattered card deck on scroll.
+ * Centered project stage.
+ * Active card stays locked to the middle; others fan behind as a card deck.
  */
 export default function WorkingProjectStage({
   projects,
@@ -57,6 +57,18 @@ export default function WorkingProjectStage({
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let last = -1;
 
+    const centerHero = (instant = false) => {
+      // Never let x/rotation drift — hero stays dead-center.
+      const props = {
+        x: 0,
+        xPercent: 0,
+        rotate: 0,
+        transformOrigin: "50% 50%",
+      };
+      if (instant) gsap.set(card, props);
+      else gsap.to(card, { ...props, duration: 0.2, overwrite: "auto" });
+    };
+
     const fanScatter = (index: number) => {
       const nodes = scatterRef.current?.querySelectorAll<HTMLElement>(
         "[data-scatter-card]",
@@ -66,15 +78,28 @@ export default function WorkingProjectStage({
       let pose = 0;
       nodes.forEach((el) => {
         const i = Number(el.dataset.index);
+        // Anchor every scatter card to the stage center, then offset.
+        gsap.set(el, {
+          left: "50%",
+          top: "50%",
+          xPercent: -50,
+          yPercent: -50,
+        });
+
         if (i === index) {
           gsap.to(el, {
             opacity: 0,
-            scale: 0.9,
-            duration: 0.35,
+            scale: 0.88,
+            x: 0,
+            y: 0,
+            rotate: 0,
+            duration: 0.3,
             ease: "power2.out",
+            overwrite: "auto",
           });
           return;
         }
+
         const s = SCATTER[pose % SCATTER.length]!;
         pose += 1;
         gsap.to(el, {
@@ -82,7 +107,7 @@ export default function WorkingProjectStage({
           y: s.y,
           rotate: s.rotate,
           scale: s.scale,
-          opacity: 0.88,
+          opacity: 0.82,
           duration: 0.55,
           ease: "power3.out",
           overwrite: "auto",
@@ -96,37 +121,52 @@ export default function WorkingProjectStage({
       const dir = index >= last ? 1 : -1;
 
       if (instant || reduced) {
-        gsap.set(card, { y: 0, opacity: 1, scale: 1, filter: "blur(0px)" });
+        gsap.set(card, {
+          y: 0,
+          x: 0,
+          opacity: 1,
+          scale: 1,
+          rotate: 0,
+        });
         setActive(index);
         fanScatter(index);
+        centerHero(true);
         last = index;
         return;
       }
 
-      // Gravity handoff — drop out, then settle in. No heavy blur that
-      // makes the screenshot / copy look like it “vanished”.
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out" },
+        onComplete: () => centerHero(true),
+      });
+
       tl.to(card, {
-        y: dir * -18,
+        y: dir * -12,
         opacity: 0,
-        scale: 0.97,
-        duration: 0.28,
+        scale: 0.98,
+        x: 0,
+        rotate: 0,
+        duration: 0.26,
         ease: "power2.in",
       })
         .add(() => {
           flushSync(() => setActive(index));
           fanScatter(index);
           gsap.set(card, {
-            y: dir * 32,
+            y: dir * 22,
+            x: 0,
             opacity: 0,
-            scale: 0.94,
+            scale: 0.97,
+            rotate: 0,
           });
         })
         .to(card, {
           y: 0,
+          x: 0,
           opacity: 1,
           scale: 1,
-          duration: 0.55,
+          rotate: 0,
+          duration: 0.5,
           ease: "power3.out",
         });
 
@@ -142,16 +182,18 @@ export default function WorkingProjectStage({
       ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        end: () => `+=${Math.max(total, 2) * window.innerHeight * 0.72}`,
+        end: () => `+=${Math.max(total, 2) * window.innerHeight * 0.85}`,
         pin: true,
-        scrub: 0.55,
+        scrub: 0.7,
         anticipatePin: 1,
+        invalidateOnRefresh: true,
         onUpdate: (self) => {
           const idx = Math.min(
             total - 1,
             Math.floor(self.progress * total + 1e-6),
           );
           show(idx);
+          centerHero(true);
         },
         onRefresh: (self) => {
           const idx = Math.min(
@@ -164,7 +206,7 @@ export default function WorkingProjectStage({
 
       gsap.fromTo(
         stage,
-        { y: 36, opacity: 0.55 },
+        { y: 28, opacity: 0.6 },
         {
           y: 0,
           opacity: 1,
@@ -178,33 +220,26 @@ export default function WorkingProjectStage({
         },
       );
 
-      // Entrance: cards fly in from a stacked deck into scatter.
       const nodes = scatterRef.current?.querySelectorAll<HTMLElement>(
         "[data-scatter-card]",
       );
-      nodes?.forEach((el, i) => {
-        gsap.fromTo(
-          el,
-          { opacity: 0, scale: 0.5, rotate: 0, x: 0, y: 40 },
-          {
-            opacity: 0.88,
-            duration: 0.7,
-            delay: 0.05 * i,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: section,
-              start: "top 80%",
-              toggleActions: "play none none reverse",
-            },
-            onComplete: () => {
-              if (last >= 0) fanScatter(last);
-              else fanScatter(0);
-            },
-          },
-        );
+      nodes?.forEach((el) => {
+        gsap.set(el, {
+          left: "50%",
+          top: "50%",
+          xPercent: -50,
+          yPercent: -50,
+          x: 0,
+          y: 24,
+          opacity: 0,
+          scale: 0.55,
+          rotate: 0,
+        });
       });
 
       show(0, true);
+      // Land scatter after first paint so hero is already centered.
+      requestAnimationFrame(() => fanScatter(0));
     }, section);
 
     return () => ctx.revert();
@@ -228,8 +263,9 @@ export default function WorkingProjectStage({
       className="relative"
       aria-labelledby="working-stage-live"
     >
-      <div className="shell flex min-h-[100svh] flex-col items-center justify-center gap-6 py-10">
-        <div className="flex w-full max-w-3xl flex-col items-center text-center">
+      <div className="shell flex min-h-[100svh] flex-col items-center py-8 sm:py-10">
+        {/* Header stays on top; card area fills and centers below */}
+        <div className="flex w-full max-w-3xl shrink-0 flex-col items-center text-center">
           <p
             id="working-stage-live"
             className="font-mono text-2xs uppercase tracking-[0.16em] text-muted"
@@ -241,7 +277,7 @@ export default function WorkingProjectStage({
             {isLive ? "Live" : "Source"}
           </p>
 
-          <ul className="mt-5 flex flex-wrap justify-center gap-2">
+          <ul className="mt-4 flex flex-wrap justify-center gap-2">
             {projects.map((p, i) => {
               const on = i === active;
               return (
@@ -268,129 +304,128 @@ export default function WorkingProjectStage({
           </ul>
         </div>
 
-        <div
-          ref={stageRef}
-          className="relative mx-auto w-full max-w-3xl will-change-transform"
-        >
+        <div className="relative flex w-full flex-1 items-center justify-center pt-6">
           <div
-            aria-hidden
-            className="absolute -inset-8 rounded-[40px] opacity-55 blur-3xl"
-            style={{
-              background:
-                "radial-gradient(circle at 50% 30%, rgb(var(--c-glow-a) / 0.28), transparent 65%)",
-            }}
-          />
-
-          {/* Scattered deck — other projects behind the hero card */}
-          <div
-            ref={scatterRef}
-            aria-hidden
-            className="pointer-events-none absolute inset-0 z-0"
+            ref={stageRef}
+            className="relative mx-auto w-full max-w-3xl will-change-transform"
           >
-            {projects.map((p, i) => (
-              <div
-                key={p.slug}
-                data-scatter-card
-                data-index={i}
-                className="absolute inset-[8%] overflow-hidden rounded-[22px] border bg-elev/80 shadow-[0_18px_40px_-24px_rgb(0_0_0/0.55)] backdrop-blur-sm will-change-transform"
-                style={{
-                  opacity: 0,
-                  transformOrigin: "center center",
-                }}
-              >
-                <div className="relative h-36 overflow-hidden border-b sm:h-44">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={p.screenshot}
-                    alt=""
-                    className="h-full w-full object-cover object-top opacity-90"
-                  />
+            <div
+              aria-hidden
+              className="absolute -inset-8 rounded-[40px] opacity-55 blur-3xl"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 30%, rgb(var(--c-glow-a) / 0.28), transparent 65%)",
+              }}
+            />
+
+            {/* Deck behind — anchored to center of the stage */}
+            <div
+              ref={scatterRef}
+              aria-hidden
+              className="pointer-events-none absolute inset-0 z-0 overflow-visible"
+            >
+              {projects.map((p, i) => (
+                <div
+                  key={p.slug}
+                  data-scatter-card
+                  data-index={i}
+                  className="absolute h-[78%] w-[84%] overflow-hidden rounded-[22px] border bg-elev/80 shadow-[0_18px_40px_-24px_rgb(0_0_0/0.55)] backdrop-blur-sm will-change-transform"
+                  style={{ opacity: 0 }}
+                >
+                  <div className="relative h-36 overflow-hidden border-b sm:h-40">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={p.screenshot}
+                      alt=""
+                      className="h-full w-full object-cover object-top opacity-90"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <p className="truncate text-sm font-semibold">{p.name}</p>
+                    <p className="mt-0.5 truncate font-mono text-2xs text-muted">
+                      {p.framework || p.language}
+                    </p>
+                  </div>
                 </div>
-                <div className="p-3">
-                  <p className="truncate text-sm font-semibold">{p.name}</p>
-                  <p className="mt-0.5 truncate font-mono text-2xs text-muted">
-                    {p.framework || p.language}
+              ))}
+            </div>
+
+            <article
+              ref={cardRef}
+              className="group relative z-10 mx-auto w-full overflow-hidden rounded-[28px] border bg-elev/90 shadow-[0_28px_70px_-36px_rgb(var(--c-glow-a)/0.8)] backdrop-blur-md will-change-transform"
+            >
+              <ProjectPagePreview
+                key={project.slug}
+                src={project.screenshot}
+                alt={`${project.name} website screenshot`}
+                live={isLive}
+                priority={active === 0}
+                className="border-b"
+              />
+
+              <div className="grid gap-5 p-5 sm:grid-cols-[1.2fr_0.8fr] sm:p-6">
+                <div className="min-w-0 text-left">
+                  <div className="flex items-center gap-3 font-mono text-2xs text-muted">
+                    <span>{project.framework || project.language}</span>
+                    <span className="opacity-40">·</span>
+                    <span>
+                      {(project.updated || project.created).slice(0, 4)}
+                    </span>
+                  </div>
+                  <h4 className="mt-2 text-2xl tracking-tight sm:text-[1.75rem]">
+                    <a
+                      href={primaryHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transition-colors hover:text-brand-ink"
+                    >
+                      {project.name}
+                    </a>
+                  </h4>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    {project.description || project.detail}
+                  </p>
+                </div>
+
+                <div className="flex min-w-0 flex-col justify-between gap-4 sm:items-end sm:text-right">
+                  <div className="flex flex-wrap gap-1.5 sm:justify-end">
+                    {tags.map((t) => (
+                      <span key={t} className="chip">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:justify-end">
+                    {isLive ? (
+                      <a
+                        href={project.homepage}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-ink transition-colors hover:text-accent-500"
+                      >
+                        {hostLabel(project.homepage)}
+                        <ArrowUpRightIcon width={15} height={15} />
+                      </a>
+                    ) : null}
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted transition-colors hover:text-brand-ink"
+                    >
+                      <GithubIcon width={15} height={15} />
+                      GitHub
+                    </a>
+                  </div>
+                  <p className="font-mono text-2xs text-muted">
+                    {active === total - 1
+                      ? "Last project"
+                      : "Scroll preview, then next project →"}
                   </p>
                 </div>
               </div>
-            ))}
+            </article>
           </div>
-
-          <article
-            ref={cardRef}
-            className="group relative z-10 overflow-hidden rounded-[28px] border bg-elev/90 shadow-[0_28px_70px_-36px_rgb(var(--c-glow-a)/0.8)] backdrop-blur-md will-change-transform"
-          >
-            <ProjectPagePreview
-              key={project.slug}
-              src={project.screenshot}
-              alt={`${project.name} website screenshot`}
-              live={isLive}
-              priority={active === 0}
-              className="border-b"
-            />
-
-            <div className="grid gap-5 p-5 sm:grid-cols-[1.2fr_0.8fr] sm:p-6">
-              <div>
-                <div className="flex items-center gap-3 font-mono text-2xs text-muted">
-                  <span>{project.framework || project.language}</span>
-                  <span className="opacity-40">·</span>
-                  <span>
-                    {(project.updated || project.created).slice(0, 4)}
-                  </span>
-                </div>
-                <h4 className="mt-2 text-2xl tracking-tight sm:text-[1.75rem]">
-                  <a
-                    href={primaryHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition-colors hover:text-brand-ink"
-                  >
-                    {project.name}
-                  </a>
-                </h4>
-                <p className="mt-2 text-sm leading-relaxed text-muted">
-                  {project.description || project.detail}
-                </p>
-              </div>
-
-              <div className="flex flex-col justify-between gap-4 sm:items-end sm:text-right">
-                <div className="flex flex-wrap gap-1.5 sm:justify-end">
-                  {tags.map((t) => (
-                    <span key={t} className="chip">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:justify-end">
-                  {isLive ? (
-                    <a
-                      href={project.homepage}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-ink transition-colors hover:text-accent-500"
-                    >
-                      {hostLabel(project.homepage)}
-                      <ArrowUpRightIcon width={15} height={15} />
-                    </a>
-                  ) : null}
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted transition-colors hover:text-brand-ink"
-                  >
-                    <GithubIcon width={15} height={15} />
-                    GitHub
-                  </a>
-                </div>
-                <p className="font-mono text-2xs text-muted">
-                  {active === total - 1
-                    ? "Last project"
-                    : "Scroll page for next project →"}
-                </p>
-              </div>
-            </div>
-          </article>
         </div>
       </div>
     </section>

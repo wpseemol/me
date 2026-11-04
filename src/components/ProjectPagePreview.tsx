@@ -211,7 +211,6 @@ export default function ProjectPagePreview({
     <div
       ref={frameRef}
       className={`group/preview relative z-[3] aspect-[16/10] cursor-ns-resize overflow-hidden bg-surface touch-none ${className}`}
-      title="Scroll the preview first — at the end, keep scrolling for the next project"
     >
       <div
         ref={shotRef}

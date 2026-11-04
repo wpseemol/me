@@ -20,8 +20,8 @@ const LANG_COLOR: Record<string, string> = {
   Liquid: "#7AB55C",
 };
 
-/** Mild deck angles so the grid still reads, but cards feel physical. */
-const TILT = [-7, 5, -4, 8, -6, 3, -5, 6];
+/** Entrance tilt only — cards settle flat/centered in the grid. */
+const TILT = [-8, 6, -5, 7, -6, 4, -5, 5];
 
 function yearOf(iso: string) {
   return iso ? iso.slice(0, 4) : "";
@@ -57,11 +57,8 @@ function WorkingProjectCard({
     <article
       data-scale-card
       className="group relative flex flex-col overflow-hidden rounded-card border bg-elev/80 backdrop-blur-xs will-change-transform transition-[border-color,box-shadow] duration-500 hover:border-[color-mix(in_oklab,var(--brand-500)_45%,transparent)] hover:shadow-[0_22px_48px_-22px_rgb(var(--c-glow-a)/0.55)]"
-      style={{
-        transformOrigin: "center center",
-        // Resting deck pose — scroll animation overrides via GSAP.
-        transform: `rotate(${tilt}deg)`,
-      }}
+      style={{ transformOrigin: "center center" }}
+      data-tilt={tilt}
     >
       <ProjectPagePreview
         src={project.screenshot}
@@ -183,29 +180,28 @@ export default function WorkingProjects({
 
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>("[data-scale-card]").forEach((card, i) => {
-        const tilt = TILT[i % TILT.length]!;
+        const tilt = Number(card.dataset.tilt ?? TILT[i % TILT.length]);
         gsap.fromTo(
           card,
           {
-            scale: 0.88,
-            autoAlpha: 0.4,
-            y: 56,
-            rotate: tilt * 1.6,
-            x: i % 2 === 0 ? -20 : 20,
+            scale: 0.9,
+            autoAlpha: 0.35,
+            y: 52,
+            rotate: tilt,
+            x: 0,
           },
           {
             scale: 1,
             autoAlpha: 1,
             y: 0,
             x: 0,
-            rotate: tilt,
-            // Heavier scrub = gravity settle as the card lands in view.
+            rotate: 0, // land flat + aligned in the centered grid
             ease: "none",
             scrollTrigger: {
               trigger: card,
               start: "top 96%",
-              end: "top 52%",
-              scrub: 1.05,
+              end: "top 55%",
+              scrub: 1.1,
             },
           },
         );
@@ -218,7 +214,10 @@ export default function WorkingProjects({
   if (!projects.length) return null;
 
   return (
-    <div ref={ref} className="mt-12 grid gap-6 md:grid-cols-2 md:gap-8">
+    <div
+      ref={ref}
+      className="mx-auto mt-12 grid w-full max-w-5xl gap-6 md:grid-cols-2 md:gap-8"
+    >
       {projects.map((p, i) => (
         <WorkingProjectCard key={p.slug} project={p} index={i} />
       ))}
