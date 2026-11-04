@@ -22,6 +22,7 @@ export default function Nav() {
     const [atTop, setAtTop] = useState(true);
     const [navVisible, setNavVisible] = useState(true);
     const [open, setOpen] = useState(false);
+    const headerRef = useRef<HTMLElement>(null);
     const barRef = useRef<HTMLDivElement>(null);
     const atTopRef = useRef(true);
     const visibleRef = useRef(true);
@@ -72,6 +73,24 @@ export default function Nav() {
             gsap.ticker.remove(onScroll);
         };
     }, []);
+
+    // Animate hide / show only — visibility rules above stay untouched.
+    useEffect(() => {
+        const el = headerRef.current;
+        if (!el) return;
+        const show = open || navVisible;
+        const reduced = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+        ).matches;
+
+        gsap.to(el, {
+            yPercent: show ? 0 : -100,
+            autoAlpha: show ? 1 : 0,
+            duration: reduced ? 0 : show ? 0.45 : 0.32,
+            ease: show ? "power3.out" : "power2.in",
+            overwrite: "auto",
+        });
+    }, [navVisible, open]);
 
     useEffect(() => setOpen(false), [pathname]);
 
@@ -126,9 +145,8 @@ export default function Nav() {
             </a>
 
             <header
-                className={`fixed inset-x-0 top-0 z-50 transition-[transform,background-color,border-color,backdrop-filter] duration-500 ${
-                    open || navVisible ? "translate-y-0" : "-translate-y-full"
-                } ${
+                ref={headerRef}
+                className={`fixed inset-x-0 top-0 z-50 will-change-transform transition-[background-color,border-color,backdrop-filter] duration-500 ${
                     open || (navVisible && !atTop)
                         ? "border-b bg-ink/85 backdrop-blur-xl supports-backdrop-filter:bg-ink/72"
                         : "border-b border-transparent"

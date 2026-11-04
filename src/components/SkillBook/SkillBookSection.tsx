@@ -81,9 +81,10 @@ function DesktopSkillBook() {
           sheet.style.zIndex = String(
             progress > 0.5 ? i + 2 : SHEET_COUNT - i + 30,
           );
-          gsap.set(sheet, { z: mid * 36 });
-          if (shades[i]) gsap.set(shades[i]!, { opacity: mid * 0.5 });
-          if (curls[i]) gsap.set(curls[i]!, { opacity: mid * 0.75 });
+          // Keep flips flat in-plane — z-lift made the book look like it floated
+          gsap.set(sheet, { z: 0 });
+          if (shades[i]) gsap.set(shades[i]!, { opacity: mid * 0.4 });
+          if (curls[i]) gsap.set(curls[i]!, { opacity: mid * 0.55 });
           return;
         }
         // Waiting on the right
@@ -95,29 +96,32 @@ function DesktopSkillBook() {
     };
 
     const ctx = gsap.context(() => {
-      gsap.set(stage, { scale: 1, transformOrigin: "50% 50%" });
+      // Planted in the layout — no book pose / stage motion (that caused site float).
+      gsap.set(stage, { clearProps: "transform" });
       gsap.set(book, {
-        rotateX: 14,
-        rotateY: -28,
-        rotateZ: -3,
-        xPercent: -6,
-        scale: 0.94,
-        transformOrigin: "50% 55%",
-        force3D: true,
+        x: 0,
+        y: 0,
+        z: 0,
+        rotateX: 0,
+        rotateY: 0,
+        rotateZ: 0,
+        xPercent: 0,
+        yPercent: 0,
+        scale: 1,
+        transformOrigin: "50% 50%",
       });
-      // Single-face cover only — no inside-cover swing (that was the “2nd book”)
       gsap.set(cover, {
         rotateY: 0,
         autoAlpha: 1,
         transformOrigin: "left center",
-        force3D: true,
       });
       gsap.set([edge, spine], { autoAlpha: 1 });
       gsap.set(sheets, {
         rotateY: 0,
         z: 0,
+        x: 0,
+        y: 0,
         transformOrigin: "left center",
-        force3D: true,
       });
       gsap.set(shades, { opacity: 0 });
       gsap.set(curls, { opacity: 0 });
@@ -126,13 +130,6 @@ function DesktopSkillBook() {
       });
 
       if (reduced) {
-        gsap.set(book, {
-          rotateX: 3,
-          rotateY: 0,
-          rotateZ: 0,
-          xPercent: 0,
-          scale: 1.1,
-        });
         gsap.set(cover, { autoAlpha: 0 });
         gsap.set([edge, spine], { autoAlpha: 0 });
         setLabel(meta.introTitle);
@@ -144,9 +141,11 @@ function DesktopSkillBook() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: "+=520%",
+          end: "+=420%",
           pin: pin,
-          scrub: 0.7,
+          // transform pin is stabler with Lenis — avoids fixed-layer float/jitter
+          pinType: "transform",
+          scrub: 0.35,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
@@ -155,13 +154,12 @@ function DesktopSkillBook() {
                 scaleX: 0.04 + self.progress * 0.96,
               });
             }
-            // Labels from timeline progress (scrub-safe — no onStart)
             const p = self.progress;
             if (p < 0.08) setLabel("Closed · Skill book");
-            else if (p < 0.18) setLabel("Opening…");
+            else if (p < 0.16) setLabel("Opening…");
             else if (p < 0.82) {
-              const turnSpan = 0.82 - 0.18;
-              const local = (p - 0.18) / turnSpan;
+              const turnSpan = 0.82 - 0.16;
+              const local = (p - 0.16) / turnSpan;
               const idx = Math.min(
                 SHEET_COUNT - 1,
                 Math.floor(local * SHEET_COUNT),
@@ -176,45 +174,20 @@ function DesktopSkillBook() {
       /* ---- 1. Hold closed ------------------------------------------------ */
       tl.to({}, { duration: 0.08 });
 
-      /* ---- 2. Open: face-on + cover lifts away (never a 3rd panel) ------ */
+      /* ---- 2. Open: cover fades only — book stays planted --------------- */
       tl.addLabel("open");
-      tl.to(
-        book,
-        {
-          rotateX: 3,
-          rotateY: 0,
-          rotateZ: 0,
-          xPercent: 0,
-          scale: 1.14,
-          duration: 0.14,
-          ease: "power2.out",
-        },
-        "open",
-      );
-      tl.to(stage, { scale: 1.08, duration: 0.14, ease: "power2.out" }, "open");
-      // Cover swings a little then fades — hide before it can stand upright
-      tl.to(
-        cover,
-        {
-          rotateY: -105,
-          duration: 0.07,
-          ease: "power2.in",
-        },
-        "open",
-      );
       tl.to(
         cover,
         {
           autoAlpha: 0,
-          rotateY: -160,
-          duration: 0.07,
-          ease: "power1.in",
+          duration: 0.12,
+          ease: "power2.inOut",
         },
-        "open+=0.06",
+        "open",
       );
       tl.to(
         [edge, spine],
-        { autoAlpha: 0, duration: 0.08, ease: "power1.in" },
+        { autoAlpha: 0, duration: 0.1, ease: "power1.in" },
         "open",
       );
 
@@ -269,9 +242,8 @@ function DesktopSkillBook() {
         sheet.style.zIndex = String(SHEET_COUNT - i + 30);
       }
 
-      /* ---- 7. Cover returns (fade in already past upright) -------------- */
+      /* ---- 7. Cover returns — book never moves ------------------------- */
       tl.addLabel("close");
-      tl.set(cover, { rotateY: -100, autoAlpha: 0 });
       tl.to(
         cover,
         {
@@ -285,22 +257,8 @@ function DesktopSkillBook() {
       tl.to(
         [edge, spine],
         { autoAlpha: 1, duration: 0.08 },
-        "close+=0.04",
-      );
-      tl.to(
-        book,
-        {
-          rotateX: 14,
-          rotateY: -28,
-          rotateZ: -3,
-          xPercent: -6,
-          scale: 0.94,
-          duration: 0.12,
-          ease: "power2.inOut",
-        },
         "close",
       );
-      tl.to(stage, { scale: 1, duration: 0.12, ease: "power2.inOut" }, "close");
       tl.to({}, { duration: 0.05 });
     }, pin);
 
@@ -318,7 +276,7 @@ function DesktopSkillBook() {
     >
       <div
         ref={pinRef}
-        className="flex min-h-[100svh] flex-col items-center justify-center py-3 sm:py-5"
+        className="flex min-h-[100svh] flex-col items-center justify-center overflow-x-clip py-3 sm:py-5"
       >
         <p
           ref={labelRef}
@@ -331,23 +289,23 @@ function DesktopSkillBook() {
 
         <div
           ref={stageRef}
-          className="relative mx-auto w-full max-w-[1080px] origin-center px-3 sm:px-5"
-          style={{ perspective: "2000px", perspectiveOrigin: "50% 42%" }}
+          className="relative mx-auto w-full max-w-[720px] px-4 sm:px-6"
+          style={{ perspective: "1400px", perspectiveOrigin: "50% 50%" }}
         >
           <div
             aria-hidden
-            className="pointer-events-none absolute -inset-12 rounded-[48px] opacity-35 blur-3xl"
+            className="pointer-events-none absolute -inset-8 rounded-[32px] opacity-25 blur-3xl"
             style={{
               background:
                 theme === "dark"
-                  ? "radial-gradient(circle at 50% 55%, rgb(var(--c-glow-a) / 0.3), transparent 70%)"
-                  : "radial-gradient(circle at 50% 55%, rgb(27 99 255 / 0.14), transparent 70%)",
+                  ? "radial-gradient(circle at 50% 55%, rgb(var(--c-glow-a) / 0.22), transparent 70%)"
+                  : "radial-gradient(circle at 50% 55%, rgb(27 99 255 / 0.1), transparent 70%)",
             }}
           />
 
           <div
             ref={bookRef}
-            className="relative mx-auto aspect-[1.4/1] w-full max-h-[min(78svh,720px)] will-change-transform"
+            className="relative mx-auto aspect-[5/4] w-full max-h-[min(56svh,480px)]"
             style={{ transformStyle: "preserve-3d" }}
           >
             {/* Soft jacket under the spread only — not a second book */}
@@ -427,15 +385,14 @@ function DesktopSkillBook() {
             {/* Front cover only (no inside-cover face = no second book) */}
             <div
               ref={coverRef}
-              className="hardcover-cover absolute inset-0 z-50 overflow-hidden rounded-2xl will-change-transform"
-              style={{ transformOrigin: "left center" }}
+              className="hardcover-cover absolute inset-0 z-50 overflow-hidden rounded-2xl"
             >
               <Image
                 src={asset("/images/skill-book-cover.jpg")}
                 alt=""
                 fill
                 className="object-cover"
-                sizes="(max-width: 1100px) 90vw, 1080px"
+                sizes="(max-width: 720px) 90vw, 720px"
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-black/35 via-transparent to-white/5" />
