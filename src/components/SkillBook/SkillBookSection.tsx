@@ -79,9 +79,9 @@ function DesktopSkillBook3D() {
       st = ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        end: "+=520%",
+        end: "+=560%",
         pin: pin,
-        scrub: 0.7,
+        scrub: 0.85,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
@@ -132,7 +132,7 @@ function DesktopSkillBook3D() {
           Closed · Skill book
         </p>
 
-        <div className="relative mx-auto w-full max-w-[980px] px-3 sm:px-6">
+        <div className="relative mx-auto w-full max-w-[1240px] px-2 sm:px-4">
           <div
             aria-hidden
             className="pointer-events-none absolute -inset-16 rounded-[48px] opacity-35 blur-3xl"
@@ -141,7 +141,7 @@ function DesktopSkillBook3D() {
                 "radial-gradient(circle at 50% 55%, rgb(var(--c-glow-a) / 0.32), transparent 70%)",
             }}
           />
-          <div className="relative aspect-[16/11] w-full overflow-hidden rounded-[20px]">
+          <div className="relative h-[min(78svh,820px)] w-full overflow-hidden rounded-[20px]">
             <canvas
               ref={canvasRef}
               className="h-full w-full touch-none"

@@ -1,7 +1,7 @@
 import type { SheetContent, Skill } from "./skillsData";
 
-const W = 768;
-const H = 1024;
+const W = 1024;
+const H = 1360;
 
 function paperColors(dark: boolean) {
   return dark

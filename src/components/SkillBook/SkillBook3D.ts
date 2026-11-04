@@ -14,10 +14,10 @@ import {
 } from "./pageTextures";
 import { asset } from "@/lib/asset";
 
-const PAGE_W = 1.55;
-const PAGE_H = 2.05;
-const COVER_T = 0.04;
-const BLOCK_T = 0.28;
+const PAGE_W = 2.25;
+const PAGE_H = 2.9;
+const COVER_T = 0.05;
+const BLOCK_T = 0.36;
 
 export type SkillBookHandle = {
   setProgress: (t: number) => void;
@@ -55,8 +55,8 @@ export async function createSkillBook3D(
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(32, width / height, 0.1, 40);
-  camera.position.set(0, 0.35, 6.4);
+  const camera = new THREE.PerspectiveCamera(28, width / height, 0.1, 50);
+  camera.position.set(0, 0.4, 7.2);
 
   // Lights
   scene.add(new THREE.AmbientLight(0xffffff, dark ? 0.55 : 0.7));
@@ -66,10 +66,10 @@ export async function createSkillBook3D(
   key.shadow.mapSize.set(1024, 1024);
   key.shadow.camera.near = 1;
   key.shadow.camera.far = 20;
-  key.shadow.camera.left = -4;
-  key.shadow.camera.right = 4;
-  key.shadow.camera.top = 4;
-  key.shadow.camera.bottom = -4;
+  key.shadow.camera.left = -6;
+  key.shadow.camera.right = 6;
+  key.shadow.camera.top = 6;
+  key.shadow.camera.bottom = -6;
   scene.add(key);
   const fill = new THREE.DirectionalLight(0x9ec5ff, 0.35);
   fill.position.set(-4, 2, 2);
@@ -77,9 +77,9 @@ export async function createSkillBook3D(
 
   // Ground shadow catcher
   const shadowMat = new THREE.ShadowMaterial({ opacity: dark ? 0.55 : 0.4 });
-  const ground = new THREE.Mesh(new THREE.CircleGeometry(3.2, 48), shadowMat);
+  const ground = new THREE.Mesh(new THREE.CircleGeometry(4.6, 64), shadowMat);
   ground.rotation.x = -Math.PI / 2;
-  ground.position.y = -PAGE_H / 2 - 0.02;
+  ground.position.y = -PAGE_H / 2 - 0.03;
   ground.receiveShadow = true;
   scene.add(ground);
 
@@ -248,37 +248,43 @@ export async function createSkillBook3D(
 
   let progress = 0;
 
-  // Closed pose — three-quarter table view like a real hardcover
+  // Closed pose — three-quarter table view like the hardcover reference
   const closed = {
-    bookRX: THREE.MathUtils.degToRad(28),
-    bookRY: THREE.MathUtils.degToRad(-38),
-    bookRZ: THREE.MathUtils.degToRad(-4),
-    bookY: -0.05,
-    coverY: THREE.MathUtils.degToRad(-14), // ajar
-    camZ: 5.8,
-    camY: 0.85,
+    bookRX: THREE.MathUtils.degToRad(24),
+    bookRY: THREE.MathUtils.degToRad(-36),
+    bookRZ: THREE.MathUtils.degToRad(-5),
+    bookY: -0.08,
+    coverY: THREE.MathUtils.degToRad(-13), // slightly ajar
+    camZ: 7.0,
+    camY: 1.05,
+    scale: 1,
   };
+  // Open reading pose — fill the frame so page content is readable
   const open = {
-    bookRX: THREE.MathUtils.degToRad(6),
+    bookRX: THREE.MathUtils.degToRad(4),
     bookRY: 0,
     bookRZ: 0,
-    bookY: 0,
-    coverY: THREE.MathUtils.degToRad(-172),
-    camZ: 5.4,
-    camY: 0.12,
+    bookY: 0.05,
+    coverY: THREE.MathUtils.degToRad(-175),
+    camZ: 5.15,
+    camY: 0.08,
+    scale: 1.08,
   };
 
   const n = leaves.length;
+
+  // Timeline beats (share with getLabel)
+  const T_HOLD = 0.06;
+  const T_OPEN = 0.24;
+  const T_TURN = 0.72;
+  const T_STACK = 0.8; // pages return under cover
+  const T_SHUT = 0.9; // cover gravity-closes
+  // 0.9–1.0 settle into closed hardcover pose
 
   const setProgress = (raw: number) => {
     const t = THREE.MathUtils.clamp(raw, 0, 1);
     progress = t;
 
-    // Segments:
-    // 0.00–0.08 hold closed
-    // 0.08–0.26 open cover + face camera
-    // 0.26–0.78 page turns
-    // 0.78–1.00 close cover + return to closed pose
     let coverAngle = closed.coverY;
     let bookRX = closed.bookRX;
     let bookRY = closed.bookRY;
@@ -286,15 +292,16 @@ export async function createSkillBook3D(
     let bookY = closed.bookY;
     let camZ = closed.camZ;
     let camY = closed.camY;
+    let scale = closed.scale;
     let blockVis = 1;
     let ribbonVis = 1;
 
     const leafAngles = new Array(n).fill(0) as number[];
 
-    if (t <= 0.08) {
-      // closed hold
-    } else if (t < 0.26) {
-      const u = smooth((t - 0.08) / 0.18);
+    if (t <= T_HOLD) {
+      // closed hold — hardcover on the table
+    } else if (t < T_OPEN) {
+      const u = smooth((t - T_HOLD) / (T_OPEN - T_HOLD));
       coverAngle = lerp(closed.coverY, open.coverY, u);
       bookRX = lerp(closed.bookRX, open.bookRX, u);
       bookRY = lerp(closed.bookRY, open.bookRY, u);
@@ -302,9 +309,10 @@ export async function createSkillBook3D(
       bookY = lerp(closed.bookY, open.bookY, u);
       camZ = lerp(closed.camZ, open.camZ, u);
       camY = lerp(closed.camY, open.camY, u);
+      scale = lerp(closed.scale, open.scale, u);
       blockVis = 1 - u;
       ribbonVis = 1 - u;
-    } else if (t < 0.78) {
+    } else if (t < T_TURN) {
       coverAngle = open.coverY;
       bookRX = open.bookRX;
       bookRY = open.bookRY;
@@ -312,46 +320,84 @@ export async function createSkillBook3D(
       bookY = open.bookY;
       camZ = open.camZ;
       camY = open.camY;
+      scale = open.scale;
       blockVis = 0;
       ribbonVis = 0;
 
-      const turnT = (t - 0.26) / 0.52;
+      const turnT = (t - T_OPEN) / (T_TURN - T_OPEN);
       const per = 1 / n;
       for (let i = 0; i < n; i++) {
-        const local = THREE.MathUtils.clamp((turnT - i * per) / (per * 0.85), 0, 1);
+        const local = THREE.MathUtils.clamp(
+          (turnT - i * per) / (per * 0.88),
+          0,
+          1,
+        );
         leafAngles[i] = -Math.PI * gravity(local);
       }
-    } else {
-      // close again
-      const u = smooth((t - 0.78) / 0.22);
-      // Pages fold back under cover while closing
+    } else if (t < T_STACK) {
+      // 1) Pages stack back to the right before the cover moves
+      coverAngle = open.coverY;
+      bookRX = open.bookRX;
+      bookRY = open.bookRY;
+      bookRZ = open.bookRZ;
+      bookY = open.bookY;
+      camZ = open.camZ;
+      camY = open.camY;
+      scale = open.scale;
+      blockVis = 0;
+      ribbonVis = 0;
+      const u = gravity((t - T_TURN) / (T_STACK - T_TURN));
       for (let i = 0; i < n; i++) {
-        leafAngles[i] = lerp(-Math.PI, 0, Math.min(1, u * 1.35));
+        // Later pages (already on left) return first — reverse order feel
+        const delay = (n - 1 - i) / n;
+        const local = THREE.MathUtils.clamp((u - delay * 0.35) / 0.75, 0, 1);
+        leafAngles[i] = lerp(-Math.PI, 0, gravity(local));
       }
+    } else if (t < T_SHUT) {
+      // 2) Cover swings shut with weight; pages already stacked
+      const u = gravity((t - T_STACK) / (T_SHUT - T_STACK));
+      for (let i = 0; i < n; i++) leafAngles[i] = 0;
       coverAngle = lerp(open.coverY, closed.coverY, u);
+      bookRX = open.bookRX;
+      bookRY = open.bookRY;
+      bookRZ = open.bookRZ;
+      bookY = open.bookY;
+      camZ = lerp(open.camZ, lerp(open.camZ, closed.camZ, 0.35), u);
+      camY = open.camY;
+      scale = open.scale;
+      blockVis = Math.max(0, (u - 0.55) / 0.45);
+      ribbonVis = 0;
+    } else {
+      // 3) Settle into table-top hardcover (reference pose)
+      const u = smooth((t - T_SHUT) / (1 - T_SHUT));
+      for (let i = 0; i < n; i++) leafAngles[i] = 0;
+      coverAngle = closed.coverY;
       bookRX = lerp(open.bookRX, closed.bookRX, u);
       bookRY = lerp(open.bookRY, closed.bookRY, u);
       bookRZ = lerp(open.bookRZ, closed.bookRZ, u);
       bookY = lerp(open.bookY, closed.bookY, u);
-      camZ = lerp(open.camZ, closed.camZ, u);
+      camZ = lerp(lerp(open.camZ, closed.camZ, 0.35), closed.camZ, u);
       camY = lerp(open.camY, closed.camY, u);
-      blockVis = u;
-      ribbonVis = Math.max(0, (u - 0.35) / 0.65);
+      scale = lerp(open.scale, closed.scale, u);
+      blockVis = 1;
+      ribbonVis = smooth(u);
     }
 
     coverPivot.rotation.y = coverAngle;
     book.rotation.set(bookRX, bookRY, bookRZ);
     book.position.y = bookY;
+    book.scale.setScalar(scale);
     camera.position.set(0, camY, camZ);
-    camera.lookAt(0, bookY * 0.3, -0.2);
+    camera.lookAt(0, bookY * 0.25, -0.15);
 
-    pageBlock.visible = blockVis > 0.05;
-    pageBlock.scale.set(1, 1, Math.max(0.15, blockVis));
-    ribbon.visible = ribbonVis > 0.05;
-    ribbon.material.opacity = ribbonVis;
-    (ribbon.material as THREE.MeshStandardMaterial).transparent = true;
+    pageBlock.visible = blockVis > 0.04;
+    pageBlock.scale.set(1, 1, Math.max(0.12, blockVis));
+    ribbon.visible = ribbonVis > 0.04;
+    const ribbonMat = ribbon.material as THREE.MeshStandardMaterial;
+    ribbonMat.transparent = true;
+    ribbonMat.opacity = ribbonVis;
 
-    const pagesLive = blockVis < 0.85;
+    const pagesLive = blockVis < 0.82;
     leftPivot.visible = pagesLive;
     rightBase.visible = pagesLive;
 
@@ -360,15 +406,14 @@ export async function createSkillBook3D(
       leaf.pivot.rotation.y = leafAngles[i]!;
       const a = Math.abs(leafAngles[i]!);
       const mid = Math.sin(a);
-      leaf.pivot.position.z = mid * 0.1;
+      leaf.pivot.position.z = mid * 0.14;
       const turned = leafAngles[i]! < -Math.PI / 2;
       leaf.pivot.renderOrder = turned ? i : n - i;
     });
 
-    coverPivot.position.z = COVER_T / 2 + 0.02;
+    coverPivot.position.z = COVER_T / 2 + 0.025;
     coverPivot.renderOrder = n + 5;
-    // Keep hardcover volume readable when closed
-    backCover.visible = blockVis > 0.2;
+    backCover.visible = blockVis > 0.15;
     spine.visible = true;
 
     renderer.render(scene, camera);
@@ -378,10 +423,12 @@ export async function createSkillBook3D(
 
   const getLabel = (raw: number) => {
     const t = THREE.MathUtils.clamp(raw, 0, 1);
-    if (t < 0.08) return "Closed · Skill book";
-    if (t < 0.26) return "Opening…";
-    if (t >= 0.78) return t > 0.92 ? "Closed · Skill book" : "Closing…";
-    const turnT = (t - 0.26) / 0.52;
+    if (t < T_HOLD) return "Closed · Skill book";
+    if (t < T_OPEN) return "Opening…";
+    if (t >= T_TURN && t < T_STACK) return "Stacking pages…";
+    if (t >= T_STACK && t < T_SHUT) return "Closing cover…";
+    if (t >= T_SHUT) return t > 0.97 ? "Closed · Skill book" : "Settling…";
+    const turnT = (t - T_OPEN) / (T_TURN - T_OPEN);
     const idx = Math.min(n - 1, Math.max(0, Math.floor(turnT * n)));
     const sheet = FLIP_SHEETS[idx];
     if (!sheet) return "Turning page…";
