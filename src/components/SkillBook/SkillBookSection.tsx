@@ -10,7 +10,6 @@ import {
   LEFT_ENDPAPER,
   RIGHT_BASE,
   meta,
-  profile,
 } from "./skillsData";
 import { asset } from "@/lib/asset";
 import { useTheme } from "@/components/ThemeProvider";
@@ -20,8 +19,8 @@ gsap.registerPlugin(ScrollTrigger);
 const SHEET_COUNT = FLIP_SHEETS.length;
 
 /**
- * Sticky hardcover Skill Book — CSS 3D + GSAP ScrollTrigger only (no Three.js).
- * Closed volume → open 2-page spread → page turns → close.
+ * Sticky hardcover Skill Book — CSS 3D + GSAP ScrollTrigger only.
+ * One book, strict 2-page open spread, sequential page turns (no second cover panel).
  */
 export default function SkillBookSection() {
   const [isMobile, setIsMobile] = useState(false);
@@ -69,40 +68,72 @@ function DesktopSkillBook() {
       if (labelRef.current) labelRef.current.textContent = text;
     };
 
-    const ctx = gsap.context(() => {
-      // Closed hardcover — angled object on the table
-      gsap.set(book, {
-        rotateX: 16,
-        rotateY: -32,
-        rotateZ: -4,
-        xPercent: -8,
-        scale: 0.92,
-        transformOrigin: "50% 55%",
+    const syncSheetStack = (activeIndex: number, progress: number) => {
+      sheets.forEach((sheet, i) => {
+        if (i < activeIndex) {
+          // Already turned — sit on the left stack
+          sheet.style.zIndex = String(i + 2);
+          gsap.set(sheet, { z: 0 });
+          return;
+        }
+        if (i === activeIndex) {
+          const mid = Math.sin(progress * Math.PI);
+          sheet.style.zIndex = String(
+            progress > 0.5 ? i + 2 : SHEET_COUNT - i + 30,
+          );
+          gsap.set(sheet, { z: mid * 36 });
+          if (shades[i]) gsap.set(shades[i]!, { opacity: mid * 0.5 });
+          if (curls[i]) gsap.set(curls[i]!, { opacity: mid * 0.75 });
+          return;
+        }
+        // Waiting on the right
+        sheet.style.zIndex = String(SHEET_COUNT - i + 30);
+        gsap.set(sheet, { z: 0 });
+        if (shades[i]) gsap.set(shades[i]!, { opacity: 0 });
+        if (curls[i]) gsap.set(curls[i]!, { opacity: 0 });
       });
+    };
+
+    const ctx = gsap.context(() => {
+      gsap.set(stage, { scale: 1, transformOrigin: "50% 50%" });
+      gsap.set(book, {
+        rotateX: 14,
+        rotateY: -28,
+        rotateZ: -3,
+        xPercent: -6,
+        scale: 0.94,
+        transformOrigin: "50% 55%",
+        force3D: true,
+      });
+      // Single-face cover only — no inside-cover swing (that was the “2nd book”)
       gsap.set(cover, {
         rotateY: 0,
         autoAlpha: 1,
         transformOrigin: "left center",
+        force3D: true,
       });
-      gsap.set(edge, { autoAlpha: 1, scaleX: 1 });
-      gsap.set(spine, { autoAlpha: 1 });
+      gsap.set([edge, spine], { autoAlpha: 1 });
       gsap.set(sheets, {
         rotateY: 0,
         z: 0,
         transformOrigin: "left center",
+        force3D: true,
       });
       gsap.set(shades, { opacity: 0 });
       gsap.set(curls, { opacity: 0 });
+      sheets.forEach((sheet, i) => {
+        sheet.style.zIndex = String(SHEET_COUNT - i + 30);
+      });
 
       if (reduced) {
         gsap.set(book, {
-          rotateX: 4,
+          rotateX: 3,
           rotateY: 0,
           rotateZ: 0,
           xPercent: 0,
-          scale: 1.08,
+          scale: 1.1,
         });
-        gsap.set(cover, { autoAlpha: 0, rotateY: -180 });
+        gsap.set(cover, { autoAlpha: 0 });
         gsap.set([edge, spine], { autoAlpha: 0 });
         setLabel(meta.introTitle);
         return;
@@ -113,9 +144,9 @@ function DesktopSkillBook() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: "+=480%",
+          end: "+=520%",
           pin: pin,
-          scrub: 0.65,
+          scrub: 0.7,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
@@ -124,173 +155,157 @@ function DesktopSkillBook() {
                 scaleX: 0.04 + self.progress * 0.96,
               });
             }
+            // Labels from timeline progress (scrub-safe — no onStart)
+            const p = self.progress;
+            if (p < 0.08) setLabel("Closed · Skill book");
+            else if (p < 0.18) setLabel("Opening…");
+            else if (p < 0.82) {
+              const turnSpan = 0.82 - 0.18;
+              const local = (p - 0.18) / turnSpan;
+              const idx = Math.min(
+                SHEET_COUNT - 1,
+                Math.floor(local * SHEET_COUNT),
+              );
+              setLabel(sheetLabel(FLIP_SHEETS[idx]!) ?? `Page ${idx + 1}`);
+            } else if (p < 0.9) setLabel("Closing…");
+            else setLabel("Closed · Skill book");
           },
         },
       });
 
-      // 1) Hold closed
-      tl.to({}, { duration: 0.06, onStart: () => setLabel("Closed · Skill book") });
+      /* ---- 1. Hold closed ------------------------------------------------ */
+      tl.to({}, { duration: 0.08 });
 
-      // 2) Open cover fast through upright — never linger as a 3rd panel
+      /* ---- 2. Open: face-on + cover lifts away (never a 3rd panel) ------ */
+      tl.addLabel("open");
       tl.to(
-        cover,
+        book,
         {
-          rotateY: -180,
-          duration: 0.16,
-          ease: "power2.inOut",
-          onStart: () => setLabel("Opening…"),
+          rotateX: 3,
+          rotateY: 0,
+          rotateZ: 0,
+          xPercent: 0,
+          scale: 1.14,
+          duration: 0.14,
+          ease: "power2.out",
         },
         "open",
       );
-      // Fade cover away in the second half of the swing so inside cover never reads as a page
+      tl.to(stage, { scale: 1.08, duration: 0.14, ease: "power2.out" }, "open");
+      // Cover swings a little then fades — hide before it can stand upright
+      tl.to(
+        cover,
+        {
+          rotateY: -105,
+          duration: 0.07,
+          ease: "power2.in",
+        },
+        "open",
+      );
       tl.to(
         cover,
         {
           autoAlpha: 0,
-          duration: 0.08,
+          rotateY: -160,
+          duration: 0.07,
           ease: "power1.in",
         },
-        "open+=0.09",
-      );
-      tl.to(
-        book,
-        {
-          rotateX: 4,
-          rotateY: 0,
-          rotateZ: 0,
-          xPercent: 0,
-          scale: 1.12,
-          duration: 0.16,
-          ease: "power2.out",
-        },
-        "open",
-      );
-      tl.to(
-        stage,
-        {
-          scale: 1.06,
-          duration: 0.16,
-          ease: "power2.out",
-        },
-        "open",
+        "open+=0.06",
       );
       tl.to(
         [edge, spine],
-        { autoAlpha: 0, duration: 0.1, ease: "power1.in" },
+        { autoAlpha: 0, duration: 0.08, ease: "power1.in" },
         "open",
       );
 
-      // 3) Turn each leaf — weighted ease, lift + shade mid-flip
-      const turnDur = 0.55 / Math.max(1, sheets.length);
+      /* ---- 3. Hold open spread (left endpaper + first recto) ------------ */
+      tl.to({}, { duration: 0.05 });
+
+      /* ---- 4. Turn pages one-by-one (no overlap) ------------------------ */
+      const turnDur = 0.1;
+      const gap = 0.035;
       sheets.forEach((sheet, i) => {
-        const label = sheetLabel(FLIP_SHEETS[i]!) ?? `Page ${i + 1}`;
-        const shade = shades[i];
-        const curl = curls[i];
         tl.to(
           sheet,
           {
             rotateY: -180,
             duration: turnDur,
             ease: "power2.inOut",
-            onStart: () => setLabel(label),
             onUpdate: function onTurn() {
-              const p = this.progress();
-              const mid = Math.sin(p * Math.PI);
-              gsap.set(sheet, { z: mid * 28 });
-              if (shade) gsap.set(shade, { opacity: mid * 0.45 });
-              if (curl) gsap.set(curl, { opacity: mid * 0.7 });
-              sheet.style.zIndex = String(
-                p > 0.5 ? i + 3 : SHEET_COUNT - i + 20,
-              );
-            },
-            onComplete: () => {
-              gsap.set(sheet, { z: 0 });
-              if (shade) gsap.set(shade, { opacity: 0.08 });
-              if (curl) gsap.set(curl, { opacity: 0.1 });
+              syncSheetStack(i, this.progress());
             },
           },
-          i === 0 ? ">-0.02" : ">-0.01",
+          i === 0 ? ">" : `>+${gap}`,
         );
+        // Settle after each turn
+        tl.set(sheet, { z: 0 });
+        if (shades[i]) tl.set(shades[i]!, { opacity: 0.06 });
+        if (curls[i]) tl.set(curls[i]!, { opacity: 0.08 });
       });
 
-      // 4) Brief hold open
-      tl.to({}, { duration: 0.06, onStart: () => setLabel("Closing…") });
+      /* ---- 5. Hold on last spread --------------------------------------- */
+      tl.to({}, { duration: 0.06 });
 
-      // 5) Return pages flat to the right (fast, no upright linger)
-      sheets
-        .slice()
-        .reverse()
-        .forEach((sheet, rev) => {
-          const i = sheets.length - 1 - rev;
-          const shade = shades[i];
-          const curl = curls[i];
-          tl.to(
-            sheet,
-            {
-              rotateY: 0,
-              z: 0,
-              duration: 0.045,
-              ease: "power2.in",
-              onUpdate: function onStack() {
-                const p = this.progress();
-                const mid = Math.sin(p * Math.PI);
-                gsap.set(sheet, { z: mid * 16 });
-                sheet.style.zIndex = String(SHEET_COUNT - i + 20);
-              },
-              onComplete: () => {
-                if (shade) gsap.set(shade, { opacity: 0 });
-                if (curl) gsap.set(curl, { opacity: 0 });
-              },
+      /* ---- 6. Flip pages back to the right, one at a time --------------- */
+      for (let i = sheets.length - 1; i >= 0; i--) {
+        const sheet = sheets[i]!;
+        tl.to(
+          sheet,
+          {
+            rotateY: 0,
+            z: 0,
+            duration: 0.055,
+            ease: "power2.inOut",
+            onUpdate: function onBack() {
+              const p = this.progress();
+              // While returning, treat as active flip in reverse
+              syncSheetStack(i, 1 - p);
             },
-            rev === 0 ? ">" : "<0.02",
-          );
-        });
+          },
+          i === sheets.length - 1 ? ">" : ">+0.015",
+        );
+        if (shades[i]) tl.set(shades[i]!, { opacity: 0 });
+        if (curls[i]) tl.set(curls[i]!, { opacity: 0 });
+        sheet.style.zIndex = String(SHEET_COUNT - i + 30);
+      }
 
-      // 6) Cover swings shut (skip upright linger via ease), book settles closed
-      tl.set(cover, { autoAlpha: 1, rotateY: -180 });
+      /* ---- 7. Cover returns (fade in already past upright) -------------- */
+      tl.addLabel("close");
+      tl.set(cover, { rotateY: -100, autoAlpha: 0 });
       tl.to(
         cover,
         {
+          autoAlpha: 1,
           rotateY: 0,
-          duration: 0.12,
-          ease: "power3.in",
-          onStart: () => setLabel("Closing cover…"),
+          duration: 0.1,
+          ease: "power2.out",
         },
         "close",
       );
       tl.to(
         [edge, spine],
         { autoAlpha: 1, duration: 0.08 },
-        "close+=0.06",
+        "close+=0.04",
       );
       tl.to(
         book,
         {
-          rotateX: 16,
-          rotateY: -32,
-          rotateZ: -4,
-          xPercent: -8,
-          scale: 0.92,
-          duration: 0.14,
+          rotateX: 14,
+          rotateY: -28,
+          rotateZ: -3,
+          xPercent: -6,
+          scale: 0.94,
+          duration: 0.12,
           ease: "power2.inOut",
         },
         "close",
       );
-      tl.to(
-        stage,
-        { scale: 1, duration: 0.14, ease: "power2.inOut" },
-        "close",
-      );
-      tl.to(
-        {},
-        {
-          duration: 0.05,
-          onComplete: () => setLabel("Closed · Skill book"),
-        },
-      );
+      tl.to(stage, { scale: 1, duration: 0.12, ease: "power2.inOut" }, "close");
+      tl.to({}, { duration: 0.05 });
     }, pin);
 
-    ScrollTrigger.refresh();
+    // Defer refresh so pin measurements settle after layout
+    requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => ctx.revert();
   }, [theme]);
 
@@ -303,7 +318,7 @@ function DesktopSkillBook() {
     >
       <div
         ref={pinRef}
-        className="flex min-h-[100svh] flex-col items-center justify-center overflow-hidden py-3 sm:py-5"
+        className="flex min-h-[100svh] flex-col items-center justify-center py-3 sm:py-5"
       >
         <p
           ref={labelRef}
@@ -316,8 +331,8 @@ function DesktopSkillBook() {
 
         <div
           ref={stageRef}
-          className="relative mx-auto w-full max-w-[1100px] origin-center px-3 sm:px-5"
-          style={{ perspective: "2200px", perspectiveOrigin: "50% 45%" }}
+          className="relative mx-auto w-full max-w-[1080px] origin-center px-3 sm:px-5"
+          style={{ perspective: "2000px", perspectiveOrigin: "50% 42%" }}
         >
           <div
             aria-hidden
@@ -332,34 +347,37 @@ function DesktopSkillBook() {
 
           <div
             ref={bookRef}
-            className="relative mx-auto aspect-[1.42/1] w-full max-h-[min(82svh,760px)] will-change-transform"
+            className="relative mx-auto aspect-[1.4/1] w-full max-h-[min(78svh,720px)] will-change-transform"
             style={{ transformStyle: "preserve-3d" }}
           >
-            {/* Jacket under the full spread — never a side panel */}
+            {/* Soft jacket under the spread only — not a second book */}
             <div
               aria-hidden
-              className="book-jacket pointer-events-none absolute inset-0 -m-3 rounded-2xl sm:-m-4"
+              className="pointer-events-none absolute inset-0 -m-2 rounded-2xl opacity-90 sm:-m-3"
+              style={{
+                background:
+                  "linear-gradient(145deg, color-mix(in oklab, var(--book-bind) 88%, white), var(--book-bind))",
+                boxShadow: "0 28px 55px -22px rgb(0 0 0 / 0.55)",
+              }}
             />
 
-            {/* Closed-volume paper edge + spine (fade out when open) */}
             <div
               ref={spineRef}
               aria-hidden
-              className="hardcover-spine absolute top-[3%] bottom-[3%] left-0 z-30 w-[3.2%] rounded-l-md"
+              className="hardcover-spine absolute top-[3%] bottom-[3%] left-0 z-30 w-[2.8%] rounded-l-md"
             />
             <div
               ref={edgeRef}
               aria-hidden
-              className="hardcover-pages absolute top-[4%] right-0 bottom-[4%] z-30 w-[4.5%] rounded-r-sm"
+              className="hardcover-pages absolute top-[4%] right-0 bottom-[4%] z-30 w-[4%] rounded-r-sm"
             />
 
-            {/* Open 2-page spread — overflow visible so flips aren’t clipped */}
+            {/* Strict 2-page spread */}
             <div
               className="absolute inset-0 rounded-2xl"
               style={{ transformStyle: "preserve-3d" }}
             >
-              {/* Left endpaper */}
-              <div className="book-page absolute inset-y-0 left-0 w-1/2 overflow-hidden rounded-l-2xl border border-r-0">
+              <div className="book-page absolute inset-y-0 left-0 z-[1] w-1/2 overflow-hidden rounded-l-2xl border border-r-0">
                 <div className="relative flex h-full min-h-0 flex-col overflow-hidden p-5 sm:p-7 md:p-8">
                   <p className="book-muted shrink-0 font-mono text-[10px] uppercase tracking-[0.18em]">
                     {LEFT_ENDPAPER.eyebrow}
@@ -376,14 +394,12 @@ function DesktopSkillBook() {
                 </div>
               </div>
 
-              {/* Spine joint */}
               <div
                 aria-hidden
                 className="book-binding absolute inset-y-[2%] left-1/2 z-40 w-[3px] -translate-x-1/2 rounded-full"
               />
 
-              {/* Right base (last page under the stack) */}
-              <div className="book-page absolute inset-y-0 left-1/2 w-1/2 overflow-hidden rounded-r-2xl border border-l-0">
+              <div className="book-page absolute inset-y-0 left-1/2 z-[1] w-1/2 overflow-hidden rounded-r-2xl border border-l-0">
                 <div className="relative flex h-full min-h-0 flex-col overflow-hidden p-5 sm:p-7 md:p-8">
                   <p className="book-muted shrink-0 font-mono text-[10px] uppercase tracking-[0.18em]">
                     {RIGHT_BASE.eyebrow}
@@ -397,7 +413,6 @@ function DesktopSkillBook() {
                 </div>
               </div>
 
-              {/* Flipping leaves — right half only */}
               {FLIP_SHEETS.map((sheet, i) => (
                 <BookPage
                   key={sheet.id}
@@ -409,60 +424,28 @@ function DesktopSkillBook() {
               ))}
             </div>
 
-            {/* Front cover — hinged, fades out when open (no 3rd panel) */}
+            {/* Front cover only (no inside-cover face = no second book) */}
             <div
               ref={coverRef}
               className="hardcover-cover absolute inset-0 z-50 overflow-hidden rounded-2xl will-change-transform"
-              style={{
-                transformOrigin: "left center",
-                transformStyle: "preserve-3d",
-              }}
+              style={{ transformOrigin: "left center" }}
             >
-              <div
-                className="absolute inset-0 overflow-hidden rounded-2xl"
-                style={{
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden",
-                  transform: "rotateY(0deg) translateZ(1px)",
-                }}
-              >
-                <Image
-                  src={asset("/images/skill-book-cover.jpg")}
-                  alt=""
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1100px) 90vw, 1100px"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-black/35 via-transparent to-white/5" />
-                <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/70">
-                    {meta.eyebrow}
-                  </p>
-                  <p className="mt-1 font-display text-2xl text-white sm:text-3xl">
-                    {meta.title}
-                  </p>
-                </div>
-              </div>
-              <div
-                className="book-page-back absolute inset-0 overflow-hidden rounded-2xl border"
-                style={{
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden",
-                  transform: "rotateY(180deg) translateZ(1px)",
-                }}
-              >
-                <div className="flex h-full flex-col p-6 sm:p-8">
-                  <p className="book-muted font-mono text-[10px] uppercase tracking-[0.18em]">
-                    Inside cover
-                  </p>
-                  <p className="book-ink mt-4 font-display text-xl leading-snug sm:text-2xl">
-                    {meta.insideCover}
-                  </p>
-                  <p className="book-muted mt-auto font-mono text-[10px]">
-                    @{profile.handle}
-                  </p>
-                </div>
+              <Image
+                src={asset("/images/skill-book-cover.jpg")}
+                alt=""
+                fill
+                className="object-cover"
+                sizes="(max-width: 1100px) 90vw, 1080px"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-black/35 via-transparent to-white/5" />
+              <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/70">
+                  {meta.eyebrow}
+                </p>
+                <p className="mt-1 font-display text-2xl text-white sm:text-3xl">
+                  {meta.title}
+                </p>
               </div>
             </div>
           </div>
@@ -484,7 +467,6 @@ function DesktopSkillBook() {
     </section>
   );
 }
-
 
 function sheetLabel(sheet: (typeof FLIP_SHEETS)[number]) {
   if (sheet.front.kind === "intro") return meta.introTitle;

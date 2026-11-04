@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ThemeToggle from "./ThemeToggle";
 import Logo from "./Logo";
 import Magnetic from "./Magnetic";
@@ -33,9 +32,7 @@ export default function Nav() {
         // state — re-rendering the whole header on every scroll frame is the
         // single most common cause of a janky sticky nav.
         // Show at top + while scrolling up (return to top). Hide on scroll down.
-        // Also hook ScrollTrigger so Lenis-driven scrolls still update the header.
-        gsap.registerPlugin(ScrollTrigger);
-
+        // Poll on the GSAP ticker so Lenis smooth-scroll still updates the header.
         const readY = () =>
             window.scrollY || document.documentElement.scrollTop || 0;
 
@@ -69,10 +66,10 @@ export default function Nav() {
         lastYRef.current = readY();
         onScroll();
         window.addEventListener("scroll", onScroll, { passive: true });
-        ScrollTrigger.addEventListener("scroll", onScroll);
+        gsap.ticker.add(onScroll);
         return () => {
             window.removeEventListener("scroll", onScroll);
-            ScrollTrigger.removeEventListener("scroll", onScroll);
+            gsap.ticker.remove(onScroll);
         };
     }, []);
 

@@ -96,7 +96,7 @@ export const FLIP_SHEETS: FlipSheet[] = [
     },
     back: {
       kind: "notes",
-      title: "Inside cover",
+      title: "Field note",
       body: meta.insideCover,
       handle: profile.handle,
     },

@@ -35,6 +35,9 @@ export default function BookPage({
       <div
         className="book-page book-sheet-face book-sheet-face--front absolute inset-0 overflow-hidden rounded-r-xl border border-l-0"
         style={{
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+          transform: "rotateY(0deg) translateZ(1px)",
           boxShadow:
             "8px 16px 36px -16px rgb(0 0 0 / 0.45), inset 10px 0 18px rgb(0 0 0 / 0.04)",
         }}
@@ -47,6 +50,9 @@ export default function BookPage({
       <div
         className="book-page-back book-sheet-face book-sheet-face--back absolute inset-0 overflow-hidden rounded-l-xl border"
         style={{
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+          transform: "rotateY(180deg) translateZ(1px)",
           boxShadow: "inset -10px 0 20px rgb(0 0 0 / 0.08)",
         }}
       >
