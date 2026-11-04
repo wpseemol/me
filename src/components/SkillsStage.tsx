@@ -236,6 +236,15 @@ export default function SkillsStage() {
       `[data-skill-index="${active}"]`,
     );
     if (!list || !el) return;
+
+    // Mobile strip is horizontal; desktop aside is vertical
+    const horizontal = list.scrollWidth > list.clientWidth + 8;
+    if (horizontal) {
+      const left =
+        el.offsetLeft - list.clientWidth / 2 + el.clientWidth / 2;
+      list.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+      return;
+    }
     const top = el.offsetTop - list.clientHeight / 2 + el.clientHeight / 2;
     list.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
   }, [active]);
@@ -273,7 +282,7 @@ export default function SkillsStage() {
     >
       <div
         ref={pinRef}
-        className="relative flex min-h-svh flex-col justify-center py-10 sm:py-12"
+        className="relative flex min-h-svh flex-col justify-center py-8 sm:py-10 lg:py-12"
       >
         <div className="shell">
           <div className="mx-auto max-w-3xl text-center">
@@ -291,43 +300,52 @@ export default function SkillsStage() {
             />
           </div>
 
-          <div className="mx-auto mt-8 grid max-w-5xl gap-6 lg:mt-10 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10">
-            <aside>
-              <p className="font-mono text-2xs uppercase tracking-[0.16em] text-muted">
-                Stack · {String(active + 1).padStart(2, "0")} /{" "}
-                {String(total).padStart(2, "0")}
-              </p>
+          <div className="mx-auto mt-6 grid max-w-5xl gap-5 sm:mt-8 lg:mt-10 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10">
+            {/* Mobile: horizontal chips · Desktop: vertical list */}
+            <aside className="min-w-0 lg:pt-1">
+              <div className="flex items-center justify-between gap-3 px-0.5 lg:block">
+                <p className="font-mono text-2xs uppercase tracking-[0.16em] text-muted">
+                  Stack · {String(active + 1).padStart(2, "0")} /{" "}
+                  {String(total).padStart(2, "0")}
+                </p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted lg:hidden">
+                  Swipe · tap
+                </p>
+              </div>
+
               <ul
                 ref={listRef}
-                className="mt-4 max-h-72 space-y-1 overflow-auto pr-1 sm:max-h-[min(52vh,22rem)]"
+                className="mt-3 flex gap-2 overflow-x-auto overscroll-x-contain pb-1 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory lg:mt-4 lg:max-h-[min(52vh,22rem)] lg:flex-col lg:gap-1 lg:overflow-y-auto lg:overflow-x-visible lg:pb-0 lg:pr-1 lg:snap-none [&::-webkit-scrollbar]:hidden"
                 role="listbox"
                 aria-label="Skills"
               >
                 {SKILLS.map((s, i) => {
                   const on = i === active;
                   return (
-                    <li key={s.name}>
+                    <li key={s.name} className="shrink-0 snap-start lg:w-full">
                       <button
                         type="button"
                         role="option"
                         aria-selected={on}
                         data-skill-index={i}
                         onClick={() => goToSkill(i)}
-                        className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left font-mono text-[12px] transition-colors ${
+                        className={`flex min-h-11 items-center gap-2 rounded-full border px-3.5 py-2 text-left font-mono text-[12px] transition-colors lg:min-h-0 lg:w-full lg:rounded-lg lg:border-transparent lg:px-2.5 ${
                           on
-                            ? "bg-elev text-body"
-                            : "text-muted hover:bg-elev hover:text-body"
+                            ? "border-brand-500/40 bg-elev text-body shadow-[0_8px_24px_-16px_rgb(var(--c-glow-a)/0.7)] lg:shadow-none"
+                            : "border-transparent bg-elev/50 text-muted hover:bg-elev hover:text-body lg:bg-transparent"
                         }`}
                       >
                         <span
                           className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-                            on ? "bg-brand-500" : "bg-transparent"
+                            on ? "bg-brand-500" : "bg-transparent lg:bg-transparent"
                           }`}
                         />
-                        <span className="tabular-nums text-muted">
+                        <span className="hidden tabular-nums text-muted lg:inline">
                           {String(i + 1).padStart(2, "0")}
                         </span>
-                        <span className="truncate">{s.name}</span>
+                        <span className="whitespace-nowrap lg:truncate">
+                          {s.name}
+                        </span>
                       </button>
                     </li>
                   );
@@ -335,41 +353,43 @@ export default function SkillsStage() {
               </ul>
             </aside>
 
-            <div>
-              <article className="overflow-hidden rounded-2xl border bg-elev p-5 sm:p-7">
+            <div className="min-w-0">
+              <article className="overflow-hidden rounded-2xl border bg-elev p-4 sm:p-6 lg:p-7">
                 <div ref={panelRef} aria-live="polite">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border bg-surface text-body sm:h-14 sm:w-14">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border bg-surface text-body sm:h-14 sm:w-14 sm:rounded-2xl">
                       {Icon ? (
-                        <span className="text-[1.75rem] leading-none sm:text-[2rem]">
+                        <span className="text-[1.5rem] leading-none sm:text-[2rem]">
                           <Icon />
                         </span>
                       ) : null}
                     </div>
-                    <span className="font-mono text-[11px] text-muted">
+                    <span className="rounded-full border bg-surface px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-muted sm:text-[11px]">
                       {skill.group}
                     </span>
                   </div>
 
-                  <h3 className="mt-4 font-display text-2xl leading-none text-body sm:text-3xl md:text-4xl">
+                  <h3 className="mt-3 font-display text-[1.65rem] leading-none text-body sm:mt-4 sm:text-3xl md:text-4xl">
                     {skill.name}
                   </h3>
-                  <p className="mt-2 text-sm font-medium text-muted sm:text-[15px]">
+                  <p className="mt-2 text-sm font-medium leading-snug text-muted sm:text-[15px]">
                     {skill.blurb}
                   </p>
 
-                  <div className="mt-5 border-t pt-4">
+                  <div className="mt-4 border-t pt-4 sm:mt-5">
                     <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
                       How I learned
                     </p>
-                    <p className="mt-2 text-sm leading-relaxed text-body/80">
+                    <p className="mt-2 text-[13px] leading-relaxed text-body/80 sm:text-sm">
                       {skill.learned}
                     </p>
                     <ul className="mt-3 space-y-1.5">
-                      {skill.practice.slice(0, 3).map((item) => (
+                      {skill.practice.slice(0, 3).map((item, i) => (
                         <li
                           key={item}
-                          className="flex gap-2.5 text-[13px] leading-snug text-muted"
+                          className={`flex gap-2.5 text-[13px] leading-snug text-muted ${
+                            i > 1 ? "hidden sm:flex" : ""
+                          }`}
                         >
                           <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
                           <span>{item}</span>
@@ -388,7 +408,7 @@ export default function SkillsStage() {
                     </div>
                   </div>
 
-                  <div className="mt-6">
+                  <div className="mt-5 sm:mt-6">
                     <div className="mb-1.5 flex justify-between font-mono text-[11px] text-muted">
                       <span>Level</span>
                       <span>{skill.level}%</span>
@@ -403,21 +423,21 @@ export default function SkillsStage() {
                   </div>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between gap-3">
+                <div className="mt-5 flex items-center justify-between gap-2 sm:mt-6 sm:gap-3">
                   <button
                     type="button"
-                    className="btn btn-ghost px-4! py-2!"
+                    className="btn btn-ghost min-h-11 px-5! py-2.5! sm:min-h-0 sm:px-4!"
                     disabled={active === 0}
                     onClick={() => goToSkill(active - 1)}
                   >
                     Prev
                   </button>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+                  <p className="truncate px-1 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
                     {skill.name}
                   </p>
                   <button
                     type="button"
-                    className="btn btn-ghost px-4! py-2!"
+                    className="btn btn-ghost min-h-11 px-5! py-2.5! sm:min-h-0 sm:px-4!"
                     disabled={active >= total - 1}
                     onClick={() => goToSkill(active + 1)}
                   >
@@ -426,7 +446,7 @@ export default function SkillsStage() {
                 </div>
               </article>
 
-              <div className="mt-5 flex flex-col items-center gap-2">
+              <div className="mt-4 flex flex-col items-center gap-2 sm:mt-5">
                 <div className="h-1 w-full max-w-xs overflow-hidden rounded-full bg-elev">
                   <div
                     ref={barRef}
@@ -435,7 +455,10 @@ export default function SkillsStage() {
                   />
                 </div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
-                  Scroll · skill changes · click jumps
+                  <span className="lg:hidden">Scroll or tap a skill</span>
+                  <span className="hidden lg:inline">
+                    Scroll · skill changes · click jumps
+                  </span>
                 </p>
               </div>
             </div>
