@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PageFace } from "./BookPage";
 import { FLIP_SHEETS, meta } from "./skillsData";
 import { asset } from "@/lib/asset";
+import { useTheme } from "@/components/ThemeProvider";
 import {
   createSkillBook3D,
   type SkillBookHandle,
@@ -16,7 +17,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 /**
  * Sticky Three.js hardcover + GSAP ScrollTrigger scrub.
- * Closed → open → real page turns → closes again on the last beat.
+ * Rebuilds for light/dark so page textures + lighting match the site theme.
  */
 export default function SkillBookSection() {
   const [isMobile, setIsMobile] = useState(false);
@@ -34,14 +35,17 @@ export default function SkillBookSection() {
 }
 
 function DesktopSkillBook3D() {
+  const { theme, ready } = useTheme();
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLParagraphElement>(null);
   const bookRef = useRef<SkillBookHandle | null>(null);
+  const progressKeep = useRef(0);
 
   useLayoutEffect(() => {
+    if (!ready) return;
     const section = sectionRef.current;
     const pin = pinRef.current;
     const canvas = canvasRef.current;
@@ -53,7 +57,7 @@ function DesktopSkillBook3D() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const boot = async () => {
-      const book = await createSkillBook3D(canvas);
+      const book = await createSkillBook3D(canvas, theme);
       if (cancelled) {
         book.dispose();
         return;
@@ -61,31 +65,28 @@ function DesktopSkillBook3D() {
       bookRef.current = book;
 
       const resize = () => {
-        const w = canvas.clientWidth;
-        const h = canvas.clientHeight;
-        book.resize(w, h);
+        book.resize(canvas.clientWidth, canvas.clientHeight);
       };
       resize();
       ro = new ResizeObserver(resize);
       ro.observe(canvas);
 
       if (reduced) {
-        book.setProgress(0.5);
+        book.setProgress(0.45);
         if (labelRef.current) labelRef.current.textContent = meta.introTitle;
         return;
       }
 
-      const state = { t: 0 };
       st = ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        end: "+=560%",
+        end: "+=580%",
         pin: pin,
         scrub: 0.85,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
-          state.t = self.progress;
+          progressKeep.current = self.progress;
           book.setProgress(self.progress);
           if (labelRef.current) {
             labelRef.current.textContent = book.getLabel(self.progress);
@@ -98,7 +99,11 @@ function DesktopSkillBook3D() {
         },
       });
 
-      book.setProgress(0);
+      // Keep scroll place when theme toggles mid-read
+      book.setProgress(progressKeep.current);
+      if (labelRef.current) {
+        labelRef.current.textContent = book.getLabel(progressKeep.current);
+      }
       ScrollTrigger.refresh();
     };
 
@@ -111,37 +116,43 @@ function DesktopSkillBook3D() {
       bookRef.current?.dispose();
       bookRef.current = null;
     };
-  }, []);
+  }, [theme, ready]);
 
   return (
     <section
       ref={sectionRef}
       className="relative"
       aria-labelledby="skill-book-live"
+      data-theme={theme}
     >
       <div
         ref={pinRef}
-        className="flex min-h-[100svh] flex-col items-center justify-center overflow-hidden py-6"
+        className="flex min-h-[100svh] flex-col items-center justify-center overflow-hidden py-4 sm:py-6"
       >
         <p
           ref={labelRef}
           id="skill-book-live"
-          className="mb-3 font-mono text-2xs uppercase tracking-[0.16em] text-muted"
+          className="mb-2 font-mono text-2xs uppercase tracking-[0.16em] text-muted sm:mb-3"
           aria-live="polite"
         >
           Closed · Skill book
         </p>
 
-        <div className="relative mx-auto w-full max-w-[1240px] px-2 sm:px-4">
+        <div className="relative mx-auto w-full max-w-[1480px] px-1 sm:px-3">
           <div
             aria-hidden
-            className="pointer-events-none absolute -inset-16 rounded-[48px] opacity-35 blur-3xl"
+            className="pointer-events-none absolute -inset-16 rounded-[48px] opacity-40 blur-3xl"
             style={{
               background:
-                "radial-gradient(circle at 50% 55%, rgb(var(--c-glow-a) / 0.32), transparent 70%)",
+                theme === "dark"
+                  ? "radial-gradient(circle at 50% 55%, rgb(var(--c-glow-a) / 0.34), transparent 70%)"
+                  : "radial-gradient(circle at 50% 55%, rgb(27 99 255 / 0.16), transparent 70%)",
             }}
           />
-          <div className="relative h-[min(78svh,820px)] w-full overflow-hidden rounded-[20px]">
+          <div
+            className="relative w-full overflow-hidden rounded-[18px] sm:rounded-[22px]"
+            style={{ height: "min(88svh, 960px)" }}
+          >
             <canvas
               ref={canvasRef}
               className="h-full w-full touch-none"
@@ -150,7 +161,7 @@ function DesktopSkillBook3D() {
           </div>
         </div>
 
-        <div className="relative z-10 mt-6 flex w-full max-w-xs flex-col items-center gap-2 px-4">
+        <div className="relative z-10 mt-5 flex w-full max-w-xs flex-col items-center gap-2 px-4 sm:mt-6">
           <div className="book-track h-1 w-full overflow-hidden rounded-full">
             <div
               ref={progressRef}
@@ -168,11 +179,16 @@ function DesktopSkillBook3D() {
 }
 
 function MobileSkillBook() {
+  const { theme } = useTheme();
   const faces = useMemo(() => FLIP_SHEETS.map((s) => s.front), []);
   const [index, setIndex] = useState(0);
 
   return (
-    <section className="relative py-14" aria-labelledby="skill-book-mobile">
+    <section
+      className="relative py-14"
+      aria-labelledby="skill-book-mobile"
+      data-theme={theme}
+    >
       <div className="shell">
         <p
           id="skill-book-mobile"
@@ -197,7 +213,7 @@ function MobileSkillBook() {
         </div>
         <div
           className="book-page mt-5 overflow-hidden rounded-2xl border"
-          style={{ minHeight: 420 }}
+          style={{ minHeight: 460 }}
         >
           <PageFace content={faces[index]!} side="right" />
         </div>

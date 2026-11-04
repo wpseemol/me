@@ -14,10 +14,10 @@ import {
 } from "./pageTextures";
 import { asset } from "@/lib/asset";
 
-const PAGE_W = 2.25;
-const PAGE_H = 2.9;
-const COVER_T = 0.05;
-const BLOCK_T = 0.36;
+const PAGE_W = 2.65;
+const PAGE_H = 3.4;
+const COVER_T = 0.055;
+const BLOCK_T = 0.4;
 
 export type SkillBookHandle = {
   setProgress: (t: number) => void;
@@ -37,8 +37,9 @@ type Leaf = {
  */
 export async function createSkillBook3D(
   canvas: HTMLCanvasElement,
+  theme: "light" | "dark" = "dark",
 ): Promise<SkillBookHandle> {
-  const dark = document.documentElement.classList.contains("dark");
+  const dark = theme === "dark";
   const width = canvas.clientWidth || 800;
   const height = canvas.clientHeight || 600;
 
@@ -55,29 +56,39 @@ export async function createSkillBook3D(
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(28, width / height, 0.1, 50);
-  camera.position.set(0, 0.4, 7.2);
+  const camera = new THREE.PerspectiveCamera(26, width / height, 0.1, 50);
+  camera.position.set(0, 0.45, 7.6);
 
-  // Lights
-  scene.add(new THREE.AmbientLight(0xffffff, dark ? 0.55 : 0.7));
-  const key = new THREE.DirectionalLight(0xffffff, dark ? 1.1 : 1.35);
-  key.position.set(3.2, 5.5, 4.2);
+  // Theme-aware lighting — warm daylight vs cool night folio
+  const ambient = new THREE.AmbientLight(
+    dark ? 0xb8c7ff : 0xfff6e8,
+    dark ? 0.58 : 0.82,
+  );
+  scene.add(ambient);
+  const key = new THREE.DirectionalLight(
+    dark ? 0xe8eeff : 0xfffaf0,
+    dark ? 1.15 : 1.45,
+  );
+  key.position.set(3.4, 6.2, 4.6);
   key.castShadow = true;
   key.shadow.mapSize.set(1024, 1024);
   key.shadow.camera.near = 1;
-  key.shadow.camera.far = 20;
-  key.shadow.camera.left = -6;
-  key.shadow.camera.right = 6;
-  key.shadow.camera.top = 6;
-  key.shadow.camera.bottom = -6;
+  key.shadow.camera.far = 24;
+  key.shadow.camera.left = -7;
+  key.shadow.camera.right = 7;
+  key.shadow.camera.top = 7;
+  key.shadow.camera.bottom = -7;
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0x9ec5ff, 0.35);
-  fill.position.set(-4, 2, 2);
+  const fill = new THREE.DirectionalLight(
+    dark ? 0x7eb6ff : 0xffd9a8,
+    dark ? 0.4 : 0.48,
+  );
+  fill.position.set(-4.2, 2.2, 2.4);
   scene.add(fill);
 
   // Ground shadow catcher
-  const shadowMat = new THREE.ShadowMaterial({ opacity: dark ? 0.55 : 0.4 });
-  const ground = new THREE.Mesh(new THREE.CircleGeometry(4.6, 64), shadowMat);
+  const shadowMat = new THREE.ShadowMaterial({ opacity: dark ? 0.58 : 0.32 });
+  const ground = new THREE.Mesh(new THREE.CircleGeometry(5.4, 64), shadowMat);
   ground.rotation.x = -Math.PI / 2;
   ground.position.y = -PAGE_H / 2 - 0.03;
   ground.receiveShadow = true;
@@ -94,7 +105,7 @@ export async function createSkillBook3D(
   const edgeMap = canvasTexture(createPageEdgeCanvas(dark));
   edgeMap.wrapS = edgeMap.wrapT = THREE.ClampToEdgeWrapping;
 
-  const boardColor = dark ? 0x071640 : 0x0c2e8a;
+  const boardColor = dark ? 0x071640 : 0x0a39b4;
 
   // —— Back cover (fixed)
   const backCover = makeBoard(PAGE_W, PAGE_H, COVER_T, boardColor);
@@ -250,25 +261,25 @@ export async function createSkillBook3D(
 
   // Closed pose — three-quarter table view like the hardcover reference
   const closed = {
-    bookRX: THREE.MathUtils.degToRad(24),
-    bookRY: THREE.MathUtils.degToRad(-36),
+    bookRX: THREE.MathUtils.degToRad(22),
+    bookRY: THREE.MathUtils.degToRad(-34),
     bookRZ: THREE.MathUtils.degToRad(-5),
-    bookY: -0.08,
-    coverY: THREE.MathUtils.degToRad(-13), // slightly ajar
-    camZ: 7.0,
-    camY: 1.05,
+    bookY: -0.1,
+    coverY: THREE.MathUtils.degToRad(-13),
+    camZ: 7.4,
+    camY: 1.15,
     scale: 1,
   };
-  // Open reading pose — fill the frame so page content is readable
+  // Open reading pose — large in-frame so page text is easy to read
   const open = {
-    bookRX: THREE.MathUtils.degToRad(4),
+    bookRX: THREE.MathUtils.degToRad(3),
     bookRY: 0,
     bookRZ: 0,
-    bookY: 0.05,
+    bookY: 0.06,
     coverY: THREE.MathUtils.degToRad(-175),
-    camZ: 5.15,
-    camY: 0.08,
-    scale: 1.08,
+    camZ: 4.55,
+    camY: 0.05,
+    scale: 1.22,
   };
 
   const n = leaves.length;
