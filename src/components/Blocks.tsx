@@ -213,7 +213,7 @@ export function ServiceCard({
     return (
         <article
             id={service.slug}
-            className="group card relative scroll-mt-28 overflow-hidden p-6 sm:p-7 transition-[border-color,box-shadow,transform] duration-500 hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--brand-500)_45%,transparent)] hover:shadow-[0_18px_44px_-22px_rgb(var(--c-glow-a)/0.55)]"
+            className="group card relative scroll-mt-28 overflow-hidden p-6 sm:p-7 transition duration-500 hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--brand-500)_45%,transparent)] hover:shadow-[0_18px_44px_-22px_rgb(var(--c-glow-a)/0.55)]"
         >
             <div
                 aria-hidden="true"
@@ -292,7 +292,7 @@ export function ProjectCard({ project }: { project: Project }) {
     );
 
     return (
-        <article className="card group relative flex flex-col overflow-hidden p-6 sm:p-7 transition-[border-color,box-shadow,transform] duration-500 hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--brand-500)_45%,transparent)] hover:shadow-[0_18px_44px_-22px_rgb(var(--c-glow-a)/0.55)]">
+        <article className="card group relative flex flex-col overflow-hidden p-6 sm:p-7 transition duration-500 hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--brand-500)_45%,transparent)] hover:shadow-[0_18px_44px_-22px_rgb(var(--c-glow-a)/0.55)]">
             <div
                 aria-hidden="true"
                 className={`pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b opacity-0 transition-opacity duration-500 group-hover:opacity-100 ${

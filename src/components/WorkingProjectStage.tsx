@@ -7,9 +7,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { WorkingProject } from "@/lib/working-projects";
 import { scrollToY } from "@/lib/lenis";
 import {
-  clearFieldAtmosphere,
-  projectAccent,
-  setFieldAtmosphere,
+    clearFieldAtmosphere,
+    projectAccent,
+    setFieldAtmosphere,
 } from "@/lib/field-atmosphere";
 import { ArrowUpRightIcon, GithubIcon } from "./Icons";
 import ProjectPagePreview from "./ProjectPagePreview";
@@ -312,14 +312,14 @@ export default function WorkingProjectStage({
             requestAnimationFrame(() => fanScatter(0));
         }, section);
 
-    return () => {
-      // Restore pin DOM before React unmounts (prevents removeChild errors)
-      clearFieldAtmosphere();
-      pinStRef.current?.kill(true);
-      pinStRef.current = null;
-      ctx.revert();
-    };
-  }, [projects, total]);
+        return () => {
+            // Restore pin DOM before React unmounts (prevents removeChild errors)
+            clearFieldAtmosphere();
+            pinStRef.current?.kill(true);
+            pinStRef.current = null;
+            ctx.revert();
+        };
+    }, [projects, total]);
 
     const selectProject = (index: number) => {
         if (index === active || !projects[index]) return;
@@ -409,7 +409,7 @@ export default function WorkingProjectStage({
                                         type="button"
                                         onClick={() => selectProject(i)}
                                         aria-pressed={on}
-                                        className={`inline-flex border border-red-500 items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-400 ${
+                                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-400 ${
                                             on
                                                 ? "border-[color-mix(in_oklab,var(--brand-500)_50%,transparent)] bg-elev/90 text-brand-ink shadow-[0_10px_28px_-16px_rgb(var(--c-glow-a)/0.7)]"
                                                 : "opacity-55 hover:opacity-90"
@@ -457,7 +457,7 @@ export default function WorkingProjectStage({
                                     data-index={i}
                                     onClick={() => selectProject(i)}
                                     aria-label={`Show ${p.name} preview`}
-                                    className="absolute h-[78%] w-[84%] cursor-pointer overflow-hidden rounded-[22px] border bg-elev/85 text-left shadow-[0_18px_40px_-24px_rgb(0_0_0/0.55)] backdrop-blur-sm transition-[box-shadow] duration-300 will-change-transform hover:shadow-[0_22px_48px_-18px_rgb(var(--c-glow-a)/0.45)]"
+                                    className="absolute h-[78%] w-[84%] cursor-pointer overflow-hidden rounded-[22px] border bg-elev/85 text-left shadow-[0_18px_40px_-24px_rgb(0_0_0/0.55)] backdrop-blur-sm transition-shadow duration-300 will-change-transform hover:shadow-[0_22px_48px_-18px_rgb(var(--c-glow-a)/0.45)]"
                                     style={{ opacity: 0 }}
                                 >
                                     <div className="relative h-36 overflow-hidden border-b sm:h-40">

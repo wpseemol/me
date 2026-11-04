@@ -146,7 +146,7 @@ export default function Nav() {
 
             <header
                 ref={headerRef}
-                className={`fixed inset-x-0 top-0 z-50 will-change-transform transition-[background-color,border-color,backdrop-filter] duration-500 ${
+                className={`fixed inset-x-0 top-0 z-50 will-change-transform transition duration-500 ${
                     open || (navVisible && !atTop)
                         ? "border-b bg-ink/85 backdrop-blur-xl supports-backdrop-filter:bg-ink/72"
                         : "border-b border-transparent"

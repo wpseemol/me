@@ -56,7 +56,7 @@ function WorkingProjectCard({
   return (
     <article
       data-scale-card
-      className="group relative flex flex-col overflow-hidden rounded-card border bg-elev/80 backdrop-blur-xs will-change-transform transition-[border-color,box-shadow] duration-500 hover:border-[color-mix(in_oklab,var(--brand-500)_45%,transparent)] hover:shadow-[0_22px_48px_-22px_rgb(var(--c-glow-a)/0.55)]"
+      className="group relative flex flex-col overflow-hidden rounded-card border bg-elev/80 backdrop-blur-xs will-change-transform transition duration-500 hover:border-[color-mix(in_oklab,var(--brand-500)_45%,transparent)] hover:shadow-[0_22px_48px_-22px_rgb(var(--c-glow-a)/0.55)]"
       style={{ transformOrigin: "center center" }}
       data-tilt={tilt}
     >
