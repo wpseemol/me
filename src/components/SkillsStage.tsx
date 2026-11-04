@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import skillsJson from "@/data/skills.json";
-import { SKILL_ACCENT, SKILL_ICON } from "@/components/ui/SkillIcons";
+import { SKILL_ICON } from "@/components/ui/SkillIcons";
 import { SectionHead } from "@/components/Section";
 import ScrambleText from "@/components/ScrambleText";
 import { scrollToY } from "@/lib/lenis";
@@ -14,32 +14,76 @@ gsap.registerPlugin(ScrollTrigger);
 type Skill = (typeof skillsJson.skills)[number];
 
 const SKILLS = skillsJson.skills as Skill[];
-/** Scroll distance per skill — enough to step one-by-one, capped so page stays short. */
 const VH_PER_SKILL = 0.38;
 
 /**
- * Pinned skills stage:
- * - Scroll → skill content changes one by one
- * - Click list / Prev / Next → page scroll jumps to that skill
+ * Pinned skills stage — scroll/click sync + GSAP content swap.
+ * Solid surfaces only (no skill accent fills).
  */
 export default function SkillsStage() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
   const activeRef = useRef(0);
+  const animatingRef = useRef(false);
   const [active, setActive] = useState(0);
+
+  const swapTo = (index: number) => {
+    const i = Math.max(0, Math.min(SKILLS.length - 1, index));
+    if (i === activeRef.current) return;
+    // Lock index immediately so scroll+click don't double-fire
+    activeRef.current = i;
+
+    const card = cardRef.current;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (!card || reduced) {
+      setActive(i);
+      return;
+    }
+
+    gsap.killTweensOf(card);
+    animatingRef.current = true;
+    gsap.to(card, {
+      autoAlpha: 0,
+      y: 14,
+      duration: 0.18,
+      ease: "power2.in",
+      overwrite: "auto",
+      onComplete: () => {
+        setActive(i);
+        requestAnimationFrame(() => {
+          gsap.fromTo(
+            card,
+            { autoAlpha: 0, y: -12 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.32,
+              ease: "power3.out",
+              overwrite: "auto",
+              onComplete: () => {
+                animatingRef.current = false;
+              },
+            },
+          );
+        });
+      },
+    });
+  };
 
   const goToSkill = (index: number) => {
     const st = stRef.current;
     const i = Math.max(0, Math.min(SKILLS.length - 1, index));
-    activeRef.current = i;
-    setActive(i);
+    swapTo(i);
 
     if (!st) return;
     const span = st.end - st.start;
-    // Land in the middle of that skill’s scroll band
     const progress = (i + 0.5) / SKILLS.length;
     scrollToY(st.start + span * progress, { duration: 0.75 });
   };
@@ -74,8 +118,7 @@ export default function SkillsStage() {
             });
           }
           if (idx !== activeRef.current) {
-            activeRef.current = idx;
-            setActive(idx);
+            swapTo(idx);
           }
         },
       });
@@ -87,6 +130,7 @@ export default function SkillsStage() {
       stRef.current = null;
       ctx.revert();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount once
   }, []);
 
   useLayoutEffect(() => {
@@ -97,7 +141,6 @@ export default function SkillsStage() {
   }, [active]);
 
   const skill = SKILLS[active]!;
-  const accent = SKILL_ACCENT[skill.name] ?? "#1b63ff";
   const Icon = SKILL_ICON[skill.name];
 
   return (
@@ -106,7 +149,7 @@ export default function SkillsStage() {
       className="relative"
       aria-labelledby="stack-heading"
     >
-      <div ref={pinRef} className="bg-ink py-10 sm:py-12">
+      <div ref={pinRef} className="bg-surface py-10 sm:py-12">
         <div className="shell">
           <div className="mx-auto max-w-3xl text-center">
             <SectionHead
@@ -137,7 +180,6 @@ export default function SkillsStage() {
               >
                 {SKILLS.map((s, i) => {
                   const on = i === active;
-                  const a = SKILL_ACCENT[s.name] ?? "#1b63ff";
                   return (
                     <li key={s.name}>
                       <button
@@ -149,12 +191,13 @@ export default function SkillsStage() {
                         className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left font-mono text-[12px] transition-colors ${
                           on
                             ? "bg-elev text-body"
-                            : "text-muted hover:bg-elev/50 hover:text-body"
+                            : "text-muted hover:bg-elev hover:text-body"
                         }`}
                       >
                         <span
-                          className="h-1.5 w-1.5 shrink-0 rounded-full"
-                          style={{ background: on ? a : "transparent" }}
+                          className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                            on ? "bg-brand-500" : "bg-transparent"
+                          }`}
                         />
                         <span className="tabular-nums text-muted">
                           {String(i + 1).padStart(2, "0")}
@@ -169,19 +212,12 @@ export default function SkillsStage() {
 
             <div>
               <article
-                key={skill.name}
-                className="rounded-2xl border bg-elev/50 p-5 sm:p-7"
+                ref={cardRef}
+                className="rounded-2xl border bg-elev p-5 sm:p-7"
                 aria-live="polite"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div
-                    className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border sm:h-14 sm:w-14"
-                    style={{
-                      color: accent,
-                      borderColor: `${accent}55`,
-                      background: `${accent}18`,
-                    }}
-                  >
+                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border bg-surface text-body sm:h-14 sm:w-14">
                     {Icon ? (
                       <span className="text-[1.75rem] leading-none sm:text-[2rem]">
                         <Icon />
@@ -213,10 +249,7 @@ export default function SkillsStage() {
                         key={item}
                         className="flex gap-2.5 text-[13px] leading-snug text-muted"
                       >
-                        <span
-                          className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                          style={{ background: accent }}
-                        />
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
                         <span>{item}</span>
                       </li>
                     ))}
@@ -225,12 +258,7 @@ export default function SkillsStage() {
                     {skill.focus.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.08em]"
-                        style={{
-                          color: accent,
-                          borderColor: `${accent}44`,
-                          background: `${accent}12`,
-                        }}
+                        className="rounded-full border bg-surface px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-muted"
                       >
                         {tag}
                       </span>
@@ -245,11 +273,8 @@ export default function SkillsStage() {
                   </div>
                   <div className="h-1.5 overflow-hidden rounded-full bg-surface">
                     <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${skill.level}%`,
-                        background: accent,
-                      }}
+                      className="h-full rounded-full bg-brand-500"
+                      style={{ width: `${skill.level}%` }}
                     />
                   </div>
                 </div>
@@ -278,7 +303,7 @@ export default function SkillsStage() {
               </article>
 
               <div className="mt-5 flex flex-col items-center gap-2">
-                <div className="h-1 w-full max-w-xs overflow-hidden rounded-full bg-surface">
+                <div className="h-1 w-full max-w-xs overflow-hidden rounded-full bg-elev">
                   <div
                     ref={barRef}
                     className="h-full origin-left rounded-full bg-brand-500"
