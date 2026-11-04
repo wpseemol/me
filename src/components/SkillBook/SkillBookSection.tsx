@@ -183,9 +183,9 @@ function DesktopSkillBook() {
       // 3) Turn each leaf — weighted ease, lift + shade mid-flip
       const turnDur = 0.55 / Math.max(1, sheets.length);
       sheets.forEach((sheet, i) => {
-        const label =
-          sheetLabel(FLIP_SHEETS[i]!) ?? `Page ${i + 1}`;
-        const start = `turn${i}`;
+        const label = sheetLabel(FLIP_SHEETS[i]!) ?? `Page ${i + 1}`;
+        const shade = shades[i];
+        const curl = curls[i];
         tl.to(
           sheet,
           {
@@ -197,21 +197,20 @@ function DesktopSkillBook() {
               const p = this.progress();
               const mid = Math.sin(p * Math.PI);
               gsap.set(sheet, { z: mid * 28 });
-              if (shades[i]) gsap.set(shades[i]!, { opacity: mid * 0.45 });
-              if (curls[i]) gsap.set(curls[i]!, { opacity: mid * 0.7 });
-              // Stacking: turned leaves go under subsequent left stack order
+              if (shade) gsap.set(shade, { opacity: mid * 0.45 });
+              if (curl) gsap.set(curl, { opacity: mid * 0.7 });
               sheet.style.zIndex = String(
                 p > 0.5 ? i + 3 : SHEET_COUNT - i + 20,
               );
             },
+            onComplete: () => {
+              gsap.set(sheet, { z: 0 });
+              if (shade) gsap.set(shade, { opacity: 0.08 });
+              if (curl) gsap.set(curl, { opacity: 0.1 });
+            },
           },
           i === 0 ? ">-0.02" : ">-0.01",
         );
-        // settle flat
-        tl.set(sheet, { z: 0 }, ">");
-        tl.set(shades[i] ?? {}, { opacity: 0.08 }, "<");
-        tl.set(curls[i] ?? {}, { opacity: 0.1 }, "<");
-        void start;
       });
 
       // 4) Brief hold open
@@ -223,6 +222,8 @@ function DesktopSkillBook() {
         .reverse()
         .forEach((sheet, rev) => {
           const i = sheets.length - 1 - rev;
+          const shade = shades[i];
+          const curl = curls[i];
           tl.to(
             sheet,
             {
@@ -236,11 +237,13 @@ function DesktopSkillBook() {
                 gsap.set(sheet, { z: mid * 16 });
                 sheet.style.zIndex = String(SHEET_COUNT - i + 20);
               },
+              onComplete: () => {
+                if (shade) gsap.set(shade, { opacity: 0 });
+                if (curl) gsap.set(curl, { opacity: 0 });
+              },
             },
             rev === 0 ? ">" : "<0.02",
           );
-          tl.set(shades[i] ?? {}, { opacity: 0 }, ">");
-          tl.set(curls[i] ?? {}, { opacity: 0 }, "<");
         });
 
       // 6) Cover swings shut (skip upright linger via ease), book settles closed
@@ -350,9 +353,9 @@ function DesktopSkillBook() {
               className="hardcover-pages absolute top-[4%] right-0 bottom-[4%] z-30 w-[4.5%] rounded-r-sm"
             />
 
-            {/* Open 2-page spread */}
+            {/* Open 2-page spread — overflow visible so flips aren’t clipped */}
             <div
-              className="absolute inset-0 overflow-hidden rounded-2xl"
+              className="absolute inset-0 rounded-2xl"
               style={{ transformStyle: "preserve-3d" }}
             >
               {/* Left endpaper */}

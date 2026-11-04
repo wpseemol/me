@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ThemeToggle from "./ThemeToggle";
 import Logo from "./Logo";
 import Magnetic from "./Magnetic";
@@ -20,30 +21,59 @@ const LINKS = [
 export default function Nav() {
     const pathname = usePathname();
     const [atTop, setAtTop] = useState(true);
+    const [navVisible, setNavVisible] = useState(true);
     const [open, setOpen] = useState(false);
     const barRef = useRef<HTMLDivElement>(null);
     const atTopRef = useRef(true);
+    const visibleRef = useRef(true);
+    const lastYRef = useRef(0);
 
     useEffect(() => {
         // Progress bar is written straight to the DOM instead of through React
         // state — re-rendering the whole header on every scroll frame is the
         // single most common cause of a janky sticky nav.
-        // Header only shows at the page top; it slides away once you leave.
+        // Show at top + while scrolling up (return to top). Hide on scroll down.
+        // Also hook ScrollTrigger so Lenis-driven scrolls still update the header.
+        gsap.registerPlugin(ScrollTrigger);
+
+        const readY = () =>
+            window.scrollY || document.documentElement.scrollTop || 0;
+
         const onScroll = () => {
-            const y = window.scrollY;
-            const visible = y <= 12;
-            if (visible !== atTopRef.current) {
-                atTopRef.current = visible;
-                setAtTop(visible);
+            const y = readY();
+            const top = y <= 24;
+            const dy = y - lastYRef.current;
+            lastYRef.current = y;
+
+            if (top !== atTopRef.current) {
+                atTopRef.current = top;
+                setAtTop(top);
             }
+
+            let nextVisible = visibleRef.current;
+            if (top) nextVisible = true;
+            else if (dy < -4) nextVisible = true; // scrolling toward top
+            else if (dy > 4) nextVisible = false; // scrolling down
+
+            if (nextVisible !== visibleRef.current) {
+                visibleRef.current = nextVisible;
+                setNavVisible(nextVisible);
+            }
+
             const max =
                 document.documentElement.scrollHeight - window.innerHeight;
             const p = max > 0 ? Math.min(y / max, 1) : 0;
             if (barRef.current) barRef.current.style.transform = `scaleX(${p})`;
         };
+
+        lastYRef.current = readY();
         onScroll();
         window.addEventListener("scroll", onScroll, { passive: true });
-        return () => window.removeEventListener("scroll", onScroll);
+        ScrollTrigger.addEventListener("scroll", onScroll);
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            ScrollTrigger.removeEventListener("scroll", onScroll);
+        };
     }, []);
 
     useEffect(() => setOpen(false), [pathname]);
@@ -100,9 +130,9 @@ export default function Nav() {
 
             <header
                 className={`fixed inset-x-0 top-0 z-50 transition-[transform,background-color,border-color,backdrop-filter] duration-500 ${
-                    open || atTop ? "translate-y-0" : "-translate-y-full"
+                    open || navVisible ? "translate-y-0" : "-translate-y-full"
                 } ${
-                    open
+                    open || (navVisible && !atTop)
                         ? "border-b bg-ink/85 backdrop-blur-xl supports-backdrop-filter:bg-ink/72"
                         : "border-b border-transparent"
                 }`}
