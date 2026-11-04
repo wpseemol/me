@@ -374,6 +374,49 @@
   padding-bottom: 0.12em;
 }
 
+/* ---- Skill book pages (light paper / dark paper) ---------------------- */
+:root {
+  --book-page: #f7f1e8;
+  --book-page-2: #fbf7f0;
+  --book-page-back: #efe8dc;
+  --book-ink: #1a1a1a;
+  --book-body: rgb(26 26 26 / 0.58);
+  --book-muted: rgb(26 26 26 / 0.4);
+  --book-track: rgb(0 0 0 / 0.1);
+  --book-edge-a: #f3eee4;
+  --book-edge-b: #e4dccf;
+}
+.dark {
+  --book-page: #141a28;
+  --book-page-2: #182033;
+  --book-page-back: #0f1522;
+  --book-ink: #f2f5ff;
+  --book-body: rgb(242 245 255 / 0.62);
+  --book-muted: rgb(242 245 255 / 0.42);
+  --book-track: rgb(255 255 255 / 0.12);
+  --book-edge-a: #2a3348;
+  --book-edge-b: #1c2436;
+}
+.book-page {
+  background: linear-gradient(105deg, var(--book-page-2) 0%, var(--book-page) 100%);
+  color: var(--book-ink);
+}
+.book-page-back {
+  background: linear-gradient(270deg, var(--book-page-back) 0%, var(--book-page) 100%);
+}
+.book-ink {
+  color: var(--book-ink);
+}
+.book-body {
+  color: var(--book-body);
+}
+.book-muted {
+  color: var(--book-muted);
+}
+.book-track {
+  background: var(--book-track);
+}
+
 /* ---- Theme switch: sunrise / sunset wipe (View Transitions API) -------- */
 ::view-transition-old(root),
 ::view-transition-new(root) {

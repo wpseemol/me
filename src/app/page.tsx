@@ -62,31 +62,32 @@ export default function HomePage() {
             {/* --------------------------------------------- recent / live work */}
             {working.length > 0 ? (
                 <section
-                    className="shell py-24 sm:py-28"
+                    className="py-6 sm:py-8"
                     aria-labelledby="working-heading"
                 >
-                    <Reveal>
-                        <SectionHead
-                            path="/projects"
-                            title={
-                                <span id="working-heading">
-                                    <ScrambleText
-                                        text="Recent"
-                                        duration={500}
-                                    />{" "}
-                                    <span className="grad-text">
+                    <div className="shell pb-2 text-center">
+                        <Reveal>
+                            <SectionHead
+                                align="center"
+                                path="/projects"
+                                title={
+                                    <span id="working-heading">
                                         <ScrambleText
-                                            text="working projects"
-                                            duration={600}
-                                        />
+                                            text="Recent"
+                                            duration={500}
+                                        />{" "}
+                                        <span className="grad-text">
+                                            <ScrambleText
+                                                text="working projects"
+                                                duration={600}
+                                            />
+                                        </span>
                                     </span>
-                                </span>
-                            }
-                            lede="Live products I'm shipping now — open the site or jump into the GitHub repo."
-                        />
-                    </Reveal>
-
-                    <WorkingProjects projects={working} />
+                                }
+                            />
+                        </Reveal>
+                    </div>
+                    <WorkingProjectStage projects={working} />
                 </section>
             ) : null}
 
@@ -137,13 +138,11 @@ export default function HomePage() {
             </section>
 
             {/* ---------------------------------------------------------- stack */}
-            <section
-                className="py-8 sm:py-12"
-                aria-labelledby="stack-heading"
-            >
-                <div className="shell pb-6">
+            <section className="py-6 sm:py-8" aria-labelledby="stack-heading">
+                <div className="shell pb-2 text-center">
                     <Reveal>
                         <SectionHead
+                            align="center"
                             path="/stack"
                             title={
                                 <span id="stack-heading">
@@ -159,11 +158,10 @@ export default function HomePage() {
                                     </span>
                                 </span>
                             }
-                            lede="Scroll the stage — skills step in order: HTML → CSS → Tailwind → frameworks → Docker."
                         />
                     </Reveal>
                 </div>
-                <SkillFlipStage />
+                <SkillBook />
             </section>
 
             {/* ------------------------------------------------------- projects */}
