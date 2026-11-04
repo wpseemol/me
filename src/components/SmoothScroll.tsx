@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { setLenis } from '@/lib/lenis';
 
 /**
  * Smooth scrolling, driven off the GSAP ticker rather than its own rAF loop.
@@ -34,6 +35,7 @@ export default function SmoothScroll() {
     });
 
     lenis.on('scroll', ScrollTrigger.update);
+    setLenis(lenis);
 
     const tick = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
@@ -56,6 +58,7 @@ export default function SmoothScroll() {
     return () => {
       document.removeEventListener('click', onClick);
       gsap.ticker.remove(tick);
+      setLenis(null);
       lenis.destroy();
     };
   }, []);

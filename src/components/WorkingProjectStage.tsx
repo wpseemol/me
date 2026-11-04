@@ -190,9 +190,11 @@ export default function WorkingProjectStage({
       const pin = ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        end: () => `+=${Math.max(total, 2) * window.innerHeight * 0.85}`,
+        // Keep the stage interactive without a huge empty pin spacer
+        end: () => `+=${Math.max(total, 2) * window.innerHeight * 0.42}`,
         pin: true,
-        scrub: 0.7,
+        pinType: "transform",
+        scrub: 0.55,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {

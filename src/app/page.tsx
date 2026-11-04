@@ -26,7 +26,7 @@ import {
     TechMarquee,
 } from "@/components/Blocks";
 import WorkingProjectStage from "@/components/WorkingProjectStage";
-import SkillBook from "@/components/SkillBook";
+import SkillsStage from "@/components/SkillsStage";
 import { ArrowIcon } from "@/components/Icons";
 import ScrambleText from "@/components/ScrambleText";
 
@@ -138,31 +138,7 @@ export default function HomePage() {
             </section>
 
             {/* ---------------------------------------------------------- stack */}
-            <section className="py-6 sm:py-8" aria-labelledby="stack-heading">
-                <div className="shell pb-2 text-center">
-                    <Reveal>
-                        <SectionHead
-                            align="center"
-                            path="/stack"
-                            title={
-                                <span id="stack-heading">
-                                    <ScrambleText
-                                        text="The tools I reach for"
-                                        duration={500}
-                                    />{" "}
-                                    <span className="grad-text">
-                                        <ScrambleText
-                                            text="daily"
-                                            duration={600}
-                                        />
-                                    </span>
-                                </span>
-                            }
-                        />
-                    </Reveal>
-                </div>
-                <SkillBook />
-            </section>
+            <SkillsStage />
 
             {/* ------------------------------------------------------- projects */}
             <section
