@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { setLenis } from '@/lib/lenis';
+import { getLenis, setLenis } from '@/lib/lenis';
 
 /**
  * Smooth scrolling, driven off the GSAP ticker rather than its own rAF loop.
@@ -67,10 +67,16 @@ export default function SmoothScroll() {
     };
   }, []);
 
-  // App Router keeps the scroll container alive across routes, so both Lenis
-  // and every ScrollTrigger need to be told the page underneath them changed.
+  // App Router keeps Lenis alive across routes — reset scroll + refresh pins
+  // after the leaving page has killed its ScrollTriggers.
   useEffect(() => {
-    ScrollTrigger.refresh();
+    const id = window.setTimeout(() => {
+      const lenis = getLenis();
+      lenis?.scrollTo(0, { immediate: true, force: true });
+      if (!lenis) window.scrollTo(0, 0);
+      ScrollTrigger.refresh();
+    }, 0);
+    return () => window.clearTimeout(id);
   }, [pathname]);
 
   return null;

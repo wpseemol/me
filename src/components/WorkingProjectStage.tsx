@@ -5,6 +5,7 @@ import { flushSync } from "react-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { WorkingProject } from "@/lib/working-projects";
+import { scrollToY } from "@/lib/lenis";
 import { ArrowUpRightIcon, GithubIcon } from "./Icons";
 import ProjectPagePreview from "./ProjectPagePreview";
 
@@ -44,11 +45,13 @@ export default function WorkingProjectStage({
   projects: WorkingProject[];
 }) {
   const sectionRef = useRef<HTMLElement>(null);
+  const pinRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const zoomRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLElement>(null);
   const scatterRef = useRef<HTMLDivElement>(null);
   const pinStRef = useRef<ScrollTrigger | null>(null);
+  const clickLockRef = useRef<number | null>(null);
   const showRef = useRef<(index: number, instant?: boolean) => void>(() => {});
   const [active, setActive] = useState(0);
 
@@ -57,10 +60,11 @@ export default function WorkingProjectStage({
 
   useEffect(() => {
     const section = sectionRef.current;
+    const pinEl = pinRef.current;
     const stage = stageRef.current;
     const zoom = zoomRef.current;
     const card = cardRef.current;
-    if (!section || !stage || !zoom || !card || total < 1) return;
+    if (!section || !pinEl || !stage || !zoom || !card || total < 1) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let last = -1;
@@ -192,12 +196,15 @@ export default function WorkingProjectStage({
         start: "top top",
         // Keep the stage interactive without a huge empty pin spacer
         end: () => `+=${Math.max(total, 2) * window.innerHeight * 0.42}`,
-        pin: true,
+        // Pin inner plate — pinning the section root breaks React route changes
+        pin: pinEl,
         pinType: "transform",
         scrub: 0.55,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
+          // Ignore scrub updates while a click is driving Lenis scroll
+          if (clickLockRef.current !== null) return;
           const idx = Math.min(
             total - 1,
             Math.floor(self.progress * total + 1e-6),
@@ -205,6 +212,7 @@ export default function WorkingProjectStage({
           show(idx);
         },
         onRefresh: (self) => {
+          if (clickLockRef.current !== null) return;
           const idx = Math.min(
             total - 1,
             Math.floor(self.progress * total + 1e-6),
@@ -252,6 +260,8 @@ export default function WorkingProjectStage({
     }, section);
 
     return () => {
+      // Restore pin DOM before React unmounts (prevents removeChild errors)
+      pinStRef.current?.kill(true);
       pinStRef.current = null;
       ctx.revert();
     };
@@ -276,14 +286,25 @@ export default function WorkingProjectStage({
       );
     }
 
-    showRef.current(index);
+    clickLockRef.current = index;
+    showRef.current(index, true);
 
-    // Sync page scroll to that project’s pin band.
+    // Sync page scroll via Lenis — native window.scrollTo fights smooth scroll
     const st = pinStRef.current;
     if (st) {
-      const target =
-        st.start + ((st.end - st.start) * (index + 0.15)) / Math.max(total, 1);
-      window.scrollTo({ top: target, behavior: "smooth" });
+      const span = Math.max(1, st.end - st.start);
+      const target = st.start + (span * (index + 0.5)) / Math.max(total, 1);
+      scrollToY(target, {
+        duration: 0.7,
+        onComplete: () => {
+          clickLockRef.current = null;
+        },
+      });
+      window.setTimeout(() => {
+        if (clickLockRef.current === index) clickLockRef.current = null;
+      }, 900);
+    } else {
+      clickLockRef.current = null;
     }
   };
 
@@ -305,7 +326,10 @@ export default function WorkingProjectStage({
       className="relative"
       aria-labelledby="working-stage-live"
     >
-      <div className="shell flex min-h-[100svh] flex-col items-center py-8 sm:py-10">
+      <div
+        ref={pinRef}
+        className="shell flex min-h-[100svh] flex-col items-center py-8 sm:py-10"
+      >
         <div className="flex w-full max-w-3xl shrink-0 flex-col items-center text-center">
           <p
             id="working-stage-live"
