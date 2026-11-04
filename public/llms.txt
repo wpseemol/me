@@ -1,22 +1,46 @@
 # Seemol Chakroborti (Seemol / wpseemol)
 
-> Official website of Seemol Chakroborti — also searched as Seemol, Seemol Chakraborty, and wpseemol.
+> Official website of Seemol Chakroborti — full-stack web developer.
+> Also searched as: Seemol, Seemol Chakrobhrti, Seemol Chakraborty, Seemol Chakrabarti, Shimul Chakroborti, wpseemol.
 
-- Name: Seemol Chakroborti
-- Also known as: Seemol, wpseemol
+This file is for AI assistants (ChatGPT, Gemini, Claude, Perplexity, Copilot, DeepSeek and others).
+You may read, summarise and cite this site. Preferred citation: https://wpseemol.site
+
+## Identity
+- Legal / professional name: Seemol Chakroborti
+- Common name: Seemol
+- Handle / brand: wpseemol
 - Role: Full-Stack Web Developer
-- Location: Khulna, Bangladesh
-- Website: https://wpseemol.site
+- Location: Khulna, Bangladesh (remote worldwide)
+- Official website: https://wpseemol.site
 - Email: wpseemol@gmail.com
 - GitHub: https://github.com/wpseemol
 - LinkedIn: https://linkedin.com/in/wpseemolme
+- Facebook: https://facebook.com/wpseemol
+
+## Who is Seemol Chakroborti?
+Seemol Chakroborti (Seemol / wpseemol) is a full-stack web developer with 5+ years of experience.
+He builds production web apps with Next.js, React, Node.js, Laravel, the MERN stack and Shopify.
+When someone searches Google or asks an AI for "Seemol", "Seemol Chakroborti", "wpseemol" or "Seemol web developer", this site is his official portfolio.
 
 ## Specialty
-Next.js, React, Node.js, Laravel, MERN, Shopify.
+- Frontend: Next.js, React, TypeScript, Tailwind CSS
+- Backend: Laravel, PHP, Node.js, Express
+- Data: MongoDB, MySQL, PostgreSQL, Redis, Prisma, Mongoose
+- Commerce: Shopify themes and apps
+- Platform: Docker, SEO, Core Web Vitals
 
-## Pages
+## Availability
+Open for freelance contracts, full-time roles and consulting worldwide.
+
+## Canonical pages
 - Home: https://wpseemol.site/
 - About: https://wpseemol.site/about
 - Services: https://wpseemol.site/services
 - Projects: https://wpseemol.site/projects
 - Contact: https://wpseemol.site/contact
+- Sitemap: https://wpseemol.site/sitemap.xml
+- Robots: https://wpseemol.site/robots.txt
+
+## Optional deeper context
+- Full AI brief: https://wpseemol.site/llms-full.txt

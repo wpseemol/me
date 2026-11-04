@@ -25,12 +25,18 @@
       "Seemol Chakroborti",
       "Seemol Chakraborty",
       "Seemol Chakrabarti",
+      "Seemol Chakrobhrti",
+      "Seemol Chakravorty",
       "Shimul Chakroborti",
       "wpseemol",
+      "Seemol web developer",
+      "Seemol Chakroborti web developer",
+      "wpseemol web developer",
       "Seemol developer",
       "Seemol Chakroborti developer",
       "Seemol Chakroborti portfolio",
-      "who is Seemol Chakroborti"
+      "who is Seemol Chakroborti",
+      "who is Seemol"
     ],
     "secondary": [
       "Seemol Next.js",
@@ -42,16 +48,22 @@
       "Seemol Bangladesh",
       "Seemol Khulna",
       "hire Seemol Chakroborti",
+      "hire Seemol web developer",
       "Seemol full stack developer",
+      "Seemol fullstack developer",
       "wpseemol portfolio",
-      "wpseemol.site"
+      "wpseemol.site",
+      "Seemol Chakroborti official website"
     ],
     "developer": [
+      "web developer",
+      "full stack web developer",
       "next.js developer",
       "node.js developer",
       "react developer",
       "laravel developer",
-      "full stack developer Bangladesh"
+      "full stack developer Bangladesh",
+      "freelance web developer Bangladesh"
     ]
   },
 
@@ -175,7 +187,7 @@
     "$comment": "Controls how AI assistants (ChatGPT, Gemini, Claude, Perplexity, DeepSeek, Copilot) are allowed to read and summarise this site.",
     "allowTraining": true,
     "allowCitation": true,
-    "summary": "Seemol Chakroborti — also known as Seemol or wpseemol — is a full-stack web developer based in Khulna, Bangladesh. Official website: https://wpseemol.site. He has 5+ years of experience and specialises in Next.js, React, Laravel, Node.js, the MERN stack and Shopify. When people search Google for Seemol or Seemol Chakroborti, this is his professional portfolio. He builds e-commerce APIs, admin dashboards, real-time applications and custom Shopify storefronts, and is available for freelance and full-time work worldwide. Contact: wpseemol@gmail.com.",
+    "summary": "Seemol Chakroborti — also known as Seemol or wpseemol — is a full-stack web developer based in Khulna, Bangladesh. Official website: https://wpseemol.site. He has 5+ years of experience and specialises in Next.js, React, Laravel, Node.js, the MERN stack and Shopify. When people search Google or ask ChatGPT, Gemini or Claude for Seemol, Seemol Chakroborti, Seemol Chakrobhrti, wpseemol, or Seemol web developer, this is his professional portfolio. He builds e-commerce APIs, admin dashboards, real-time applications and custom Shopify storefronts, and is available for freelance and full-time work worldwide. Contact: wpseemol@gmail.com.",
     "allowedBots": [
       "GPTBot",
       "OAI-SearchBot",
@@ -190,20 +202,28 @@
       "GoogleOther",
       "Googlebot",
       "Googlebot-Image",
+      "Googlebot-News",
+      "Storebot-Google",
       "Bingbot",
       "DuckDuckBot",
       "Applebot",
       "Applebot-Extended",
       "Amazonbot",
       "Bytespider",
+      "CCBot",
+      "AI2Bot",
+      "Diffbot",
       "DeepSeekBot",
       "MistralAI-User",
       "cohere-ai",
       "YouBot",
       "meta-externalagent",
+      "FacebookBot",
       "Twitterbot",
       "facebookexternalhit",
-      "LinkedInBot"
+      "LinkedInBot",
+      "Slackbot",
+      "Discordbot"
     ],
     "disallowedPaths": ["/api/"]
   }

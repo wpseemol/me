@@ -110,6 +110,9 @@ export const metadata: Metadata = {
   },
   other: {
     'ai-content-declaration': 'human-authored',
+    // Helps AI crawlers discover the machine-readable brief
+    'llms': abs('/llms.txt'),
+    'llms-full': abs('/llms-full.txt'),
   },
 };
 
@@ -145,12 +148,26 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
         />
         <link rel="me" href="https://github.com/wpseemol" />
+        <link rel="me" href="https://linkedin.com/in/wpseemolme" />
         <link rel="author" href={asset('/about')} />
         <link
           rel="sitemap"
           type="application/xml"
           title="Sitemap"
           href={asset('/sitemap.xml')}
+        />
+        {/* AI assistants (ChatGPT / Gemini / Claude / Perplexity) */}
+        <link
+          rel="alternate"
+          type="text/plain"
+          title="LLMs.txt"
+          href={asset('/llms.txt')}
+        />
+        <link
+          rel="alternate"
+          type="text/plain"
+          title="LLMs full brief"
+          href={asset('/llms-full.txt')}
         />
         <script
           type="application/ld+json"
