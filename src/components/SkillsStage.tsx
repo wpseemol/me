@@ -5,10 +5,14 @@ import { flushSync } from "react-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import skillsJson from "@/data/skills.json";
-import { SKILL_ICON } from "@/components/ui/SkillIcons";
+import { SKILL_ACCENT, SKILL_ICON } from "@/components/ui/SkillIcons";
 import { SectionHead } from "@/components/Section";
 import ScrambleText from "@/components/ScrambleText";
 import { scrollToY } from "@/lib/lenis";
+import {
+  clearFieldAtmosphere,
+  setFieldAtmosphere,
+} from "@/lib/field-atmosphere";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -19,13 +23,14 @@ type Skill = (typeof skillsJson.skills)[number];
 const SKILLS = skillsJson.skills as Skill[];
 
 /**
- * Skills stage — same scroll/pin pattern as WorkingProjectStage.
- * Pin an INNER plate (never the React section root) so route changes stay safe.
+ * Skills stage — same scroll/pin + professional out→swap→in content
+ * animation as WorkingProjectStage.
  */
 export default function SkillsStage() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const levelFillRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const pinStRef = useRef<ScrollTrigger | null>(null);
@@ -45,36 +50,92 @@ export default function SkillsStage() {
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let last = -1;
+    let tl: gsap.core.Timeline | null = null;
+
+    const fillLevel = (level: number, instant = false) => {
+      const el = levelFillRef.current;
+      if (!el) return;
+      gsap.killTweensOf(el);
+      if (instant || reduced) {
+        gsap.set(el, { scaleX: level / 100, transformOrigin: "left center" });
+        return;
+      }
+      gsap.fromTo(
+        el,
+        { scaleX: 0 },
+        {
+          scaleX: level / 100,
+          duration: 0.55,
+          ease: "power3.out",
+          transformOrigin: "left center",
+          overwrite: true,
+        },
+      );
+    };
+
+    const syncField = (index: number, progress: number, pulse: boolean) => {
+      const name = SKILLS[index]?.name ?? "";
+      setFieldAtmosphere({
+        accent: SKILL_ACCENT[name] ?? "#1b63ff",
+        progress,
+        intensity: 1,
+        ...(pulse ? { pulse: performance.now() } : {}),
+      });
+    };
 
     const show = (index: number, instant = false) => {
       if (index === last && !instant) return;
-      if (!SKILLS[index]) return;
+      const next = SKILLS[index];
+      if (!next) return;
       const dir = index >= last ? 1 : -1;
+      const progress = (index + 0.5) / Math.max(total, 1);
+
+      tl?.kill();
+      syncField(index, progress, true);
 
       if (instant || reduced) {
-        gsap.set(panel, { y: 0, opacity: 1, visibility: "visible" });
+        gsap.set(panel, { y: 0, x: 0, opacity: 1 });
         setActive(index);
+        fillLevel(next.level, true);
         last = index;
         return;
       }
 
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      // Same professional out → swap → in as WorkingProjectStage
+      tl = gsap.timeline({ defaults: { ease: "power3.out" } });
       tl.to(panel, {
         y: dir * -10,
-        opacity: 0.35,
-        duration: 0.18,
+        opacity: 0,
+        x: 0,
+        duration: 0.24,
         ease: "power2.in",
+        overwrite: "auto",
       })
         .add(() => {
           flushSync(() => setActive(index));
-          gsap.set(panel, { y: dir * 14, opacity: 0.35 });
+          gsap.set(panel, { y: dir * 20, x: 0, opacity: 0 });
+          gsap.set(levelFillRef.current, {
+            scaleX: 0,
+            transformOrigin: "left center",
+          });
         })
         .to(panel, {
           y: 0,
+          x: 0,
           opacity: 1,
-          duration: 0.32,
+          duration: 0.48,
           ease: "power3.out",
-        });
+        })
+        .to(
+          levelFillRef.current,
+          {
+            scaleX: next.level / 100,
+            duration: 0.55,
+            ease: "power3.out",
+            transformOrigin: "left center",
+          },
+          "-=0.28",
+        );
 
       last = index;
     };
@@ -96,18 +157,25 @@ export default function SkillsStage() {
         scrub: 0.55,
         anticipatePin: 1,
         invalidateOnRefresh: true,
+        onToggle: (self) => {
+          if (!self.isActive) clearFieldAtmosphere();
+        },
         onUpdate: (self) => {
           if (barRef.current) {
             gsap.set(barRef.current, {
               scaleX: 0.06 + self.progress * 0.94,
             });
           }
-          if (clickLockRef.current) return;
+          if (clickLockRef.current) {
+            setFieldAtmosphere({ progress: self.progress, intensity: 1 });
+            return;
+          }
           const idx = Math.min(
             total - 1,
             Math.floor(self.progress * total + 1e-6),
           );
           show(idx);
+          setFieldAtmosphere({ progress: self.progress, intensity: 1 });
         },
         onRefresh: (self) => {
           if (barRef.current) {
@@ -128,11 +196,9 @@ export default function SkillsStage() {
       show(0, true);
     }, section);
 
-    // Match WorkingProjectStage: refresh after Lenis / layout settle
     const t1 = window.setTimeout(() => ScrollTrigger.refresh(), 60);
     const t2 = window.setTimeout(() => ScrollTrigger.refresh(), 280);
 
-    // Manual scroll must always win over a stuck click-lock
     const unlock = () => {
       clickLockRef.current = false;
     };
@@ -145,6 +211,8 @@ export default function SkillsStage() {
       window.removeEventListener("wheel", unlock);
       window.removeEventListener("touchmove", unlock);
       clickLockRef.current = false;
+      tl?.kill();
+      clearFieldAtmosphere();
       pinStRef.current?.kill(true);
       pinStRef.current = null;
       ctx.revert();
@@ -316,8 +384,9 @@ export default function SkillsStage() {
                     </div>
                     <div className="h-1.5 overflow-hidden rounded-full bg-surface">
                       <div
-                        className="h-full rounded-full bg-brand-500"
-                        style={{ width: `${skill.level}%` }}
+                        ref={levelFillRef}
+                        className="h-full origin-left rounded-full bg-brand-500"
+                        style={{ width: "100%", transform: "scaleX(0)" }}
                       />
                     </div>
                   </div>

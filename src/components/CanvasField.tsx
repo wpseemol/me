@@ -2,39 +2,62 @@
 
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import {
+  subscribeFieldAtmosphere,
+  type FieldAtmosphere,
+} from '@/lib/field-atmosphere';
 
 /**
  * Ambient canvas: a field of code glyphs the cursor pushes away and, while the
  * pointer is held down, pulls back in.
  *
- * Two decisions worth knowing about:
- *
- * 1. Glyphs are pre-rendered once into a small sprite atlas and blitted with
- *    drawImage. Calling fillText ~900 times a frame is what makes canvas text
- *    fields drop frames; blitting cached bitmaps does not.
- * 2. The loop runs on gsap.ticker rather than its own requestAnimationFrame, so
- *    the field, the scroll reveals and Lenis all advance on the same tick and
- *    can never tear against each other.
+ * Pinned stages (skills / projects) publish FieldAtmosphere so glow + particle
+ * tints shift with each scroll content change — readable scroll feedback.
  */
 
 const GLYPHS = ['>', '_', '/', '{', '}', ';', '·', '<', '$'];
-const SPRITE = 44; // atlas cell size in CSS px before DPR scaling
+const SPRITE = 44;
 
 type Particle = {
-  hx: number; // home x
-  hy: number; // home y
+  hx: number;
+  hy: number;
   x: number;
   y: number;
   vx: number;
   vy: number;
-  g: number; // glyph index
-  tint: number; // atlas tint row
+  g: number;
+  tint: number;
   scale: number;
-  depth: number; // 0.35 – 1, drives parallax and how hard it reacts
+  depth: number;
 };
+
+function mixHex(a: string, b: string, t: number) {
+  const parse = (hex: string) => {
+    const s = hex.replace('#', '').trim();
+    const n =
+      s.length === 3
+        ? s
+            .split('')
+            .map((c) => c + c)
+            .join('')
+        : s.padStart(6, '0').slice(0, 6);
+    return [0, 2, 4].map((i) => parseInt(n.slice(i, i + 2), 16));
+  };
+  try {
+    const A = parse(a);
+    const B = parse(b);
+    const m = A.map((v, i) => Math.round(v + ((B[i] ?? v) - v) * t));
+    return `#${m.map((v) => Math.max(0, Math.min(255, v)).toString(16).padStart(2, '0')).join('')}`;
+  } catch {
+    return a;
+  }
+}
 
 export default function CanvasField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const glowARef = useRef<HTMLDivElement>(null);
+  const glowBRef = useRef<HTMLDivElement>(null);
+  const stageGlowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -49,22 +72,22 @@ export default function CanvasField() {
     let h = 0;
     let particles: Particle[] = [];
 
-    /* ------------------------------------------------------- sprite atlas */
-    // One row per tint, one column per glyph. Rebuilt only on theme change.
     let atlas: HTMLCanvasElement | null = null;
     let tints: string[] = [];
     let isLight = false;
+    let stageAccent = '';
+    let stageIntensity = 0; // smoothed
+    let stageProgress = 0;
+    let lastPulse = 0;
+    const target = { intensity: 0 };
 
-    const readTints = () => {
+    const readBaseTints = () => {
       const s = getComputedStyle(document.documentElement);
       const pick = (name: string, fallback: string) =>
         s.getPropertyValue(name).trim() || fallback;
 
       isLight = !document.documentElement.classList.contains('dark');
 
-      // On a pale background the light tints vanish and the mid tints turn
-      // into speckle, so the light theme gets the darker half of the ramp and
-      // roughly half the opacity. Same field, half the shouting.
       return isLight
         ? [
             pick('--brand-500', '#1b63ff'),
@@ -78,8 +101,18 @@ export default function CanvasField() {
           ];
     };
 
-    const buildAtlas = () => {
-      tints = readTints();
+    const buildAtlas = (accent?: string) => {
+      const base = readBaseTints();
+      if (accent) {
+        tints = [
+          accent,
+          mixHex(accent, '#ffffff', isLight ? 0.15 : 0.35),
+          mixHex(accent, base[2]!, 0.45),
+        ];
+      } else {
+        tints = base;
+      }
+
       const a = document.createElement('canvas');
       a.width = SPRITE * GLYPHS.length * dpr;
       a.height = SPRITE * tints.length * dpr;
@@ -101,21 +134,16 @@ export default function CanvasField() {
       atlas = a;
     };
 
-    /* ------------------------------------------------------------- layout */
     const seed = () => {
-      // Density scales with area but is capped, so a 4K monitor doesn't get
-      // three times the work of a laptop for the same visual result.
-      const target = Math.min(Math.round((w * h) / 14000), 900);
-      const cols = Math.ceil(Math.sqrt((target * w) / h));
-      const rows = Math.ceil(target / cols);
+      const count = Math.min(Math.round((w * h) / 14000), 900);
+      const cols = Math.ceil(Math.sqrt((count * w) / h));
+      const rows = Math.ceil(count / cols);
       const cellW = w / cols;
       const cellH = h / rows;
 
       particles = [];
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          // Jitter inside each cell: an even grid reads as wallpaper, a
-          // jittered one reads as a field.
           const hx = c * cellW + cellW * (0.2 + Math.random() * 0.6);
           const hy = r * cellH + cellH * (0.2 + Math.random() * 0.6);
           const depth = 0.35 + Math.random() * 0.65;
@@ -149,10 +177,7 @@ export default function CanvasField() {
     buildAtlas();
     resize();
 
-    /* -------------------------------------------------------- input state */
-    // Off-screen until the pointer actually arrives, so nothing is disturbed
-    // on load and the first frame matches the server render.
-    const pointer = { x: -9999, y: -9999, mode: 1 }; // mode: 1 push, -1 pull
+    const pointer = { x: -9999, y: -9999, mode: 1 };
     let scrollN = 0;
     let running = true;
 
@@ -165,8 +190,6 @@ export default function CanvasField() {
       moveToY(e.clientY - r.top);
     };
 
-    // Hold to pull the field back in. This is the whole interaction: the
-    // cursor has two states and the field answers differently to each.
     const onDown = () => gsap.to(pointer, { mode: -1, duration: 0.25 });
     const onUp = () => gsap.to(pointer, { mode: 1, duration: 0.45 });
 
@@ -184,7 +207,71 @@ export default function CanvasField() {
       running = !document.hidden;
     };
 
-    const onThemeChange = () => buildAtlas();
+    const onThemeChange = () => buildAtlas(stageAccent || undefined);
+
+    const burstParticles = () => {
+      if (!w || !h) return;
+      const cx = w * (0.35 + stageProgress * 0.3);
+      const cy = h * 0.45;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i]!;
+        const dx = p.x - cx;
+        const dy = p.y - cy;
+        const d = Math.sqrt(dx * dx + dy * dy) || 1;
+        const force = (5.5 + Math.random() * 7) * p.depth;
+        p.vx += (dx / d) * force * 0.55;
+        p.vy += (dy / d) * force * 0.55;
+        if (Math.random() < 0.35) {
+          p.tint = Math.floor(Math.random() * tints.length);
+          p.g = Math.floor(Math.random() * GLYPHS.length);
+        }
+      }
+    };
+
+    const applyAtmosphere = (atm: FieldAtmosphere) => {
+      target.intensity = atm.intensity;
+      stageProgress = atm.progress;
+
+      if (atm.accent && atm.accent !== stageAccent) {
+        stageAccent = atm.accent;
+        buildAtlas(stageAccent);
+      } else if (!atm.accent && stageAccent) {
+        stageAccent = '';
+        buildAtlas();
+      }
+
+      if (atm.pulse && atm.pulse !== lastPulse) {
+        lastPulse = atm.pulse;
+        if (!reduced && atm.intensity > 0.2) burstParticles();
+      }
+
+      const sg = stageGlowRef.current;
+      if (sg && atm.accent) {
+        const x = 28 + atm.progress * 44;
+        sg.style.background = `radial-gradient(circle at ${x}% 42%, ${atm.accent}, transparent 68%)`;
+      }
+
+      gsap.to(glowARef.current, {
+        opacity: atm.intensity > 0.15 ? 0.22 : 0.5,
+        duration: 0.55,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+      gsap.to(glowBRef.current, {
+        opacity: atm.intensity > 0.15 ? 0.16 : 0.4,
+        duration: 0.55,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+      gsap.to(stageGlowRef.current, {
+        opacity: atm.intensity * (isLight ? 0.28 : 0.42),
+        duration: 0.55,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+    };
+
+    const unsubAtmosphere = subscribeFieldAtmosphere(applyAtmosphere);
     const themeObserver = new MutationObserver(onThemeChange);
 
     window.addEventListener('pointermove', onPointerMove, { passive: true });
@@ -201,7 +288,6 @@ export default function CanvasField() {
     });
     onScroll();
 
-    /* ----------------------------------------------------------- the loop */
     const RADIUS = 190;
     const R2 = RADIUS * RADIUS;
 
@@ -209,11 +295,16 @@ export default function CanvasField() {
       if (!atlas) return;
       ctx.clearRect(0, 0, w, h);
 
+      // Smooth stage intensity for soft field response
+      stageIntensity += (target.intensity - stageIntensity) * 0.08;
+      const stageLift = stageProgress * 90 * stageIntensity;
+      const stageBoost = 1 + stageIntensity * 0.22;
+
       const t = time;
       const linkAlpha = 0.5;
 
       for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
+        const p = particles[i]!;
 
         const dx = p.x - pointer.x;
         const dy = p.y - pointer.y;
@@ -223,14 +314,11 @@ export default function CanvasField() {
         if (d2 < R2) {
           const d = Math.sqrt(d2) || 1;
           near = 1 - d / RADIUS;
-          // Deeper glyphs shove harder, which reads as depth without any 3D.
           const force = near * near * 26 * p.depth * pointer.mode;
           p.vx += (dx / d) * force * 0.06;
           p.vy += (dy / d) * force * 0.06;
         }
 
-        // Spring home, with drag. Tuned so a fast swipe leaves a wake that
-        // settles in roughly a second rather than snapping back.
         p.vx += (p.hx - p.x) * 0.014;
         p.vy += (p.hy - p.y) * 0.014;
         p.vx *= 0.9;
@@ -238,19 +326,21 @@ export default function CanvasField() {
         p.x += p.vx;
         p.y += p.vy;
 
-        // Idle breathing plus a parallax lift as the page scrolls.
-        const sway = reduced ? 0 : Math.sin(t * 0.6 + p.hx * 0.01) * 2.2 * p.depth;
-        const lift = -scrollN * 130 * p.depth;
+        const sway =
+          reduced ? 0 : Math.sin(t * 0.6 + p.hx * 0.01 + stageProgress * 4) * 2.2 * p.depth;
+        const lift = -scrollN * 130 * p.depth - stageLift * p.depth;
         const y = p.y + sway + lift;
 
-        // Wrap vertically so the field never runs out from under the page.
         const wrapped = ((y % (h + 120)) + h + 120) % (h + 120);
 
-        const size = SPRITE * p.scale * (1 + near * 0.5);
+        const size = SPRITE * p.scale * (1 + near * 0.5) * stageBoost;
         const alpha =
-          (0.18 + p.depth * 0.34 + near * 0.42) * (reduced ? 0.6 : 1) * (isLight ? 0.5 : 1);
+          (0.18 + p.depth * 0.34 + near * 0.42) *
+          (reduced ? 0.6 : 1) *
+          (isLight ? 0.5 : 1) *
+          (1 + stageIntensity * 0.35);
 
-        ctx.globalAlpha = Math.min(alpha, 0.9);
+        ctx.globalAlpha = Math.min(alpha, 0.95);
         ctx.drawImage(
           atlas,
           p.g * SPRITE * dpr,
@@ -263,11 +353,9 @@ export default function CanvasField() {
           size,
         );
 
-        // A hairline to the cursor for whatever is inside the radius: the
-        // field acknowledges the pointer instead of only fleeing it.
         if (near > 0.35) {
           ctx.globalAlpha = (near - 0.35) * linkAlpha * (isLight ? 0.6 : 1);
-          ctx.strokeStyle = tints[2];
+          ctx.strokeStyle = tints[2] ?? tints[0]!;
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(p.x, wrapped);
@@ -280,9 +368,9 @@ export default function CanvasField() {
     };
 
     if (reduced) {
-      // One static frame: the texture is still there, nothing moves.
       draw(0);
       return () => {
+        unsubAtmosphere();
         window.removeEventListener('pointermove', onPointerMove);
         window.removeEventListener('pointerdown', onDown);
         window.removeEventListener('pointerup', onUp);
@@ -305,6 +393,7 @@ export default function CanvasField() {
 
     return () => {
       gsap.ticker.remove(tick);
+      unsubAtmosphere();
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointerup', onUp);
@@ -319,20 +408,26 @@ export default function CanvasField() {
 
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      {/* Atmosphere sits under the canvas and is also the no-JS fallback. */}
       <div className="absolute inset-0 bg-ink" />
       <div
+        ref={glowARef}
         className="absolute -top-[20%] -left-[15%] h-[70vh] w-[70vw] rounded-full opacity-50 blur-[110px]"
         style={{ background: 'radial-gradient(circle, rgb(var(--c-glow-a) / 0.4), transparent 68%)' }}
       />
       <div
+        ref={glowBRef}
         className="absolute top-[38%] -right-[10%] h-[60vh] w-[55vw] rounded-full opacity-40 blur-[110px]"
         style={{ background: 'radial-gradient(circle, rgb(var(--c-glow-b) / 0.28), transparent 68%)' }}
+      />
+      {/* Stage-driven wash — color shifts with skills / projects scroll */}
+      <div
+        ref={stageGlowRef}
+        className="absolute inset-[-10%] opacity-0 blur-[100px] will-change-[opacity,background]"
+        style={{ background: 'transparent' }}
       />
 
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
 
-      {/* Blueprint grid keeps structure where the field is sparse. */}
       <div
         className="absolute inset-0 opacity-[0.14] dark:opacity-[0.2]"
         style={{
