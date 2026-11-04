@@ -25,8 +25,8 @@ import {
     ServiceCard,
     TechMarquee,
 } from "@/components/Blocks";
-import WorkingProjects from "@/components/WorkingProjects";
-import SkillFlipStage from "@/components/SkillFlipStage";
+import WorkingProjectStage from "@/components/WorkingProjectStage";
+import SkillBook from "@/components/SkillBook";
 import { ArrowIcon } from "@/components/Icons";
 import ScrambleText from "@/components/ScrambleText";
 
