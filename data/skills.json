@@ -1,0 +1,196 @@
+{
+  "meta": {
+    "eyebrow": "Portfolio field guide",
+    "title": "Skill book",
+    "insideCover": "Foundations first. Then frameworks. Then ship.",
+    "leftLeafTitle": "Field notes",
+    "leftLeafBody": "Each turn is one tool I actually ship with — how I learned it, where I use it, and what I still watch for.",
+    "introTitle": "Chapter 01 · The stack",
+    "introLede": "Not a buzzword list. These are the tools I reach for when a product has to stay fast, accessible, and maintainable after launch day.",
+    "introFooter": "Next pages → each skill in depth"
+  },
+  "skills": [
+    {
+      "name": "HTML",
+      "level": 94,
+      "group": "Foundation",
+      "blurb": "Semantic markup & accessible document structure",
+      "learned": "I learned HTML the hard way — rebuilding client pages until headings, landmarks, and forms made sense to a screen reader, not just a designer. Real projects taught me that clean markup is the cheapest accessibility win.",
+      "practice": [
+        "Landmark regions and heading order on every page",
+        "Forms with labels, errors, and keyboard paths",
+        "SEO-friendly structure before styling starts"
+      ],
+      "focus": ["Semantics", "a11y", "SEO"]
+    },
+    {
+      "name": "CSS",
+      "level": 90,
+      "group": "Foundation",
+      "blurb": "Layout, motion, and responsive design systems",
+      "learned": "CSS clicked when I stopped fighting it and started designing with constraints — grid, flex, container queries, and tokens. Most of my motion work is CSS-first so it stays cheap and theme-aware.",
+      "practice": [
+        "Responsive layouts without one-off hacks",
+        "Design tokens for color, type, and spacing",
+        "Subtle motion that respects reduced-motion"
+      ],
+      "focus": ["Layout", "Motion", "Tokens"]
+    },
+    {
+      "name": "Tailwind CSS",
+      "level": 88,
+      "group": "Frontend",
+      "blurb": "Utility-first styling that ships production UI fast",
+      "learned": "I picked up Tailwind on shipping deadlines — then kept it because a shared utility language keeps design systems honest across pages. I still extract components when patterns repeat.",
+      "practice": [
+        "Consistent spacing and type scales",
+        "Themeable dark/light surfaces",
+        "Component extraction when utilities get noisy"
+      ],
+      "focus": ["Speed", "Consistency", "Theming"]
+    },
+    {
+      "name": "React",
+      "level": 88,
+      "group": "Frontend",
+      "blurb": "Component architecture for interactive interfaces",
+      "learned": "React became second nature through product UI — state that users can feel, forms that recover from errors, and components that stay readable six months later. I care more about composition than clever hooks.",
+      "practice": [
+        "Composable UI with clear ownership of state",
+        "Accessible interactive patterns",
+        "Performance-minded rendering on real devices"
+      ],
+      "focus": ["Components", "State", "UX"]
+    },
+    {
+      "name": "Next.js",
+      "level": 85,
+      "group": "Frontend",
+      "blurb": "App Router, SSR/SSG, and Core Web Vitals",
+      "learned": "Next.js is where my frontend and backend instincts meet. I learned it by shipping SEO-sensitive marketing sites and app shells that need fast first paint without giving up dynamic data.",
+      "practice": [
+        "App Router routes with sensible caching",
+        "Server/client boundaries that stay intentional",
+        "Image, font, and metadata tuning for CWV"
+      ],
+      "focus": ["SSR/SSG", "Routing", "Perf"]
+    },
+    {
+      "name": "TypeScript",
+      "level": 72,
+      "group": "Frontend",
+      "blurb": "Typed contracts that keep large apps maintainable",
+      "learned": "I adopted TypeScript gradually — first on API boundaries, then across UI props. It slowed me for a week and then saved me from an entire class of production bugs.",
+      "practice": [
+        "Shared types between API and UI",
+        "Safer refactors in growing codebases",
+        "Practical strictness without ceremony"
+      ],
+      "focus": ["Types", "Contracts", "Safety"]
+    },
+    {
+      "name": "Laravel",
+      "level": 90,
+      "group": "Backend",
+      "blurb": "Secure APIs, queues, and domain-driven backends",
+      "learned": "Laravel is my default when a business needs auth, queues, invoices, or admin workflows yesterday. Years of client work taught me to design domains first, then controllers.",
+      "practice": [
+        "Auth, policies, and validated APIs",
+        "Queues, jobs, and reliable side effects",
+        "Eloquent models that mirror the business"
+      ],
+      "focus": ["APIs", "Queues", "Domain"]
+    },
+    {
+      "name": "PHP",
+      "level": 85,
+      "group": "Backend",
+      "blurb": "Battle-tested server-side foundations",
+      "learned": "PHP was my first serious backend language. Modern PHP (typed properties, attributes, Composer ecosystems) still powers a lot of the commerce and content work I ship.",
+      "practice": [
+        "Clean service layers outside the framework glue",
+        "Secure handling of input and sessions",
+        "Maintainable legacy upgrades when needed"
+      ],
+      "focus": ["Server", "Security", "Legacy"]
+    },
+    {
+      "name": "Node.js",
+      "level": 82,
+      "group": "Backend",
+      "blurb": "Event-driven services and realtime channels",
+      "learned": "Node entered my stack for realtime features and JS-everywhere teams. I use it when streaming, sockets, or shared TypeScript models beat a split stack.",
+      "practice": [
+        "Lightweight services and workers",
+        "Realtime channels where they earn their keep",
+        "Shared tooling with the frontend team"
+      ],
+      "focus": ["Services", "Realtime", "Tooling"]
+    },
+    {
+      "name": "Express",
+      "level": 76,
+      "group": "Backend",
+      "blurb": "Lean HTTP APIs with clear middleware layers",
+      "learned": "Express taught me to keep HTTP boring — routers, middleware, and explicit error paths. I reach for it when a focused API should stay small and readable.",
+      "practice": [
+        "Clear middleware and validation layers",
+        "Predictable error and logging shapes",
+        "APIs that stay easy to document"
+      ],
+      "focus": ["HTTP", "Middleware", "APIs"]
+    },
+    {
+      "name": "MongoDB",
+      "level": 78,
+      "group": "Data",
+      "blurb": "Flexible document models with solid indexing",
+      "learned": "I learned MongoDB on product iterations that changed shape weekly. The skill is knowing when documents help — and when you need indexes and boundaries so flexibility does not become chaos.",
+      "practice": [
+        "Schema design with real query patterns",
+        "Indexes for the hot paths",
+        "Aggregation when reporting needs it"
+      ],
+      "focus": ["Documents", "Indexes", "Queries"]
+    },
+    {
+      "name": "MySQL",
+      "level": 80,
+      "group": "Data",
+      "blurb": "Relational schemas and transactional integrity",
+      "learned": "MySQL is where I trust money, inventory, and permissions. I got good at it by debugging slow queries and designing schemas that still make sense after the feature set grows.",
+      "practice": [
+        "Normalized schemas with clear relations",
+        "Transactions for multi-step writes",
+        "Query plans before throwing hardware at it"
+      ],
+      "focus": ["Schema", "SQL", "Integrity"]
+    },
+    {
+      "name": "Redis",
+      "level": 65,
+      "group": "Data",
+      "blurb": "Caching, sessions, and fast ephemeral state",
+      "learned": "Redis showed up whenever latency mattered — sessions, rate limits, cache keys. I treat it as a sharp tool: fast, intentional, and never the source of truth for critical data.",
+      "practice": [
+        "Cache keys with clear invalidation",
+        "Rate limiting and short-lived locks",
+        "Session/store patterns that fail safely"
+      ],
+      "focus": ["Cache", "Sessions", "Latency"]
+    },
+    {
+      "name": "Docker",
+      "level": 70,
+      "group": "Platform",
+      "blurb": "Reproducible environments from laptop to prod",
+      "learned": "Docker became essential once “works on my machine” stopped being funny. I use it so local, staging, and deploy targets share the same shape.",
+      "practice": [
+        "Compose stacks for local parity",
+        "Lean images for app services",
+        "Repeatable deploys with fewer surprises"
+      ],
+      "focus": ["Env", "Compose", "Deploy"]
+    }
+  ]
+}
