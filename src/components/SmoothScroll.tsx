@@ -41,6 +41,10 @@ export default function SmoothScroll() {
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
 
+    // After Lenis boots, refresh pins (skills / projects) so reload scroll works
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+    window.setTimeout(() => ScrollTrigger.refresh(), 200);
+
     // Anchor links have to go through Lenis or they jump.
     const onClick = (e: MouseEvent) => {
       const link = (e.target as HTMLElement | null)?.closest?.('a[href^="#"]');
