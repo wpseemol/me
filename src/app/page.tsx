@@ -159,7 +159,7 @@ export default function HomePage() {
                                     </span>
                                 </span>
                             }
-                            lede="Scroll the stage — skills flip in order: HTML → CSS → Tailwind → frameworks → Docker."
+                            lede="Scroll the stage — skills step in order: HTML → CSS → Tailwind → frameworks → Docker."
                         />
                     </Reveal>
                 </div>
