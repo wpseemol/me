@@ -7,7 +7,9 @@ import { asset } from "@/lib/asset";
 
 /**
  * Long-page screenshot preview.
- * Pointer Y and mouse-wheel scrub the capture; HUD shows scroll %.
+ * Wheel/pointer scrub the capture with gravity easing.
+ * At the top/bottom edge, wheel is released so the page can advance
+ * to the next project — no trapping, no snap-away that “removes” the shot.
  */
 export default function ProjectPagePreview({
   src,
@@ -26,6 +28,7 @@ export default function ProjectPagePreview({
   const shotRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const travelRef = useRef(0);
+  const yRef = useRef(0);
   const tweenRef = useRef<gsap.core.Tween | null>(null);
   const [progress, setProgress] = useState(0);
   const [canScroll, setCanScroll] = useState(false);
@@ -44,7 +47,6 @@ export default function ProjectPagePreview({
     let imgH = 0;
 
     if (img instanceof HTMLImageElement && img.naturalWidth > 0) {
-      // Force layout height from the real file aspect — not the Next width/height hints.
       imgH = (img.naturalHeight / img.naturalWidth) * frameW;
       shot.style.height = `${imgH}px`;
       img.style.height = `${imgH}px`;
@@ -64,42 +66,30 @@ export default function ProjectPagePreview({
     tweenRef.current = null;
   };
 
-  const applyY = (y: number, travel: number) => {
+  const reportProgress = (y: number, travel: number) => {
+    yRef.current = y;
+    setProgress(travel > 0 ? Math.min(1, Math.abs(y) / travel) : 0);
+  };
+
+  const applyY = (y: number, travel: number, immediate = true) => {
     const shot = shotRef.current;
     if (!shot) return;
     const clamped = gsap.utils.clamp(-travel, 0, y);
-    gsap.set(shot, { y: clamped });
-    setProgress(travel > 0 ? Math.min(1, Math.abs(clamped) / travel) : 0);
-  };
-
-  const scrubToRatio = (ratio: number) => {
-    const travel = measureTravel();
-    if (travel <= 16) {
-      setCanScroll(false);
-      setScrolling(false);
-      applyY(0, 0);
+    if (immediate) {
+      gsap.set(shot, { y: clamped });
+      reportProgress(clamped, travel);
       return;
     }
-    setCanScroll(true);
-    setScrolling(true);
+    // Gravity settle — soft weight instead of a hard snap.
     stopTween();
-    applyY(-travel * gsap.utils.clamp(0, 1, ratio), travel);
-  };
-
-  const resetShot = () => {
-    const shot = shotRef.current;
-    if (!shot) return;
-    stopTween();
-    const travel = travelRef.current || measureTravel();
     tweenRef.current = gsap.to(shot, {
-      y: 0,
-      duration: 0.45,
-      ease: "power2.out",
+      y: clamped,
+      duration: 0.42,
+      ease: "power3.out",
       onUpdate: () => {
-        const y = Number(gsap.getProperty(shot, "y")) || 0;
-        setProgress(travel > 0 ? Math.min(1, Math.abs(y) / travel) : 0);
+        const cy = Number(gsap.getProperty(shot, "y")) || 0;
+        reportProgress(cy, travel);
       },
-      onComplete: () => setScrolling(false),
     });
   };
 
@@ -109,49 +99,88 @@ export default function ProjectPagePreview({
     if (!frame || !shot) return;
 
     gsap.set(shot, { y: 0, force3D: true });
+    yRef.current = 0;
     setProgress(0);
     setScrolling(false);
     setCanScroll(false);
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let edgeLock = 0; // require a little overscroll before releasing page scroll
 
     const refresh = () => {
       const travel = measureTravel();
       setCanScroll(travel > 16);
-      // Keep current relative progress if possible
-      const y = Number(gsap.getProperty(shot, "y")) || 0;
-      if (travel > 16) applyY(y, travel);
+      if (travel > 16) applyY(yRef.current, travel);
       else applyY(0, 0);
     };
 
     const onMove = (e: PointerEvent) => {
       if (reduced) return;
+      const travel = measureTravel();
+      if (travel <= 16) {
+        setCanScroll(false);
+        return;
+      }
       const rect = frame.getBoundingClientRect();
       if (rect.height <= 0) return;
-      const ratio = (e.clientY - rect.top) / rect.height;
-      scrubToRatio(ratio);
+      setCanScroll(true);
+      setScrolling(true);
+      const ratio = gsap.utils.clamp(0, 1, (e.clientY - rect.top) / rect.height);
+      // Map pointer with a slight ease so it doesn’t feel glued to the cursor.
+      const eased = ratio * ratio * (3 - 2 * ratio);
+      applyY(-travel * eased, travel);
+      edgeLock = 0;
     };
 
-    const onEnter = (e: PointerEvent) => {
+    const onEnter = () => {
       if (reduced) return;
       refresh();
-      const rect = frame.getBoundingClientRect();
-      scrubToRatio((e.clientY - rect.top) / rect.height);
+      setScrolling(true);
+      edgeLock = 0;
     };
 
-    const onLeave = () => resetShot();
+    const onLeave = () => {
+      // Keep the scrolled position — don’t yank the image back to the top
+      // (that felt like the preview “removing” itself).
+      setScrolling(false);
+      edgeLock = 0;
+    };
 
     const onWheel = (e: WheelEvent) => {
       if (reduced) return;
       const travel = measureTravel();
-      if (travel <= 16) return;
+      if (travel <= 16) return; // nothing to scrub — let the page scroll
+
+      const current = yRef.current;
+      const atTop = current >= -2;
+      const atBottom = current <= -travel + 2;
+      const goingDown = e.deltaY > 0;
+      const goingUp = e.deltaY < 0;
+
+      // Finished the screenshot → release wheel so the next project can come in.
+      if ((goingDown && atBottom) || (goingUp && atTop)) {
+        edgeLock += Math.abs(e.deltaY);
+        if (edgeLock > 28) {
+          setScrolling(false);
+          return; // do NOT preventDefault — page / stage scroll continues
+        }
+        // Absorb the first ticks of overscroll so it doesn’t feel twitchy.
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      edgeLock = 0;
       e.preventDefault();
       e.stopPropagation();
-      stopTween();
       setScrolling(true);
       setCanScroll(true);
-      const current = Number(gsap.getProperty(shot, "y")) || 0;
-      applyY(current - e.deltaY, travel);
+      stopTween();
+
+      // Gravity-weighted wheel: slightly stronger than raw delta, then soft clamp.
+      const weighted = e.deltaY * 1.15;
+      const next = gsap.utils.clamp(-travel, 0, current - weighted);
+      applyY(next, travel, false);
     };
 
     frame.addEventListener("pointerenter", onEnter);
@@ -162,7 +191,6 @@ export default function ProjectPagePreview({
     const ro = new ResizeObserver(refresh);
     ro.observe(frame);
 
-    // Re-measure after paint / image decode.
     const t1 = window.setTimeout(refresh, 80);
     const t2 = window.setTimeout(refresh, 400);
 
@@ -183,7 +211,7 @@ export default function ProjectPagePreview({
     <div
       ref={frameRef}
       className={`group/preview relative z-[3] aspect-[16/10] cursor-ns-resize overflow-hidden bg-surface touch-none ${className}`}
-      title="Move mouse up/down or use the wheel to scroll the page preview"
+      title="Scroll the preview first — at the end, keep scrolling for the next project"
     >
       <div
         ref={shotRef}
@@ -239,13 +267,15 @@ export default function ProjectPagePreview({
               : "opacity-0 group-hover/preview:opacity-100"
           }`}
         >
-          {scrolling ? (
+          {progress >= 0.98 ? (
+            <span className="text-brand-ink">End of page · scroll for next</span>
+          ) : scrolling ? (
             <span className="inline-flex items-center gap-2 text-brand-ink">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-500" />
-              Scrolling page · {Math.round(progress * 100)}%
+              Scrolling · {Math.round(progress * 100)}%
             </span>
           ) : canScroll ? (
-            <span className="text-muted">Move mouse or wheel to scroll</span>
+            <span className="text-muted">Wheel to scroll preview</span>
           ) : (
             <span className="text-muted">Loading preview…</span>
           )}

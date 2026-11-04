@@ -20,6 +20,9 @@ const LANG_COLOR: Record<string, string> = {
   Liquid: "#7AB55C",
 };
 
+/** Mild deck angles so the grid still reads, but cards feel physical. */
+const TILT = [-7, 5, -4, 8, -6, 3, -5, 6];
+
 function yearOf(iso: string) {
   return iso ? iso.slice(0, 4) : "";
 }
@@ -48,13 +51,16 @@ function WorkingProjectCard({
         ? project.languages
         : [project.language]
   ).slice(0, 5);
+  const tilt = TILT[index % TILT.length]!;
 
   return (
     <article
       data-scale-card
-      className="group relative flex flex-col overflow-hidden rounded-card border bg-elev/70 backdrop-blur-xs will-change-transform transition-[border-color,box-shadow,translate] duration-500 hover:-translate-y-1.5 hover:border-[color-mix(in_oklab,var(--brand-500)_45%,transparent)] hover:shadow-[0_18px_44px_-22px_rgb(var(--c-glow-a)/0.55)]"
+      className="group relative flex flex-col overflow-hidden rounded-card border bg-elev/80 backdrop-blur-xs will-change-transform transition-[border-color,box-shadow] duration-500 hover:border-[color-mix(in_oklab,var(--brand-500)_45%,transparent)] hover:shadow-[0_22px_48px_-22px_rgb(var(--c-glow-a)/0.55)]"
       style={{
-        transformOrigin: index % 2 === 0 ? "left center" : "right center",
+        transformOrigin: "center center",
+        // Resting deck pose — scroll animation overrides via GSAP.
+        transform: `rotate(${tilt}deg)`,
       }}
     >
       <ProjectPagePreview
@@ -169,25 +175,37 @@ export default function WorkingProjects({
     if (!root || !projects.length) return;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      gsap.set(root.querySelectorAll("[data-scale-card]"), { scale: 1 });
+      gsap.set(root.querySelectorAll("[data-scale-card]"), {
+        clearProps: "all",
+      });
       return;
     }
 
     const ctx = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>("[data-scale-card]").forEach((card) => {
+      gsap.utils.toArray<HTMLElement>("[data-scale-card]").forEach((card, i) => {
+        const tilt = TILT[i % TILT.length]!;
         gsap.fromTo(
           card,
-          { scale: 0.92, autoAlpha: 0.45, y: 28 },
+          {
+            scale: 0.88,
+            autoAlpha: 0.4,
+            y: 56,
+            rotate: tilt * 1.6,
+            x: i % 2 === 0 ? -20 : 20,
+          },
           {
             scale: 1,
             autoAlpha: 1,
             y: 0,
+            x: 0,
+            rotate: tilt,
+            // Heavier scrub = gravity settle as the card lands in view.
             ease: "none",
             scrollTrigger: {
               trigger: card,
-              start: "top 94%",
-              end: "top 48%",
-              scrub: 0.65,
+              start: "top 96%",
+              end: "top 52%",
+              scrub: 1.05,
             },
           },
         );
@@ -200,7 +218,7 @@ export default function WorkingProjects({
   if (!projects.length) return null;
 
   return (
-    <div ref={ref} className="mt-12 grid gap-5 md:grid-cols-2">
+    <div ref={ref} className="mt-12 grid gap-6 md:grid-cols-2 md:gap-8">
       {projects.map((p, i) => (
         <WorkingProjectCard key={p.slug} project={p} index={i} />
       ))}

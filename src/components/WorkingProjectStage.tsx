@@ -20,8 +20,19 @@ function hostLabel(url: string) {
   }
 }
 
+/** Scattered deck poses for inactive project cards (playing-card feel). */
+const SCATTER = [
+  { x: "-34%", y: "10%", rotate: -16, scale: 0.72 },
+  { x: "36%", y: "-8%", rotate: 14, scale: 0.7 },
+  { x: "-28%", y: "-22%", rotate: -9, scale: 0.66 },
+  { x: "30%", y: "20%", rotate: 18, scale: 0.68 },
+  { x: "-8%", y: "28%", rotate: -5, scale: 0.64 },
+  { x: "12%", y: "-28%", rotate: 8, scale: 0.62 },
+] as const;
+
 /**
- * Centered modern project stand — no wide empty side column.
+ * Featured working project stays center-stage.
+ * Other projects fan out behind it like a scattered card deck on scroll.
  */
 export default function WorkingProjectStage({
   projects,
@@ -31,6 +42,7 @@ export default function WorkingProjectStage({
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLElement>(null);
+  const scatterRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
 
   const total = projects.length;
@@ -45,6 +57,39 @@ export default function WorkingProjectStage({
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let last = -1;
 
+    const fanScatter = (index: number) => {
+      const nodes = scatterRef.current?.querySelectorAll<HTMLElement>(
+        "[data-scatter-card]",
+      );
+      if (!nodes?.length) return;
+
+      let pose = 0;
+      nodes.forEach((el) => {
+        const i = Number(el.dataset.index);
+        if (i === index) {
+          gsap.to(el, {
+            opacity: 0,
+            scale: 0.9,
+            duration: 0.35,
+            ease: "power2.out",
+          });
+          return;
+        }
+        const s = SCATTER[pose % SCATTER.length]!;
+        pose += 1;
+        gsap.to(el, {
+          x: s.x,
+          y: s.y,
+          rotate: s.rotate,
+          scale: s.scale,
+          opacity: 0.88,
+          duration: 0.55,
+          ease: "power3.out",
+          overwrite: "auto",
+        });
+      });
+    };
+
     const show = (index: number, instant = false) => {
       if (index === last && !instant) return;
       if (!projects[index]) return;
@@ -53,35 +98,36 @@ export default function WorkingProjectStage({
       if (instant || reduced) {
         gsap.set(card, { y: 0, opacity: 1, scale: 1, filter: "blur(0px)" });
         setActive(index);
+        fanScatter(index);
         last = index;
         return;
       }
 
+      // Gravity handoff — drop out, then settle in. No heavy blur that
+      // makes the screenshot / copy look like it “vanished”.
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
       tl.to(card, {
-        y: dir * -24,
+        y: dir * -18,
         opacity: 0,
-        scale: 0.96,
-        filter: "blur(8px)",
-        duration: 0.26,
+        scale: 0.97,
+        duration: 0.28,
         ease: "power2.in",
       })
         .add(() => {
           flushSync(() => setActive(index));
+          fanScatter(index);
           gsap.set(card, {
-            y: dir * 28,
+            y: dir * 32,
             opacity: 0,
-            scale: 0.96,
-            filter: "blur(8px)",
+            scale: 0.94,
           });
         })
         .to(card, {
           y: 0,
           opacity: 1,
           scale: 1,
-          filter: "blur(0px)",
-          duration: 0.45,
-          ease: "expo.out",
+          duration: 0.55,
+          ease: "power3.out",
         });
 
       last = index;
@@ -131,6 +177,32 @@ export default function WorkingProjectStage({
           },
         },
       );
+
+      // Entrance: cards fly in from a stacked deck into scatter.
+      const nodes = scatterRef.current?.querySelectorAll<HTMLElement>(
+        "[data-scatter-card]",
+      );
+      nodes?.forEach((el, i) => {
+        gsap.fromTo(
+          el,
+          { opacity: 0, scale: 0.5, rotate: 0, x: 0, y: 40 },
+          {
+            opacity: 0.88,
+            duration: 0.7,
+            delay: 0.05 * i,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+            onComplete: () => {
+              if (last >= 0) fanScatter(last);
+              else fanScatter(0);
+            },
+          },
+        );
+      });
 
       show(0, true);
     }, section);
@@ -196,7 +268,10 @@ export default function WorkingProjectStage({
           </ul>
         </div>
 
-        <div ref={stageRef} className="relative mx-auto w-full max-w-3xl will-change-transform">
+        <div
+          ref={stageRef}
+          className="relative mx-auto w-full max-w-3xl will-change-transform"
+        >
           <div
             aria-hidden
             className="absolute -inset-8 rounded-[40px] opacity-55 blur-3xl"
@@ -206,9 +281,44 @@ export default function WorkingProjectStage({
             }}
           />
 
+          {/* Scattered deck — other projects behind the hero card */}
+          <div
+            ref={scatterRef}
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-0"
+          >
+            {projects.map((p, i) => (
+              <div
+                key={p.slug}
+                data-scatter-card
+                data-index={i}
+                className="absolute inset-[8%] overflow-hidden rounded-[22px] border bg-elev/80 shadow-[0_18px_40px_-24px_rgb(0_0_0/0.55)] backdrop-blur-sm will-change-transform"
+                style={{
+                  opacity: 0,
+                  transformOrigin: "center center",
+                }}
+              >
+                <div className="relative h-36 overflow-hidden border-b sm:h-44">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={p.screenshot}
+                    alt=""
+                    className="h-full w-full object-cover object-top opacity-90"
+                  />
+                </div>
+                <div className="p-3">
+                  <p className="truncate text-sm font-semibold">{p.name}</p>
+                  <p className="mt-0.5 truncate font-mono text-2xs text-muted">
+                    {p.framework || p.language}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
           <article
             ref={cardRef}
-            className="group relative overflow-hidden rounded-[28px] border bg-elev/90 shadow-[0_28px_70px_-36px_rgb(var(--c-glow-a)/0.8)] backdrop-blur-md will-change-transform"
+            className="group relative z-10 overflow-hidden rounded-[28px] border bg-elev/90 shadow-[0_28px_70px_-36px_rgb(var(--c-glow-a)/0.8)] backdrop-blur-md will-change-transform"
           >
             <ProjectPagePreview
               key={project.slug}
@@ -224,7 +334,9 @@ export default function WorkingProjectStage({
                 <div className="flex items-center gap-3 font-mono text-2xs text-muted">
                   <span>{project.framework || project.language}</span>
                   <span className="opacity-40">·</span>
-                  <span>{(project.updated || project.created).slice(0, 4)}</span>
+                  <span>
+                    {(project.updated || project.created).slice(0, 4)}
+                  </span>
                 </div>
                 <h4 className="mt-2 text-2xl tracking-tight sm:text-[1.75rem]">
                   <a
