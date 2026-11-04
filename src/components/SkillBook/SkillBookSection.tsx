@@ -15,7 +15,6 @@ import {
   LEFT_ENDPAPER,
   RIGHT_BASE,
   meta,
-  skills,
   type SheetContent,
 } from "./skillsData";
 
@@ -394,6 +393,3 @@ function MobileSkillBook() {
     </section>
   );
 }
-
-// silence unused import warning if tree-shaken oddly
-void skills;
