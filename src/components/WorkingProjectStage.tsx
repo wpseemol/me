@@ -20,7 +20,7 @@ function hostLabel(url: string) {
   }
 }
 
-/** Offsets from stage center — keeps the hero card visually centered. */
+/** Offsets from stage center — hero stays centered. */
 const SCATTER = [
   { x: -210, y: 36, rotate: -14, scale: 0.7 },
   { x: 220, y: -28, rotate: 12, scale: 0.68 },
@@ -30,9 +30,13 @@ const SCATTER = [
   { x: 70, y: -110, rotate: 7, scale: 0.6 },
 ] as const;
 
+const INITIAL_SCALE = 0.7;
+const FOCUS_SCALE = 1;
+
 /**
- * Centered project stage.
- * Active card stays locked to the middle; others fan behind as a card deck.
+ * Working projects stage:
+ * - Starts at ~70% scale, zooms to 100% on scroll/click (centered)
+ * - Behind cards are clickable → selected project preview
  */
 export default function WorkingProjectStage({
   projects,
@@ -41,8 +45,11 @@ export default function WorkingProjectStage({
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const zoomRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLElement>(null);
   const scatterRef = useRef<HTMLDivElement>(null);
+  const pinStRef = useRef<ScrollTrigger | null>(null);
+  const showRef = useRef<(index: number, instant?: boolean) => void>(() => {});
   const [active, setActive] = useState(0);
 
   const total = projects.length;
@@ -51,23 +58,12 @@ export default function WorkingProjectStage({
   useEffect(() => {
     const section = sectionRef.current;
     const stage = stageRef.current;
+    const zoom = zoomRef.current;
     const card = cardRef.current;
-    if (!section || !stage || !card || total < 1) return;
+    if (!section || !stage || !zoom || !card || total < 1) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let last = -1;
-
-    const centerHero = (instant = false) => {
-      // Never let x/rotation drift — hero stays dead-center.
-      const props = {
-        x: 0,
-        xPercent: 0,
-        rotate: 0,
-        transformOrigin: "50% 50%",
-      };
-      if (instant) gsap.set(card, props);
-      else gsap.to(card, { ...props, duration: 0.2, overwrite: "auto" });
-    };
 
     const fanScatter = (index: number) => {
       const nodes = scatterRef.current?.querySelectorAll<HTMLElement>(
@@ -78,7 +74,6 @@ export default function WorkingProjectStage({
       let pose = 0;
       nodes.forEach((el) => {
         const i = Number(el.dataset.index);
-        // Anchor every scatter card to the stage center, then offset.
         gsap.set(el, {
           left: "50%",
           top: "50%",
@@ -89,14 +84,17 @@ export default function WorkingProjectStage({
         if (i === index) {
           gsap.to(el, {
             opacity: 0,
-            scale: 0.88,
+            scale: 0.85,
             x: 0,
             y: 0,
             rotate: 0,
             duration: 0.3,
             ease: "power2.out",
             overwrite: "auto",
+            pointerEvents: "none",
           });
+          el.setAttribute("aria-hidden", "true");
+          el.tabIndex = -1;
           return;
         }
 
@@ -107,11 +105,14 @@ export default function WorkingProjectStage({
           y: s.y,
           rotate: s.rotate,
           scale: s.scale,
-          opacity: 0.82,
+          opacity: 0.9,
           duration: 0.55,
           ease: "power3.out",
           overwrite: "auto",
+          pointerEvents: "auto",
         });
+        el.setAttribute("aria-hidden", "false");
+        el.tabIndex = 0;
       });
     };
 
@@ -121,65 +122,72 @@ export default function WorkingProjectStage({
       const dir = index >= last ? 1 : -1;
 
       if (instant || reduced) {
-        gsap.set(card, {
-          y: 0,
-          x: 0,
-          opacity: 1,
-          scale: 1,
-          rotate: 0,
-        });
+        gsap.set(card, { y: 0, x: 0, opacity: 1, rotate: 0 });
         setActive(index);
         fanScatter(index);
-        centerHero(true);
         last = index;
         return;
       }
 
-      const tl = gsap.timeline({
-        defaults: { ease: "power3.out" },
-        onComplete: () => centerHero(true),
-      });
-
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
       tl.to(card, {
-        y: dir * -12,
+        y: dir * -10,
         opacity: 0,
-        scale: 0.98,
         x: 0,
         rotate: 0,
-        duration: 0.26,
+        duration: 0.24,
         ease: "power2.in",
       })
         .add(() => {
           flushSync(() => setActive(index));
           fanScatter(index);
-          gsap.set(card, {
-            y: dir * 22,
-            x: 0,
-            opacity: 0,
-            scale: 0.97,
-            rotate: 0,
-          });
+          gsap.set(card, { y: dir * 20, x: 0, opacity: 0, rotate: 0 });
         })
         .to(card, {
           y: 0,
           x: 0,
           opacity: 1,
-          scale: 1,
           rotate: 0,
-          duration: 0.5,
+          duration: 0.48,
           ease: "power3.out",
         });
 
       last = index;
     };
 
+    showRef.current = show;
+
     if (reduced) {
+      gsap.set(zoom, { scale: FOCUS_SCALE, transformOrigin: "50% 50%" });
       show(0, true);
       return;
     }
 
     const ctx = gsap.context(() => {
-      ScrollTrigger.create({
+      // Approach: 70% → 100% zoom, locked to center.
+      gsap.set(zoom, {
+        scale: INITIAL_SCALE,
+        transformOrigin: "50% 50%",
+        force3D: true,
+      });
+
+      gsap.fromTo(
+        zoom,
+        { scale: INITIAL_SCALE },
+        {
+          scale: FOCUS_SCALE,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 78%",
+            end: "top top",
+            scrub: 0.85,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
+
+      const pin = ScrollTrigger.create({
         trigger: section,
         start: "top top",
         end: () => `+=${Math.max(total, 2) * window.innerHeight * 0.85}`,
@@ -193,7 +201,6 @@ export default function WorkingProjectStage({
             Math.floor(self.progress * total + 1e-6),
           );
           show(idx);
-          centerHero(true);
         },
         onRefresh: (self) => {
           const idx = Math.min(
@@ -203,10 +210,11 @@ export default function WorkingProjectStage({
           show(idx, true);
         },
       });
+      pinStRef.current = pin;
 
       gsap.fromTo(
         stage,
-        { y: 28, opacity: 0.6 },
+        { y: 24, opacity: 0.65 },
         {
           y: 0,
           opacity: 1,
@@ -230,7 +238,7 @@ export default function WorkingProjectStage({
           xPercent: -50,
           yPercent: -50,
           x: 0,
-          y: 24,
+          y: 20,
           opacity: 0,
           scale: 0.55,
           rotate: 0,
@@ -238,12 +246,44 @@ export default function WorkingProjectStage({
       });
 
       show(0, true);
-      // Land scatter after first paint so hero is already centered.
       requestAnimationFrame(() => fanScatter(0));
     }, section);
 
-    return () => ctx.revert();
+    return () => {
+      pinStRef.current = null;
+      ctx.revert();
+    };
   }, [projects, total]);
+
+  const selectProject = (index: number) => {
+    if (index === active || !projects[index]) return;
+
+    // Pulse zoom for click feedback: dip to 70%, settle at 100%.
+    const zoom = zoomRef.current;
+    if (zoom && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.fromTo(
+        zoom,
+        { scale: INITIAL_SCALE },
+        {
+          scale: FOCUS_SCALE,
+          duration: 0.65,
+          ease: "power3.out",
+          overwrite: "auto",
+          transformOrigin: "50% 50%",
+        },
+      );
+    }
+
+    showRef.current(index);
+
+    // Sync page scroll to that project’s pin band.
+    const st = pinStRef.current;
+    if (st) {
+      const target =
+        st.start + ((st.end - st.start) * (index + 0.15)) / Math.max(total, 1);
+      window.scrollTo({ top: target, behavior: "smooth" });
+    }
+  };
 
   if (!project) return null;
 
@@ -264,7 +304,6 @@ export default function WorkingProjectStage({
       aria-labelledby="working-stage-live"
     >
       <div className="shell flex min-h-[100svh] flex-col items-center py-8 sm:py-10">
-        {/* Header stays on top; card area fills and centers below */}
         <div className="flex w-full max-w-3xl shrink-0 flex-col items-center text-center">
           <p
             id="working-stage-live"
@@ -282,13 +321,14 @@ export default function WorkingProjectStage({
               const on = i === active;
               return (
                 <li key={p.slug}>
-                  <span
+                  <button
+                    type="button"
+                    onClick={() => selectProject(i)}
+                    aria-pressed={on}
                     className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-400 ${
                       on
                         ? "border-[color-mix(in_oklab,var(--brand-500)_50%,transparent)] bg-elev/90 text-brand-ink shadow-[0_10px_28px_-16px_rgb(var(--c-glow-a)/0.7)]"
-                        : i < active
-                          ? "opacity-70"
-                          : "opacity-40"
+                        : "opacity-55 hover:opacity-90"
                     }`}
                   >
                     <span
@@ -297,7 +337,7 @@ export default function WorkingProjectStage({
                       }`}
                     />
                     {p.name}
-                  </span>
+                  </button>
                 </li>
               );
             })}
@@ -318,18 +358,20 @@ export default function WorkingProjectStage({
               }}
             />
 
-            {/* Deck behind — anchored to center of the stage */}
+            {/* Behind deck — click to open that project */}
             <div
               ref={scatterRef}
-              aria-hidden
-              className="pointer-events-none absolute inset-0 z-0 overflow-visible"
+              className="absolute inset-0 z-0 overflow-visible"
             >
               {projects.map((p, i) => (
-                <div
+                <button
                   key={p.slug}
+                  type="button"
                   data-scatter-card
                   data-index={i}
-                  className="absolute h-[78%] w-[84%] overflow-hidden rounded-[22px] border bg-elev/80 shadow-[0_18px_40px_-24px_rgb(0_0_0/0.55)] backdrop-blur-sm will-change-transform"
+                  onClick={() => selectProject(i)}
+                  aria-label={`Show ${p.name} preview`}
+                  className="absolute h-[78%] w-[84%] cursor-pointer overflow-hidden rounded-[22px] border bg-elev/85 text-left shadow-[0_18px_40px_-24px_rgb(0_0_0/0.55)] backdrop-blur-sm transition-[box-shadow] duration-300 will-change-transform hover:shadow-[0_22px_48px_-18px_rgb(var(--c-glow-a)/0.45)]"
                   style={{ opacity: 0 }}
                 >
                   <div className="relative h-36 overflow-hidden border-b sm:h-40">
@@ -346,85 +388,90 @@ export default function WorkingProjectStage({
                       {p.framework || p.language}
                     </p>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
 
-            <article
-              ref={cardRef}
-              className="group relative z-10 mx-auto w-full overflow-hidden rounded-[28px] border bg-elev/90 shadow-[0_28px_70px_-36px_rgb(var(--c-glow-a)/0.8)] backdrop-blur-md will-change-transform"
+            {/* Zoom shell — 70% → 100%, always centered */}
+            <div
+              ref={zoomRef}
+              className="relative z-10 mx-auto w-full will-change-transform"
+              style={{ transformOrigin: "50% 50%" }}
             >
-              <ProjectPagePreview
-                key={project.slug}
-                src={project.screenshot}
-                alt={`${project.name} website screenshot`}
-                live={isLive}
-                priority={active === 0}
-                className="border-b"
-              />
+              <article
+                ref={cardRef}
+                className="group relative mx-auto w-full overflow-hidden rounded-[28px] border bg-elev/90 shadow-[0_28px_70px_-36px_rgb(var(--c-glow-a)/0.8)] backdrop-blur-md will-change-transform"
+              >
+                <ProjectPagePreview
+                  key={project.slug}
+                  src={project.screenshot}
+                  alt={`${project.name} website screenshot`}
+                  live={isLive}
+                  priority={active === 0}
+                  className="border-b"
+                />
 
-              <div className="grid gap-5 p-5 sm:grid-cols-[1.2fr_0.8fr] sm:p-6">
-                <div className="min-w-0 text-left">
-                  <div className="flex items-center gap-3 font-mono text-2xs text-muted">
-                    <span>{project.framework || project.language}</span>
-                    <span className="opacity-40">·</span>
-                    <span>
-                      {(project.updated || project.created).slice(0, 4)}
-                    </span>
-                  </div>
-                  <h4 className="mt-2 text-2xl tracking-tight sm:text-[1.75rem]">
-                    <a
-                      href={primaryHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="transition-colors hover:text-brand-ink"
-                    >
-                      {project.name}
-                    </a>
-                  </h4>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">
-                    {project.description || project.detail}
-                  </p>
-                </div>
-
-                <div className="flex min-w-0 flex-col justify-between gap-4 sm:items-end sm:text-right">
-                  <div className="flex flex-wrap gap-1.5 sm:justify-end">
-                    {tags.map((t) => (
-                      <span key={t} className="chip">
-                        {t}
+                <div className="grid gap-5 p-5 sm:grid-cols-[1.2fr_0.8fr] sm:p-6">
+                  <div className="min-w-0 text-left">
+                    <div className="flex items-center gap-3 font-mono text-2xs text-muted">
+                      <span>{project.framework || project.language}</span>
+                      <span className="opacity-40">·</span>
+                      <span>
+                        {(project.updated || project.created).slice(0, 4)}
                       </span>
-                    ))}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:justify-end">
-                    {isLive ? (
+                    </div>
+                    <h4 className="mt-2 text-2xl tracking-tight sm:text-[1.75rem]">
                       <a
-                        href={project.homepage}
+                        href={primaryHref}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-ink transition-colors hover:text-accent-500"
+                        className="transition-colors hover:text-brand-ink"
                       >
-                        {hostLabel(project.homepage)}
-                        <ArrowUpRightIcon width={15} height={15} />
+                        {project.name}
                       </a>
-                    ) : null}
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted transition-colors hover:text-brand-ink"
-                    >
-                      <GithubIcon width={15} height={15} />
-                      GitHub
-                    </a>
+                    </h4>
+                    <p className="mt-2 text-sm leading-relaxed text-muted">
+                      {project.description || project.detail}
+                    </p>
                   </div>
-                  <p className="font-mono text-2xs text-muted">
-                    {active === total - 1
-                      ? "Last project"
-                      : "Scroll preview, then next project →"}
-                  </p>
+
+                  <div className="flex min-w-0 flex-col justify-between gap-4 sm:items-end sm:text-right">
+                    <div className="flex flex-wrap gap-1.5 sm:justify-end">
+                      {tags.map((t) => (
+                        <span key={t} className="chip">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:justify-end">
+                      {isLive ? (
+                        <a
+                          href={project.homepage}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-ink transition-colors hover:text-accent-500"
+                        >
+                          {hostLabel(project.homepage)}
+                          <ArrowUpRightIcon width={15} height={15} />
+                        </a>
+                      ) : null}
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted transition-colors hover:text-brand-ink"
+                      >
+                        <GithubIcon width={15} height={15} />
+                        GitHub
+                      </a>
+                    </div>
+                    <p className="font-mono text-2xs text-muted">
+                      Click a card behind · or scroll preview →
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </article>
+              </article>
+            </div>
           </div>
         </div>
       </div>

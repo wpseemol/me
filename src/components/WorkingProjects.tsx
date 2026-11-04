@@ -181,27 +181,29 @@ export default function WorkingProjects({
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>("[data-scale-card]").forEach((card, i) => {
         const tilt = Number(card.dataset.tilt ?? TILT[i % TILT.length]);
+        // Start ~70%, zoom to 100% as it scrolls into center — stays aligned.
         gsap.fromTo(
           card,
           {
-            scale: 0.9,
-            autoAlpha: 0.35,
-            y: 52,
+            scale: 0.7,
+            autoAlpha: 0.4,
+            y: 48,
             rotate: tilt,
             x: 0,
+            transformOrigin: "50% 50%",
           },
           {
             scale: 1,
             autoAlpha: 1,
             y: 0,
             x: 0,
-            rotate: 0, // land flat + aligned in the centered grid
+            rotate: 0,
             ease: "none",
             scrollTrigger: {
               trigger: card,
-              start: "top 96%",
-              end: "top 55%",
-              scrub: 1.1,
+              start: "top 92%",
+              end: "top 48%",
+              scrub: 1.05,
             },
           },
         );

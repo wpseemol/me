@@ -30,12 +30,12 @@ export default function BookPage({
   sheetCount,
 }: BookPageProps) {
   const rotateY = useTransform(progress, [0, 1], [0, -180]);
-  // Paper curl flex — peaks at mid-fold, then flattens.
-  const skewY = useTransform(progress, [0, 0.5, 1], [0, -3, 0]);
-  const liftZ = useTransform(progress, [0, 0.5, 1], [0, 18, 0]);
+  // Paper curl + lift through the fold (book page with weight).
+  const skewY = useTransform(progress, [0, 0.5, 1], [0, -4, 0]);
+  const liftZ = useTransform(progress, [0, 0.5, 1], [0, 26, 0]);
 
   const zIndex = useTransform(progress, (p) =>
-    p < 0.5 ? sheetCount - stackIndex + 40 : stackIndex + 4,
+    p < 0.5 ? sheetCount - stackIndex + 20 : stackIndex + 3,
   );
 
   // Lighting: shade builds mid-turn, clears when flat.
