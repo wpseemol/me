@@ -91,18 +91,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Anchor the circular wipe on the button that was pressed.
+      // Sunrise (→ light) wipes up from the horizon; sunset (→ dark) from the sun.
       const el = document.documentElement;
-      const x = origin ? (origin.x / window.innerWidth) * 100 : 50;
-      const y = origin ? (origin.y / window.innerHeight) * 100 : 0;
+      const goingLight = next === 'light';
+      const x = origin ? (origin.x / window.innerWidth) * 100 : goingLight ? 78 : 72;
+      const y = origin
+        ? (origin.y / window.innerHeight) * 100
+        : goingLight
+          ? 88
+          : 14;
       el.style.setProperty('--wipe-x', `${x}%`);
       el.style.setProperty('--wipe-y', `${y}%`);
-      el.classList.add('theme-wipe');
+      el.classList.remove('theme-wipe-sunrise', 'theme-wipe-sunset');
+      el.classList.add('theme-wipe', goingLight ? 'theme-wipe-sunrise' : 'theme-wipe-sunset');
 
       const transition = document.startViewTransition(() => {
         apply(next);
       });
-      transition.finished.finally(() => el.classList.remove('theme-wipe'));
+      transition.finished.finally(() => {
+        el.classList.remove('theme-wipe', 'theme-wipe-sunrise', 'theme-wipe-sunset');
+      });
     },
     [theme, apply],
   );

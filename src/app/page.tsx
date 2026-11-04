@@ -23,10 +23,10 @@ import {
     ProcessList,
     ProjectCard,
     ServiceCard,
-    StackBars,
     TechMarquee,
 } from "@/components/Blocks";
 import WorkingProjects from "@/components/WorkingProjects";
+import SkillFlipStage from "@/components/SkillFlipStage";
 import { ArrowIcon } from "@/components/Icons";
 import ScrambleText from "@/components/ScrambleText";
 
@@ -138,11 +138,11 @@ export default function HomePage() {
 
             {/* ---------------------------------------------------------- stack */}
             <section
-                className="shell py-24 sm:py-28"
+                className="py-8 sm:py-12"
                 aria-labelledby="stack-heading"
             >
-                <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-                    <Reveal direction="right">
+                <div className="shell pb-6">
+                    <Reveal>
                         <SectionHead
                             path="/stack"
                             title={
@@ -159,25 +159,11 @@ export default function HomePage() {
                                     </span>
                                 </span>
                             }
-                            lede="Depth beats breadth. These are the technologies I've shipped production systems with — not a list of everything I've read about."
+                            lede="Scroll the stage — skills flip in order: HTML → CSS → Tailwind → frameworks → Docker."
                         />
-                        <div className="mt-8 flex flex-wrap gap-2">
-                            {[
-                                "5+ years shipping",
-                                "Remote-first",
-                                "Asia/Dhaka (UTC+6)",
-                            ].map((t) => (
-                                <span key={t} className="chip">
-                                    {t}
-                                </span>
-                            ))}
-                        </div>
-                    </Reveal>
-
-                    <Reveal direction="left" delay={0.1}>
-                        <StackBars />
                     </Reveal>
                 </div>
+                <SkillFlipStage />
             </section>
 
             {/* ------------------------------------------------------- projects */}

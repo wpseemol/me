@@ -394,64 +394,88 @@
   ],
   "stack": [
     {
+      "name": "HTML",
+      "level": 94,
+      "group": "Foundation",
+      "blurb": "Semantic markup & accessible document structure"
+    },
+    {
+      "name": "CSS",
+      "level": 90,
+      "group": "Foundation",
+      "blurb": "Layout, motion, and responsive design systems"
+    },
+    {
+      "name": "Tailwind CSS",
+      "level": 88,
+      "group": "Frontend",
+      "blurb": "Utility-first styling that ships production UI fast"
+    },
+    {
       "name": "React",
       "level": 88,
-      "group": "Frontend"
+      "group": "Frontend",
+      "blurb": "Component architecture for interactive interfaces"
     },
     {
       "name": "Next.js",
       "level": 85,
-      "group": "Frontend"
+      "group": "Frontend",
+      "blurb": "App Router, SSR/SSG, and Core Web Vitals"
     },
     {
       "name": "TypeScript",
       "level": 72,
-      "group": "Frontend"
-    },
-    {
-      "name": "Tailwind CSS",
-      "level": 86,
-      "group": "Frontend"
+      "group": "Frontend",
+      "blurb": "Typed contracts that keep large apps maintainable"
     },
     {
       "name": "Laravel",
       "level": 90,
-      "group": "Backend"
+      "group": "Backend",
+      "blurb": "Secure APIs, queues, and domain-driven backends"
     },
     {
       "name": "PHP",
       "level": 85,
-      "group": "Backend"
+      "group": "Backend",
+      "blurb": "Battle-tested server-side foundations"
     },
     {
       "name": "Node.js",
       "level": 82,
-      "group": "Backend"
+      "group": "Backend",
+      "blurb": "Event-driven services and realtime channels"
     },
     {
       "name": "Express",
       "level": 76,
-      "group": "Backend"
+      "group": "Backend",
+      "blurb": "Lean HTTP APIs with clear middleware layers"
     },
     {
       "name": "MongoDB",
       "level": 78,
-      "group": "Data"
+      "group": "Data",
+      "blurb": "Flexible document models with solid indexing"
     },
     {
       "name": "MySQL",
       "level": 80,
-      "group": "Data"
+      "group": "Data",
+      "blurb": "Relational schemas and transactional integrity"
     },
     {
       "name": "Redis",
       "level": 65,
-      "group": "Data"
+      "group": "Data",
+      "blurb": "Caching, sessions, and fast ephemeral state"
     },
     {
       "name": "Docker",
       "level": 70,
-      "group": "Platform"
+      "group": "Platform",
+      "blurb": "Reproducible environments from laptop to prod"
     }
   ],
   "projects": [

@@ -374,7 +374,7 @@
   padding-bottom: 0.12em;
 }
 
-/* ---- Theme switch: circular wipe via the View Transitions API ---------- */
+/* ---- Theme switch: sunrise / sunset wipe (View Transitions API) -------- */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -386,8 +386,28 @@
 ::view-transition-new(root) {
   z-index: 2147483646;
 }
+
+/* Default circular expand from the toggle */
 html.theme-wipe::view-transition-new(root) {
-  animation: theme-wipe-in 0.62s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: theme-wipe-in 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Light mode: sun rises — bloom climbs from the lower-right horizon */
+html.theme-wipe-sunrise::view-transition-new(root) {
+  animation: theme-sunrise-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+html.theme-wipe-sunrise::view-transition-old(root) {
+  animation: theme-sunrise-out 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  z-index: 1;
+}
+
+/* Dark mode: sun sets — dusk expands from the upper sky as light recedes */
+html.theme-wipe-sunset::view-transition-new(root) {
+  animation: theme-sunset-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+html.theme-wipe-sunset::view-transition-old(root) {
+  animation: theme-sunset-out 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  z-index: 1;
 }
 
 @keyframes theme-wipe-in {
@@ -396,6 +416,56 @@ html.theme-wipe::view-transition-new(root) {
   }
   to {
     clip-path: circle(150% at var(--wipe-x, 50%) var(--wipe-y, 0%));
+  }
+}
+
+/* Sunrise: light expands upward from the horizon like a dawn disc */
+@keyframes theme-sunrise-in {
+  from {
+    clip-path: circle(0% at var(--wipe-x, 78%) var(--wipe-y, 88%));
+    filter: brightness(1.15) saturate(1.15);
+  }
+  40% {
+    filter: brightness(1.08) saturate(1.08);
+  }
+  to {
+    clip-path: circle(160% at var(--wipe-x, 78%) var(--wipe-y, 88%));
+    filter: brightness(1) saturate(1);
+  }
+}
+@keyframes theme-sunrise-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.55;
+    transform: scale(1.02);
+  }
+}
+
+/* Sunset: night pours in from the sky / sun position */
+@keyframes theme-sunset-in {
+  from {
+    clip-path: circle(0% at var(--wipe-x, 72%) var(--wipe-y, 14%));
+    filter: brightness(0.85) saturate(1.1);
+  }
+  45% {
+    filter: brightness(0.95) saturate(1.05);
+  }
+  to {
+    clip-path: circle(160% at var(--wipe-x, 72%) var(--wipe-y, 14%));
+    filter: brightness(1) saturate(1);
+  }
+}
+@keyframes theme-sunset-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0.4;
+    transform: translateY(1.5%);
   }
 }
 
