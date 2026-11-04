@@ -417,6 +417,36 @@
   background: var(--book-track);
 }
 
+/* Sheet faces must own backface-hiding. Never put filter/box-shadow on the
+   rotating parent — those flatten the 3D context and mirror the front face. */
+.book-sheet {
+  transform-style: preserve-3d;
+  transform-origin: left center;
+}
+.book-sheet-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+.book-sheet-face--front {
+  transform: rotateY(0deg) translateZ(1px);
+}
+.book-sheet-face--back {
+  transform: rotateY(180deg) translateZ(1px);
+}
+.book-sheet-shade {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    rgb(0 0 0 / 0.28) 0%,
+    transparent 42%,
+    rgb(0 0 0 / 0.12) 100%
+  );
+}
+
 /* ---- Theme switch: sunrise / sunset wipe (View Transitions API) -------- */
 ::view-transition-old(root),
 ::view-transition-new(root) {

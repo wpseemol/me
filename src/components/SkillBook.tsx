@@ -132,23 +132,17 @@ export default function SkillBook() {
       pages.forEach((sheet, i) => {
         const local = gsap.utils.clamp(0, 1, turnPhase - i);
         const paper = paperEase(local);
-        // Lift through the fold — highest at mid-turn, like paper peeling up.
+        // Soft peel only — keep pages packed to the spine (no big z “unpack”).
         const peel = Math.sin(paper * Math.PI);
-        const settling = paper > 0.85 ? (paper - 0.85) / 0.15 : 0;
 
         gsap.set(sheet, {
           rotateY: paper * -180,
-          z: peel * 42,
-          rotateX: peel * -4.5,
+          z: peel * 10,
           zIndex: local < 0.5 ? sheetCount - i + 14 : i + 1,
-          filter:
-            local > 0.03 && local < 0.97
-              ? `brightness(${0.86 + settling * 0.12})`
-              : "brightness(1)",
-          boxShadow:
-            peel > 0.04
-              ? `${-peel * 18}px ${peel * 10}px ${20 + peel * 36}px rgb(0 0 0 / ${0.18 + peel * 0.28})`
-              : "none",
+        });
+
+        sheet.querySelectorAll<HTMLElement>("[data-book-shade]").forEach((shade) => {
+          gsap.set(shade, { opacity: peel * 0.5 });
         });
       });
 
@@ -280,12 +274,13 @@ export default function SkillBook() {
                 </div>
               </div>
 
+              {/* Spine trough — keeps the spread looking packed, not floating */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-y-2 left-1/2 z-[35] w-5 -translate-x-1/2"
+                className="pointer-events-none absolute inset-y-1 left-1/2 z-[36] w-8 -translate-x-1/2"
                 style={{
                   background:
-                    "linear-gradient(90deg, transparent, rgb(0 0 0 / 0.22), transparent)",
+                    "linear-gradient(90deg, rgb(0 0 0 / 0.18), rgb(0 0 0 / 0.05) 40%, rgb(0 0 0 / 0.05) 60%, rgb(0 0 0 / 0.2))",
                 }}
               />
 
@@ -301,23 +296,19 @@ export default function SkillBook() {
                     ref={(el) => {
                       pageRefs.current[i] = el;
                     }}
-                    className="absolute inset-y-0 left-1/2 w-1/2 origin-left will-change-transform"
-                    style={{
-                      transformStyle: "preserve-3d",
-                      zIndex: sheetCount - i + 8,
-                    }}
+                    className="book-sheet absolute inset-y-0 left-1/2 w-1/2 will-change-transform"
+                    style={{ zIndex: sheetCount - i + 8 }}
                   >
                     {/* Recto — right page */}
                     <div
-                      className="book-page absolute inset-0 overflow-hidden rounded-r-[16px] border border-l-0"
+                      className="book-page book-sheet-face book-sheet-face--front absolute inset-0 overflow-hidden rounded-r-[16px] border border-l-0"
                       style={{
                         boxShadow:
                           "8px 16px 40px -18px rgb(0 0 0 / 0.45), inset 12px 0 20px rgb(0 0 0 / 0.04)",
-                        backfaceVisibility: "hidden",
-                        WebkitBackfaceVisibility: "hidden",
                       }}
                     >
-                      <div className="relative flex h-full flex-col p-3.5 sm:p-5 md:p-6">
+                      <div className="book-sheet-shade z-10" data-book-shade aria-hidden />
+                      <div className="relative flex h-full flex-col overflow-hidden p-3.5 sm:p-5 md:p-6">
                         {page.kind === "intro" ? (
                           <>
                             <p className="book-muted font-mono text-[10px] uppercase tracking-[0.18em]">
@@ -378,52 +369,52 @@ export default function SkillBook() {
                             <h4 className="book-ink mt-0.5 text-xl leading-none sm:text-2xl">
                               {skill.name}
                             </h4>
-                            <p className="book-body mt-1.5 text-[11px] font-medium leading-snug sm:text-xs">
+                            <p className="book-body mt-1.5 line-clamp-2 text-[11px] font-medium leading-snug sm:text-xs">
                               {skill.blurb}
                             </p>
 
-                            <div className="mt-2.5 sm:mt-3">
+                            <div className="mt-2 min-h-0 flex-1 sm:mt-2.5">
                               <p className="book-muted font-mono text-[9px] uppercase tracking-[0.14em]">
                                 How I learned
                               </p>
-                              <p className="book-body mt-1 text-[11px] leading-relaxed sm:text-[12.5px]">
+                              <p className="book-body mt-1 line-clamp-4 text-[11px] leading-relaxed sm:line-clamp-5 sm:text-[12px]">
                                 {skill.learned}
                               </p>
-                            </div>
 
-                            <ul className="mt-2.5 space-y-1 sm:mt-3">
-                              {skill.practice.slice(0, 3).map((item) => (
-                                <li
-                                  key={item}
-                                  className="book-body flex gap-2 text-[10px] leading-snug sm:text-[11px]"
-                                >
+                              <ul className="mt-2 hidden space-y-1 sm:block">
+                                {skill.practice.slice(0, 2).map((item) => (
+                                  <li
+                                    key={item}
+                                    className="book-body flex gap-2 text-[10px] leading-snug sm:text-[11px]"
+                                  >
+                                    <span
+                                      className="mt-[5px] h-1 w-1 shrink-0 rounded-full"
+                                      style={{ background: accent }}
+                                      aria-hidden
+                                    />
+                                    <span className="line-clamp-1">{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+
+                              <div className="mt-2 flex flex-wrap gap-1">
+                                {skill.focus.map((tag) => (
                                   <span
-                                    className="mt-[5px] h-1 w-1 shrink-0 rounded-full"
-                                    style={{ background: accent }}
-                                    aria-hidden
-                                  />
-                                  <span>{item}</span>
-                                </li>
-                              ))}
-                            </ul>
-
-                            <div className="mt-2 flex flex-wrap gap-1 sm:mt-3">
-                              {skill.focus.map((tag) => (
-                                <span
-                                  key={tag}
-                                  className="rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.08em]"
-                                  style={{
-                                    color: accent,
-                                    borderColor: `${accent}44`,
-                                    background: `${accent}12`,
-                                  }}
-                                >
-                                  {tag}
-                                </span>
-                              ))}
+                                    key={tag}
+                                    className="rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.08em]"
+                                    style={{
+                                      color: accent,
+                                      borderColor: `${accent}44`,
+                                      background: `${accent}12`,
+                                    }}
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
 
-                            <div className="mt-auto pt-2.5">
+                            <div className="mt-auto shrink-0 pt-2">
                               <div className="book-muted mb-1 flex justify-between font-mono text-[10px]">
                                 <span>Level</span>
                                 <span>{skill.level}%</span>
@@ -443,16 +434,14 @@ export default function SkillBook() {
                       </div>
                     </div>
 
-                    {/* Verso — same leaf's back; after the turn it sits on the left */}
+                    {/* Verso — readable left page after the turn (not a mirrored front) */}
                     <div
-                      className="book-page-back absolute inset-0 overflow-hidden rounded-l-[16px] border"
+                      className="book-page-back book-sheet-face book-sheet-face--back absolute inset-0 overflow-hidden rounded-l-[16px] border"
                       style={{
-                        transform: "rotateY(180deg)",
                         boxShadow: "inset 10px 0 24px rgb(0 0 0 / 0.08)",
-                        backfaceVisibility: "hidden",
-                        WebkitBackfaceVisibility: "hidden",
                       }}
                     >
+                      <div className="book-sheet-shade z-10" data-book-shade aria-hidden />
                       {skill ? (
                         <VersoSkill skill={skill} />
                       ) : (
@@ -482,10 +471,8 @@ export default function SkillBook() {
                 style={{ transformStyle: "preserve-3d", zIndex: 40 }}
               >
                 <div
-                  className="absolute inset-0 overflow-hidden rounded-[16px] border"
+                  className="book-sheet-face book-sheet-face--front absolute inset-0 overflow-hidden rounded-[16px] border"
                   style={{
-                    backfaceVisibility: "hidden",
-                    WebkitBackfaceVisibility: "hidden",
                     boxShadow:
                       "12px 22px 50px -16px rgb(0 0 0 / 0.55), inset 0 1px 0 rgb(255 255 255 / 0.12)",
                   }}
@@ -527,13 +514,10 @@ export default function SkillBook() {
                 </div>
 
                 <div
-                  className="absolute inset-0 overflow-hidden rounded-l-[16px] border"
+                  className="book-sheet-face book-sheet-face--back absolute inset-0 overflow-hidden rounded-l-[16px] border"
                   style={{
-                    transform: "rotateY(180deg)",
                     background:
                       "linear-gradient(135deg, var(--brand-800), var(--brand-600))",
-                    backfaceVisibility: "hidden",
-                    WebkitBackfaceVisibility: "hidden",
                   }}
                 >
                   <div className="flex h-full flex-col justify-end p-5 text-white/70">
