@@ -152,24 +152,29 @@ export default function ServicesPage() {
                 ))}
             </div>
 
-            <section className="shell py-24 sm:py-28">
-                <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-                    <Reveal direction="right">
-                        <SectionHead
-                            verb="PATCH"
-                            path="/process"
-                            title={
-                                <>
-                                    {" "}
-                                    <ScrambleText
-                                        text="What working together looks like"
-                                        duration={500}
-                                    />
-                                </>
-                            }
-                            lede="The same five stages regardless of which service you pick."
-                        />
-                    </Reveal>
+            <section
+                className="shell py-24 sm:py-28"
+                aria-labelledby="process-heading"
+            >
+                <div className="grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+                    {/* Sticky outside Reveal — transforms on Reveal kill sticky. */}
+                    <div className="lg:sticky lg:top-28 lg:self-start">
+                        <Reveal direction="right">
+                            <SectionHead
+                                verb="PATCH"
+                                path="/process"
+                                title={
+                                    <span id="process-heading">
+                                        <ScrambleText
+                                            text="What working together looks like"
+                                            duration={500}
+                                        />
+                                    </span>
+                                }
+                                lede="The same five stages regardless of which service you pick."
+                            />
+                        </Reveal>
+                    </div>
                     <Reveal direction="left" delay={0.1}>
                         <div className="lg:pl-4">
                             <ProcessList />

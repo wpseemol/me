@@ -204,23 +204,29 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            <section className="shell py-24 sm:py-28">
-                <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-                    <Reveal direction="right">
-                        <SectionHead
-                            verb="PATCH"
-                            path="/process"
-                            title={
-                                <>
-                                    <ScrambleText
-                                        text="How I run a build"
-                                        duration={500}
-                                    />{" "}
-                                </>
-                            }
-                            lede="Five stages, every project, whether it's a two-week fix or a six-month platform."
-                        />
-                    </Reveal>
+            <section
+                className="shell py-24 sm:py-28"
+                aria-labelledby="process-heading"
+            >
+                <div className="grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+                    {/* Sticky outside Reveal — transforms on Reveal kill sticky. */}
+                    <div className="lg:sticky lg:top-28 lg:self-start">
+                        <Reveal direction="right">
+                            <SectionHead
+                                verb="PATCH"
+                                path="/process"
+                                title={
+                                    <span id="process-heading">
+                                        <ScrambleText
+                                            text="How I run a build"
+                                            duration={500}
+                                        />
+                                    </span>
+                                }
+                                lede="Five stages, every project, whether it's a two-week fix or a six-month platform."
+                            />
+                        </Reveal>
+                    </div>
                     <Reveal direction="left" delay={0.1}>
                         <div className="lg:pl-4">
                             <ProcessList />
