@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import skillsJson from "@/data/skills.json";
@@ -18,8 +19,8 @@ type Skill = (typeof skillsJson.skills)[number];
 const SKILLS = skillsJson.skills as Skill[];
 
 /**
- * Skills stage — pin an INNER plate (not the React section root).
- * Pinning the section itself caused: removeChild NotFoundError on route change.
+ * Skills stage — same scroll/pin pattern as WorkingProjectStage.
+ * Pin an INNER plate (never the React section root) so route changes stay safe.
  */
 export default function SkillsStage() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -28,84 +29,58 @@ export default function SkillsStage() {
   const barRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const pinStRef = useRef<ScrollTrigger | null>(null);
-  const clickLockRef = useRef<number | null>(null);
-  const mountedRef = useRef(true);
-  const activeRef = useRef(0);
+  const clickLockRef = useRef(false);
+  const showRef = useRef<(index: number, instant?: boolean) => void>(() => {});
   const [active, setActive] = useState(0);
 
   const total = SKILLS.length;
-
-  const show = (index: number, instant = false) => {
-    if (!mountedRef.current) return;
-    const idx = Math.min(total - 1, Math.max(0, index));
-    if (idx === activeRef.current && !instant) return;
-    activeRef.current = idx;
-    setActive(idx);
-  };
-
-  const goToSkill = (index: number) => {
-    const idx = Math.min(total - 1, Math.max(0, index));
-    clickLockRef.current = idx;
-    show(idx, true);
-
-    const st = pinStRef.current;
-    if (!st) {
-      clickLockRef.current = null;
-      return;
-    }
-    const span = Math.max(1, st.end - st.start);
-    scrollToY(st.start + span * ((idx + 0.5) / total), {
-      duration: 0.7,
-      onComplete: () => {
-        clickLockRef.current = null;
-      },
-    });
-    // Safety unlock if Lenis onComplete is skipped
-    window.setTimeout(() => {
-      if (clickLockRef.current === idx) clickLockRef.current = null;
-    }, 900);
-  };
+  const skill = SKILLS[Math.min(active, Math.max(total - 1, 0))]!;
+  const Icon = SKILL_ICON[skill.name];
 
   useEffect(() => {
-    const panel = panelRef.current;
-    if (!panel) return;
-
-    gsap.killTweensOf(panel);
-    gsap.set(panel, { opacity: 1, visibility: "visible", y: 0 });
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    gsap.fromTo(
-      panel,
-      { y: 12, opacity: 0.55 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.28,
-        ease: "power2.out",
-        overwrite: true,
-      },
-    );
-  }, [active]);
-
-  useEffect(() => {
-    const list = listRef.current;
-    const el = list?.querySelector<HTMLElement>(
-      `[data-skill-index="${active}"]`,
-    );
-    if (!list || !el) return;
-    const top = el.offsetTop - list.clientHeight / 2 + el.clientHeight / 2;
-    list.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
-  }, [active]);
-
-  // useLayoutEffect so pin DOM is restored BEFORE React removes nodes on route change
-  useLayoutEffect(() => {
-    mountedRef.current = true;
     const section = sectionRef.current;
     const pinEl = pinRef.current;
-    if (!section || !pinEl || total < 1) return;
+    const panel = panelRef.current;
+    if (!section || !pinEl || !panel || total < 1) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let last = -1;
+
+    const show = (index: number, instant = false) => {
+      if (index === last && !instant) return;
+      if (!SKILLS[index]) return;
+      const dir = index >= last ? 1 : -1;
+
+      if (instant || reduced) {
+        gsap.set(panel, { y: 0, opacity: 1, visibility: "visible" });
+        setActive(index);
+        last = index;
+        return;
+      }
+
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      tl.to(panel, {
+        y: dir * -10,
+        opacity: 0.35,
+        duration: 0.18,
+        ease: "power2.in",
+      })
+        .add(() => {
+          flushSync(() => setActive(index));
+          gsap.set(panel, { y: dir * 14, opacity: 0.35 });
+        })
+        .to(panel, {
+          y: 0,
+          opacity: 1,
+          duration: 0.32,
+          ease: "power3.out",
+        });
+
+      last = index;
+    };
+
+    showRef.current = show;
+
     if (reduced) {
       show(0, true);
       return;
@@ -116,7 +91,6 @@ export default function SkillsStage() {
         trigger: section,
         start: "top top",
         end: () => `+=${Math.max(total, 2) * window.innerHeight * 0.42}`,
-        // Pin inner plate — never the React section root
         pin: pinEl,
         pinType: "transform",
         scrub: 0.55,
@@ -128,8 +102,7 @@ export default function SkillsStage() {
               scaleX: 0.06 + self.progress * 0.94,
             });
           }
-          // Ignore scrub index while a click is driving Lenis scroll
-          if (clickLockRef.current !== null) return;
+          if (clickLockRef.current) return;
           const idx = Math.min(
             total - 1,
             Math.floor(self.progress * total + 1e-6),
@@ -142,7 +115,7 @@ export default function SkillsStage() {
               scaleX: 0.06 + self.progress * 0.94,
             });
           }
-          if (clickLockRef.current !== null) return;
+          if (clickLockRef.current) return;
           const idx = Math.min(
             total - 1,
             Math.floor(self.progress * total + 1e-6),
@@ -152,40 +125,78 @@ export default function SkillsStage() {
       });
 
       pinStRef.current = pin;
+      show(0, true);
     }, section);
 
+    // Match WorkingProjectStage: refresh after Lenis / layout settle
     const t1 = window.setTimeout(() => ScrollTrigger.refresh(), 60);
-    const t2 = window.setTimeout(() => ScrollTrigger.refresh(), 320);
-    const onLoad = () => ScrollTrigger.refresh();
-    window.addEventListener("load", onLoad);
+    const t2 = window.setTimeout(() => ScrollTrigger.refresh(), 280);
+
+    // Manual scroll must always win over a stuck click-lock
+    const unlock = () => {
+      clickLockRef.current = false;
+    };
+    window.addEventListener("wheel", unlock, { passive: true });
+    window.addEventListener("touchmove", unlock, { passive: true });
 
     return () => {
-      mountedRef.current = false;
       window.clearTimeout(t1);
       window.clearTimeout(t2);
-      window.removeEventListener("load", onLoad);
-      // Kill pin + restore DOM before React unmounts the tree
+      window.removeEventListener("wheel", unlock);
+      window.removeEventListener("touchmove", unlock);
+      clickLockRef.current = false;
       pinStRef.current?.kill(true);
       pinStRef.current = null;
       ctx.revert();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount once
   }, [total]);
 
-  const skill = SKILLS[active]!;
-  const Icon = SKILL_ICON[skill.name];
+  useEffect(() => {
+    const list = listRef.current;
+    const el = list?.querySelector<HTMLElement>(
+      `[data-skill-index="${active}"]`,
+    );
+    if (!list || !el) return;
+    const top = el.offsetTop - list.clientHeight / 2 + el.clientHeight / 2;
+    list.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  }, [active]);
+
+  const goToSkill = (index: number) => {
+    if (!SKILLS[index]) return;
+    const idx = Math.min(total - 1, Math.max(0, index));
+
+    clickLockRef.current = true;
+    showRef.current(idx, true);
+
+    const st = pinStRef.current;
+    if (!st) {
+      clickLockRef.current = false;
+      return;
+    }
+
+    const span = Math.max(1, st.end - st.start);
+    const unlock = () => {
+      clickLockRef.current = false;
+    };
+
+    scrollToY(st.start + span * ((idx + 0.5) / total), {
+      duration: 0.7,
+      onComplete: unlock,
+    });
+    window.setTimeout(unlock, 850);
+  };
 
   return (
     <section
       ref={sectionRef}
-      className="relative z-10 isolate"
+      className="relative"
       aria-labelledby="stack-heading"
     >
       <div
         ref={pinRef}
         className="relative flex min-h-[100svh] flex-col justify-center py-10 sm:py-12"
       >
-        <div className="relative shell">
+        <div className="shell">
           <div className="mx-auto max-w-3xl text-center">
             <SectionHead
               align="center"
@@ -247,11 +258,7 @@ export default function SkillsStage() {
 
             <div>
               <article className="overflow-hidden rounded-2xl border bg-elev p-5 sm:p-7">
-                <div
-                  ref={panelRef}
-                  aria-live="polite"
-                  style={{ opacity: 1, visibility: "visible" }}
-                >
+                <div ref={panelRef} aria-live="polite">
                   <div className="flex items-start justify-between gap-4">
                     <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border bg-surface text-body sm:h-14 sm:w-14">
                       {Icon ? (
