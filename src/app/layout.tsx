@@ -9,6 +9,8 @@ import CanvasField from '@/components/CanvasField';
 import Cursor from '@/components/Cursor';
 import Intro from '@/components/Intro';
 import SmoothScroll from '@/components/SmoothScroll';
+import CelestialParallaxSky from '@/components/parallax/CelestialParallaxSky';
+import ScrollParallaxDecorations from '@/components/parallax/ScrollParallaxDecorations';
 import { ThemeProvider, themeInitScript } from '@/components/ThemeProvider';
 
 import seo from '@/data/seo.json';
@@ -165,11 +167,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           />
           <SmoothScroll />
           <Intro />
+          <CelestialParallaxSky />
           <CanvasField />
           <Cursor />
           <Nav />
-          <main id="main">{children}</main>
-          <Footer />
+          <div className="relative">
+            <ScrollParallaxDecorations />
+            <main id="main">{children}</main>
+            <Footer />
+          </div>
         </ThemeProvider>
       </body>
     </html>

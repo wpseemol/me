@@ -140,6 +140,8 @@
   --animate-caret: caret 1.05s step-end infinite;
   --animate-pulse-dot: pulse-dot 2.2s ease-in-out infinite;
   --animate-floaty: floaty 6s ease-in-out infinite;
+  --animate-float-badge: float-badge var(--float-dur, 4s) ease-in-out infinite;
+  --animate-spin-slow: spin-slow 28s linear infinite;
 
   @keyframes caret {
     0%,
@@ -171,7 +173,23 @@
       transform: translateY(-8px);
     }
   }
+  /* y: [-amp, amp, -amp] — amp from --float-amp (default 6px) */
+  @keyframes float-badge {
+    0%,
+    100% {
+      transform: translateY(calc(var(--float-amp, 6px) * -1));
+    }
+    50% {
+      transform: translateY(var(--float-amp, 6px));
+    }
+  }
+  @keyframes spin-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }
+
 
 /* ==========================================================================
    BASE

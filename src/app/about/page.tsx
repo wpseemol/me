@@ -17,6 +17,13 @@ import { SectionHead, StatCounter } from "@/components/Section";
 import { CtaBand, ProcessList, StackBars } from "@/components/Blocks";
 import { ArrowIcon } from "@/components/Icons";
 import ScrambleText from "@/components/ScrambleText";
+import FloatingBadge from "@/components/parallax/FloatingBadge";
+import {
+    FishRippleIcon,
+    HoneyDropIcon,
+    LeafFloatIcon,
+    OrganicShieldBadge,
+} from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata("about");
 
@@ -50,8 +57,48 @@ export default function AboutPage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
-            <section className="shell pt-32 sm:pt-40">
-                <div className="grid items-start gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+            <section className="relative shell pt-32 sm:pt-40">
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 -z-0 overflow-hidden"
+                >
+                    <FloatingBadge
+                        className="absolute left-0 top-24 opacity-25 hidden sm:block"
+                        delay={0.4}
+                    >
+                        <LeafFloatIcon
+                            width={34}
+                            height={34}
+                            className="text-emerald-500"
+                        />
+                    </FloatingBadge>
+                    <FloatingBadge
+                        className="absolute right-[8%] top-40 opacity-20 hidden md:block"
+                        delay={1.1}
+                    >
+                        <HoneyDropIcon
+                            width={30}
+                            height={30}
+                            className="text-amber-500"
+                        />
+                    </FloatingBadge>
+                    <FloatingBadge
+                        className="absolute bottom-8 left-[42%] opacity-20 hidden lg:block"
+                        delay={0.7}
+                        duration={5}
+                    >
+                        <FishRippleIcon
+                            width={40}
+                            height={40}
+                            className="text-accent-500"
+                        />
+                    </FloatingBadge>
+                    <span className="absolute left-[22%] top-[38%] h-1 w-1 rounded-full bg-brand-400/45 hidden sm:block" />
+                    <span className="absolute right-[18%] top-[55%] h-1.5 w-1.5 rounded-full bg-accent-400/35 hidden sm:block" />
+                    <span className="absolute left-[60%] top-[20%] h-1 w-1 rounded-full bg-amber-400/40 hidden md:block" />
+                </div>
+
+                <div className="relative grid items-start gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
                     <Reveal>
                         <SectionHead
                             as="h1"
@@ -82,6 +129,10 @@ export default function AboutPage() {
                             down why, and leaving the codebase in a state where
                             the next developer isn&apos;t afraid to touch it.
                         </p>
+                        <div className="mt-6 inline-flex items-center gap-2 rounded-full border bg-elev/70 px-3 py-1.5 font-mono text-2xs text-muted backdrop-blur-sm">
+                            <OrganicShieldBadge width={22} height={22} />
+                            Built from Khulna — Sundarban roots, remote reach
+                        </div>
 
                         <dl className="mt-9 grid grid-cols-2 gap-x-8 gap-y-5 border-t pt-8 sm:grid-cols-3">
                             {[

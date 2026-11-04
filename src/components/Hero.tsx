@@ -13,6 +13,14 @@ import { StatCounter } from "./Section";
 import Magnetic from "./Magnetic";
 import { ArrowIcon, ArrowUpRightIcon } from "./Icons";
 import ScrambleText from "./ScrambleText";
+import FloatingBadge from "./parallax/FloatingBadge";
+import {
+    BeeHoneycombIcon,
+    FastExpressTruckIcon,
+    HoneyDropIcon,
+    LeafFloatIcon,
+    OrganicShieldBadge,
+} from "./ui/icons";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
@@ -184,6 +192,7 @@ function CodeCard() {
 export default function Hero() {
     const p = site.profile;
     const portraitRef = useRef<HTMLDivElement>(null);
+    const visualRef = useRef<HTMLDivElement>(null);
 
     // Portrait drifts up faster than the page, the classic depth cue.
     useEffect(() => {
@@ -206,6 +215,41 @@ export default function Hero() {
         }, el);
 
         return () => ctx.revert();
+    }, []);
+
+    // Mouse-move tilt on the whole visual column (portrait + code card).
+    useEffect(() => {
+        const el = visualRef.current;
+        if (!el) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            return;
+        if (window.matchMedia("(hover: none)").matches) return;
+
+        const rotX = gsap.quickTo(el, "rotateX", {
+            duration: 0.55,
+            ease: "power3.out",
+        });
+        const rotY = gsap.quickTo(el, "rotateY", {
+            duration: 0.55,
+            ease: "power3.out",
+        });
+
+        const onMove = (e: PointerEvent) => {
+            const r = el.getBoundingClientRect();
+            rotY(((e.clientX - r.left) / r.width - 0.5) * 7);
+            rotX(-((e.clientY - r.top) / r.height - 0.5) * 7);
+        };
+        const onLeave = () => {
+            rotX(0);
+            rotY(0);
+        };
+
+        el.addEventListener("pointermove", onMove);
+        el.addEventListener("pointerleave", onLeave);
+        return () => {
+            el.removeEventListener("pointermove", onMove);
+            el.removeEventListener("pointerleave", onLeave);
+        };
     }, []);
 
     return (
@@ -330,7 +374,68 @@ export default function Hero() {
 
                     {/* ---------------------------------------------- visual column */}
                     <LoadIn className="relative" delay={0.3}>
-                        <div className="relative mx-auto max-w-md">
+                        <div
+                            ref={visualRef}
+                            className="relative mx-auto max-w-md will-change-transform"
+                            style={{
+                                transformStyle: "preserve-3d",
+                                perspective: 1000,
+                            }}
+                        >
+                            <FloatingBadge
+                                className="pointer-events-none absolute -left-3 top-6 z-10 hidden sm:block"
+                                delay={0.2}
+                            >
+                                <span className="grid place-items-center rounded-2xl border bg-elev/80 p-2 shadow-[0_12px_32px_-18px_rgb(var(--c-glow-a)/0.7)] backdrop-blur-sm">
+                                    <HoneyDropIcon
+                                        width={28}
+                                        height={28}
+                                        className="text-amber-500"
+                                    />
+                                </span>
+                            </FloatingBadge>
+
+                            <FloatingBadge
+                                className="pointer-events-none absolute -right-2 top-16 z-10 hidden sm:block"
+                                delay={1.1}
+                                amplitude={5}
+                                duration={4.4}
+                            >
+                                <span className="grid place-items-center rounded-2xl border bg-elev/80 p-2 text-emerald-600 shadow-[0_12px_32px_-18px_rgb(var(--c-glow-b)/0.55)] backdrop-blur-sm dark:text-emerald-400">
+                                    <LeafFloatIcon width={26} height={26} />
+                                </span>
+                            </FloatingBadge>
+
+                            <FloatingBadge
+                                className="pointer-events-none absolute bottom-24 -left-4 z-10 hidden md:block"
+                                delay={0.6}
+                                duration={3.6}
+                            >
+                                <OrganicShieldBadge
+                                    width={48}
+                                    height={48}
+                                    className="text-emerald-700 drop-shadow-md dark:text-emerald-300"
+                                />
+                            </FloatingBadge>
+
+                            <FloatingBadge
+                                className="pointer-events-none absolute bottom-8 right-2 z-10 hidden sm:block"
+                                delay={1.6}
+                                amplitude={7}
+                            >
+                                <span className="inline-flex items-center gap-1.5 rounded-full border bg-elev/85 px-2.5 py-1.5 text-brand-ink shadow-sm backdrop-blur-sm">
+                                    <FastExpressTruckIcon
+                                        width={18}
+                                        height={18}
+                                    />
+                                    <BeeHoneycombIcon
+                                        width={16}
+                                        height={16}
+                                        className="text-amber-500/80"
+                                    />
+                                </span>
+                            </FloatingBadge>
+
                             <div
                                 ref={portraitRef}
                                 className="relative ml-auto w-[62%] animate-floaty"

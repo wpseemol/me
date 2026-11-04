@@ -2,6 +2,13 @@ import Link from 'next/link';
 import site from '@/data/site.json';
 import { SOCIAL_ICONS } from './Icons';
 import Logo from './Logo';
+import FloatingBadge from './parallax/FloatingBadge';
+import {
+  FishRippleIcon,
+  HoneyDropIcon,
+  LeafFloatIcon,
+  ShootingStarIcon,
+} from './ui/icons';
 
 const NAV = [
   { href: '/', label: 'Home' },
@@ -16,8 +23,26 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative mt-28 border-t bg-elev/40 backdrop-blur-sm">
-      <div className="shell py-14">
+    <footer className="relative mt-28 overflow-hidden border-t bg-elev/40 backdrop-blur-sm">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <FloatingBadge className="absolute left-[6%] top-8 opacity-30" delay={0.3}>
+          <LeafFloatIcon width={28} height={28} className="text-emerald-500" />
+        </FloatingBadge>
+        <FloatingBadge className="absolute right-[10%] top-12 opacity-25 hidden sm:block" delay={1.2}>
+          <HoneyDropIcon width={24} height={24} className="text-amber-500" />
+        </FloatingBadge>
+        <FloatingBadge className="absolute bottom-16 left-[40%] opacity-20 hidden md:block" delay={0.8} duration={5}>
+          <FishRippleIcon width={36} height={36} className="text-accent-500" />
+        </FloatingBadge>
+        <FloatingBadge className="absolute right-[22%] bottom-10 opacity-20 hidden sm:block dark:opacity-35" delay={1.8}>
+          <ShootingStarIcon width={22} height={22} className="text-brand-300" />
+        </FloatingBadge>
+        <span className="absolute left-[18%] top-[42%] h-1 w-1 rounded-full bg-brand-400/40 hidden sm:block" />
+        <span className="absolute right-[30%] top-[28%] h-1.5 w-1.5 rounded-full bg-accent-400/30 hidden sm:block" />
+        <span className="absolute left-[55%] bottom-[30%] h-1 w-1 rounded-full bg-amber-400/35 hidden md:block" />
+      </div>
+
+      <div className="shell relative py-14">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <Link href="/" aria-label="wpseemol — home" className="inline-block">

@@ -8,6 +8,13 @@ import site from "@/data/site.json";
 import Magnetic from "./Magnetic";
 import { ArrowUpRightIcon, CheckIcon } from "./Icons";
 import ScrambleText from "./ScrambleText";
+import {
+    BeeHoneycombIcon,
+    FishRippleIcon,
+    FreshCatchHookIcon,
+    HoneyDropIcon,
+    LeafFloatIcon,
+} from "./ui/icons";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
@@ -166,6 +173,33 @@ export function StackBars() {
 
 type Service = (typeof site.services)[number];
 
+const SERVICE_ACCENTS = [
+    {
+        Icon: HoneyDropIcon,
+        glow: "rgb(245 185 66 / 0.28)",
+        tint: "text-amber-500",
+        halo: "from-amber-400/25 via-amber-300/10 to-transparent",
+    },
+    {
+        Icon: FishRippleIcon,
+        glow: "rgb(67 228 255 / 0.26)",
+        tint: "text-accent-500",
+        halo: "from-accent-400/25 via-brand-400/10 to-transparent",
+    },
+    {
+        Icon: LeafFloatIcon,
+        glow: "rgb(52 168 110 / 0.26)",
+        tint: "text-emerald-500",
+        halo: "from-emerald-400/25 via-emerald-300/10 to-transparent",
+    },
+    {
+        Icon: BeeHoneycombIcon,
+        glow: "rgb(245 185 66 / 0.22)",
+        tint: "text-amber-600 dark:text-amber-400",
+        halo: "from-amber-500/20 via-brand-400/10 to-transparent",
+    },
+] as const;
+
 export function ServiceCard({
     service,
     index,
@@ -173,26 +207,48 @@ export function ServiceCard({
     service: Service;
     index: number;
 }) {
+    const accent = SERVICE_ACCENTS[index % SERVICE_ACCENTS.length];
+    const AccentIcon = accent.Icon;
+
     return (
-        <article id={service.slug} className="card scroll-mt-28 p-6 sm:p-7">
-            <div className="flex items-start justify-between gap-4">
+        <article
+            id={service.slug}
+            className="group card relative scroll-mt-28 overflow-hidden p-6 sm:p-7 transition-[border-color,box-shadow,transform] duration-500 hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--brand-500)_45%,transparent)] hover:shadow-[0_18px_44px_-22px_rgb(var(--c-glow-a)/0.55)]"
+        >
+            <div
+                aria-hidden="true"
+                className={`pointer-events-none absolute -right-8 -top-10 h-36 w-36 rounded-full bg-gradient-to-br ${accent.halo} opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100`}
+            />
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -bottom-6 -left-4 opacity-[0.14] transition-all duration-500 group-hover:opacity-30 group-hover:scale-110"
+            >
+                <AccentIcon width={88} height={88} className={accent.tint} />
+            </div>
+
+            <div className="relative flex items-start justify-between gap-4">
                 <span className="font-mono text-2xs uppercase tracking-[0.18em] text-muted">
                     {String(index + 1).padStart(2, "0")}
                 </span>
                 <span
-                    className="h-9 w-9 shrink-0 rounded-[11px] opacity-90"
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-[11px] text-white opacity-90 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6"
                     style={{
                         background: `linear-gradient(${135 + index * 25}deg, var(--brand-600), var(--accent-400))`,
+                        boxShadow: `0 8px 20px -10px ${accent.glow}`,
                     }}
-                />
+                >
+                    <AccentIcon width={18} height={18} className="text-white" />
+                </span>
             </div>
 
-            <h3 className="mt-5 text-xl sm:text-[1.35rem]">{service.title}</h3>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
+            <h3 className="relative mt-5 text-xl sm:text-[1.35rem]">
+                {service.title}
+            </h3>
+            <p className="relative mt-3 text-sm leading-relaxed text-muted">
                 {service.summary}
             </p>
 
-            <ul className="mt-5 space-y-2">
+            <ul className="relative mt-5 space-y-2">
                 {service.deliverables.slice(0, 4).map((d) => (
                     <li
                         key={d}
@@ -208,7 +264,7 @@ export function ServiceCard({
                 ))}
             </ul>
 
-            <div className="mt-6 flex flex-wrap gap-1.5 border-t pt-5">
+            <div className="relative mt-6 flex flex-wrap gap-1.5 border-t pt-5">
                 {service.stack.map((t) => (
                     <span key={t} className="chip">
                         {t}
@@ -231,12 +287,43 @@ const LANG_COLOR: Record<string, string> = {
 };
 
 export function ProjectCard({ project }: { project: Project }) {
+    const coastal = /shop|liquid|php|laravel/i.test(
+        `${project.language} ${project.tags.join(" ")}`,
+    );
+
     return (
-        <article className="card group relative flex flex-col p-6 sm:p-7">
-            <div className="flex items-center justify-between gap-3">
+        <article className="card group relative flex flex-col overflow-hidden p-6 sm:p-7 transition-[border-color,box-shadow,transform] duration-500 hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--brand-500)_45%,transparent)] hover:shadow-[0_18px_44px_-22px_rgb(var(--c-glow-a)/0.55)]">
+            <div
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b opacity-0 transition-opacity duration-500 group-hover:opacity-100 ${
+                    coastal
+                        ? "from-accent-400/20 via-accent-400/5 to-transparent"
+                        : "from-amber-400/20 via-amber-300/5 to-transparent"
+                }`}
+            />
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-3 top-3 opacity-0 transition-all duration-500 group-hover:opacity-40 group-hover:scale-110"
+            >
+                {coastal ? (
+                    <FishRippleIcon
+                        width={56}
+                        height={56}
+                        className="text-accent-500"
+                    />
+                ) : (
+                    <HoneyDropIcon
+                        width={48}
+                        height={48}
+                        className="text-amber-500"
+                    />
+                )}
+            </div>
+
+            <div className="relative flex items-center justify-between gap-3">
                 <span className="inline-flex items-center gap-2 font-mono text-2xs text-muted">
                     <span
-                        className="h-2.5 w-2.5 rounded-full"
+                        className="h-2.5 w-2.5 rounded-full transition-transform duration-500 group-hover:scale-125"
                         style={{
                             background:
                                 LANG_COLOR[project.language] ??
@@ -245,12 +332,17 @@ export function ProjectCard({ project }: { project: Project }) {
                     />
                     {project.language}
                 </span>
-                <span className="font-mono text-2xs text-muted">
+                <span className="inline-flex items-center gap-2 font-mono text-2xs text-muted">
+                    <FreshCatchHookIcon
+                        width={14}
+                        height={14}
+                        className="opacity-0 transition-opacity duration-500 group-hover:opacity-60"
+                    />
                     {project.year}
                 </span>
             </div>
 
-            <h3 className="mt-4 text-lg sm:text-xl">
+            <h3 className="relative mt-4 text-lg sm:text-xl">
                 <a
                     href={project.url}
                     target="_blank"
@@ -262,11 +354,11 @@ export function ProjectCard({ project }: { project: Project }) {
                     </span>
                 </a>
             </h3>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
+            <p className="relative mt-3 text-sm leading-relaxed text-muted">
                 {project.detail}
             </p>
 
-            <div className="mt-5 flex flex-wrap gap-1.5">
+            <div className="relative mt-5 flex flex-wrap gap-1.5">
                 {project.tags.map((t) => (
                     <span key={t} className="chip">
                         {t}

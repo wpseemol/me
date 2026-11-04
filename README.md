@@ -1,7 +1,7 @@
 # wpseemol.site — Seemol Chakroborti Portfolio
 
 Developer portfolio for **Seemol Chakroborti (wpseemol)** — full-stack web developer.
-Built with Next.js 15 (App Router), TypeScript, **Tailwind CSS v4**, GSAP 3.15 and a
+Built with Next.js 16 (App Router), TypeScript, **Tailwind CSS v4**, GSAP 3.15 and a
 hand-written canvas renderer.
 
 ---
@@ -9,18 +9,43 @@ hand-written canvas renderer.
 ## Quick start
 
 ```bash
-npm install
-npm run dev        # http://localhost:3000
+pnpm install
+pnpm dev        # http://localhost:3000
 ```
 
 Other commands:
 
 ```bash
-npm run build      # production build
-npm start          # serve the production build
+pnpm build      # production build
+pnpm start      # serve the production build
 ```
 
 Requires Node 18.18+ (Node 20 or 22 recommended).
+
+### Upgrade Next.js again later
+
+When you want the latest Next.js (and matching React types), run the official
+codemod from the project root:
+
+```bash
+pnpm dlx @next/codemod@canary upgrade latest
+```
+
+That command:
+
+1. Detects the current Next.js version
+2. Installs the latest release
+3. Applies any required codemods / config updates
+
+After it finishes:
+
+```bash
+pnpm install
+pnpm build
+```
+
+Fix anything the build reports, then commit. Use this same command whenever you
+need to upgrade again — no need to bump `next` / `react` versions by hand.
 
 ---
 
@@ -319,7 +344,3 @@ to `fonts.gstatic.com` at build time, so it was left as a deliberate next step.
 ## Licence
 
 Content and images © Seemol Chakroborti. Code MIT.
-
-bg remove
-
-need rebuild
