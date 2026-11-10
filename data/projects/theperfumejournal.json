@@ -1,0 +1,32 @@
+{
+    "slug": "theperfumejournal",
+    "name": "The Perfume Journal",
+    "repo": "https://github.com/wpseemol/patelle-journal",
+    "github": "https://github.com/wpseemol/patelle-journal",
+    "homepage": "https://theperfumejournal.com",
+    "description": "Editorial fragrance journal for Patélle — scent guides, notes and stories on a WordPress + Elementor site, powered by a custom journal plugin I built.",
+    "detail": "Live magazine-style storefront and blog at theperfumejournal.com. Layout and pages are WordPress with Elementor; the archive and single-post experience comes from my Patélle Journal plugin — plugin-owned templates, Customizer-style settings for blog grid, featured story, newsletter, reading progress, TOC and design tokens. Theme/Elementor can keep the header and footer while the plugin takes over post views.",
+    "screenshot": "/images/projects/theperfumejournal.png",
+    "framework": "WordPress + Elementor",
+    "cms": "WordPress",
+    "stack": {
+        "frontend": "Elementor · PHP templates · Custom CSS",
+        "backend": "WordPress · Custom plugin (Patélle Journal)",
+        "dashboard": "WP Admin · Plugin settings · Elementor",
+        "infra": "WordPress hosting"
+    },
+    "technologies": [
+        "WordPress",
+        "Elementor",
+        "PHP",
+        "JavaScript",
+        "CSS"
+    ],
+    "language": "PHP",
+    "languages": ["PHP", "JavaScript", "CSS", "HTML"],
+    "stars": 0,
+    "created": "2024-01-01",
+    "updated": "2026-11-10",
+    "status": "live",
+    "featured": true
+}
