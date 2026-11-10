@@ -1,0 +1,33 @@
+{
+    "slug": "b2wi",
+    "name": "B2W Initiative",
+    "repo": "https://github.com/wpseemol/b2wi",
+    "github": "https://github.com/wpseemol/b2wi",
+    "homepage": "https://www.b2wi.com/",
+    "description": "Marketing site for Bangladesh 2 World Initiative — study-abroad guidance, profile assessment, scholarships and visa support for Bangladeshi talent.",
+    "detail": "Next.js 15 front end for B2WI: hero and impact stats, service grid (university research, SOP/LOR review, visa, accommodation, scholarships), testimonials, scholarship updates and insights. Built with React 19, TypeScript, Tailwind, Radix UI and next-themes dark mode. Live at b2wi.com.",
+    "screenshot": "/images/projects/b2wi.png",
+    "framework": "Next.js",
+    "cms": "Custom (no CMS)",
+    "stack": {
+        "frontend": "Next.js 15 · React 19 · TypeScript · Tailwind · Radix UI · next-themes",
+        "backend": "Static / Next.js App Router",
+        "dashboard": "—",
+        "infra": "Vercel-ready · npm / yarn"
+    },
+    "technologies": [
+        "Next.js",
+        "React",
+        "TypeScript",
+        "Tailwind CSS",
+        "Radix UI",
+        "Glide.js"
+    ],
+    "language": "TypeScript",
+    "languages": ["TypeScript", "JavaScript", "CSS"],
+    "stars": 0,
+    "created": "2024-01-01",
+    "updated": "2026-11-10",
+    "status": "live",
+    "featured": true
+}
