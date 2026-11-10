@@ -1,0 +1,33 @@
+{
+    "slug": "patelle",
+    "name": "Patélle",
+    "repo": "https://github.com/wpseemol/patelle-theme",
+    "github": "https://github.com/wpseemol/patelle-theme",
+    "homepage": "https://patelle.wpseemol.site/",
+    "description": "Custom Shopify Online Store 2.0 theme for Patélle — a premium fragrance brand with Figma-matched home, shop, product, about and contact pages.",
+    "detail": "Shopify theme built on Dawn 16 with a full set of patelle-* sections: hero slider, shop grids, seasonal collage, product PDP with scent metafields (notes, intensity, FAQs), reviews and quality promise. Liquid + JSON templates, theme-editor settings and metaobjects. Live preview: patelle.wpseemol.site (storefront password: 1).",
+    "screenshot": "/images/projects/patelle.png",
+    "framework": "Shopify (Dawn)",
+    "cms": "Shopify",
+    "stack": {
+        "frontend": "Liquid · JSON templates · CSS · JavaScript",
+        "backend": "Shopify Online Store 2.0 · Metafields · Metaobjects",
+        "dashboard": "Shopify Admin · Theme editor",
+        "infra": "Shopify CLI · Theme Check"
+    },
+    "technologies": [
+        "Shopify",
+        "Liquid",
+        "JavaScript",
+        "CSS",
+        "JSON",
+        "Dawn"
+    ],
+    "language": "Liquid",
+    "languages": ["Liquid", "JavaScript", "CSS", "JSON"],
+    "stars": 0,
+    "created": "2024-01-01",
+    "updated": "2026-11-10",
+    "status": "live",
+    "featured": true
+}
