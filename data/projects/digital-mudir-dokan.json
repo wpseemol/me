@@ -1,0 +1,34 @@
+{
+    "slug": "digital-mudir-dokan",
+    "name": "Digital Mudir Dokan",
+    "repo": "https://github.com/wpseemol/digital-mudir-dokan",
+    "github": "https://github.com/wpseemol/digital-mudir-dokan",
+    "homepage": "https://digitalmudirdokan.com",
+    "description": "Custom WordPress + WooCommerce theme for a Bangladeshi grocery store — shop, cart, checkout and account flows built for local delivery and COD.",
+    "detail": "WooCommerce-first theme I wrote from scratch with Tailwind CSS and semantic HTML5. Customizer-driven hero slider, homepage product grids, promo banners, FAQ and WhatsApp CTA; tailored templates for archive, single product, cart and checkout; JSON-LD for Organization, Product and Breadcrumb. Live on digitalmudirdokan.com.",
+    "screenshot": "/images/projects/digital-mudir-dokan.png",
+    "framework": "WordPress + WooCommerce",
+    "cms": "WordPress",
+    "stack": {
+        "frontend": "PHP templates · Tailwind CSS · Vanilla JS",
+        "backend": "WordPress · WooCommerce · Customizer API",
+        "dashboard": "WP Admin · Theme options · Customizer panels",
+        "infra": "npm · Tailwind CLI"
+    },
+    "technologies": [
+        "WordPress",
+        "WooCommerce",
+        "PHP",
+        "Tailwind CSS",
+        "JavaScript",
+        "HTML5",
+        "JSON-LD"
+    ],
+    "language": "PHP",
+    "languages": ["PHP", "CSS", "JavaScript", "HTML"],
+    "stars": 0,
+    "created": "2024-01-28",
+    "updated": "2026-11-10",
+    "status": "live",
+    "featured": true
+}
