@@ -120,22 +120,23 @@ Sync will **not** overwrite a screenshot path you already set, and it will not d
 
 ---
 
-## 5. Pagination (projects page)
+## 5. Home order & pagination
 
-- **Home** shows featured projects (all with `"featured": true`), newest first — no pager.
-- **`/projects`** paginates the full JSON list.
-
-Change page size in `data/projects/_config.json`:
+- **Home** “Recent working projects” uses the `home` slug list in `_config.json` (1st, 2nd, 3rd…).
+- If `home` is empty, it falls back to `"featured": true` projects, newest `updated` first.
+- **`/projects`** shows the full JSON list, sorted by `updated` (newest first), paginated.
 
 ```json
 {
   "pageSize": 4,
-  "homeLimit": 4
+  "homeLimit": 3,
+  "home": ["patelle", "theperfumejournal", "digital-mudir-dokan"]
 }
 ```
 
 - `pageSize` — cards per page on `/projects` (default `4` = 2×2 grid).
-- `homeLimit` — max cards on the home “Recent working projects” section (`0` = no limit).
+- `homeLimit` — max cards on the home section (`0` = no limit).
+- `home` — slugs in the order they appear on the home page.
 
 ---
 

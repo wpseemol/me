@@ -33,9 +33,10 @@ import ScrambleText from "@/components/ScrambleText";
 export const metadata: Metadata = pageMetadata("home");
 
 export default function HomePage() {
-    const { homeLimit } = getProjectsConfig();
+    const { homeLimit, home } = getProjectsConfig();
     const working = getWorkingProjects({
         featuredOnly: true,
+        order: home.length ? home : undefined,
         limit: homeLimit || undefined,
     });
 
@@ -88,6 +89,12 @@ export default function HomePage() {
                         </Reveal>
                     </div>
                     <WorkingProjectStage projects={working} />
+                    <Reveal className="shell mt-8 flex justify-center sm:mt-10">
+                        <Link href="/projects" className="btn btn-ghost">
+                            All projects
+                            <ArrowIcon width={16} height={16} />
+                        </Link>
+                    </Reveal>
                 </section>
             ) : null}
 

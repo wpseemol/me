@@ -1,4 +1,13 @@
 {
     "pageSize": 4,
-    "homeLimit": 5
+    "homeLimit": 0,
+    "home": [
+        "niyenin",
+        "mangrove-collection",
+        "patelle",
+        "theperfumejournal",
+        "digital-mudir-dokan",
+        "b2wi",
+        "prodesiginity"
+    ]
 }

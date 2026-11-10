@@ -35,6 +35,8 @@ export type WorkingProject = {
 export type ProjectsConfig = {
     pageSize: number;
     homeLimit: number;
+    /** Slugs for home “Recent working projects”, in display order (1st, 2nd, 3rd…). */
+    home: string[];
 };
 
 const PROJECTS_DIR = path.join(process.cwd(), "data", "projects");
@@ -42,6 +44,7 @@ const PROJECTS_DIR = path.join(process.cwd(), "data", "projects");
 const DEFAULT_CONFIG: ProjectsConfig = {
     pageSize: 4,
     homeLimit: 4,
+    home: [],
 };
 
 function asString(v: unknown, fallback = ""): string {
@@ -118,16 +121,38 @@ export function getProjectsConfig(): ProjectsConfig {
         return {
             pageSize: Math.max(1, asNumber(raw.pageSize, DEFAULT_CONFIG.pageSize)),
             homeLimit: Math.max(0, asNumber(raw.homeLimit, DEFAULT_CONFIG.homeLimit)),
+            home: asStringList(raw.home)
+                .map((s) => s.trim())
+                .filter(Boolean),
         };
     } catch {
         return { ...DEFAULT_CONFIG };
     }
 }
 
+function sortByUpdatedDesc(list: WorkingProject[]): WorkingProject[] {
+    return [...list].sort((a, b) =>
+        (b.updated || "").localeCompare(a.updated || ""),
+    );
+}
+
+/** Apply an explicit slug order; unknown slugs are skipped. */
+function orderBySlugs(
+    list: WorkingProject[],
+    slugs: string[],
+): WorkingProject[] {
+    const bySlug = new Map(list.map((p) => [p.slug, p]));
+    return slugs
+        .map((slug) => bySlug.get(slug))
+        .filter((p): p is WorkingProject => Boolean(p));
+}
+
 /** Read data/projects/*.json at build time — safe for `output: "export"`. */
 export function getWorkingProjects(options?: {
     featuredOnly?: boolean;
     limit?: number;
+    /** When set, show these slugs in this order (home page). */
+    order?: string[];
 }): WorkingProject[] {
     if (!fs.existsSync(PROJECTS_DIR)) return [];
 
@@ -144,11 +169,19 @@ export function getWorkingProjects(options?: {
                 return null;
             }
         })
-        .filter((p): p is WorkingProject => Boolean(p))
-        .sort((a, b) => (b.updated || "").localeCompare(a.updated || ""));
+        .filter((p): p is WorkingProject => Boolean(p));
 
-    if (options?.featuredOnly) {
-        list = list.filter((p) => p.featured);
+    const order = (options?.order ?? [])
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+    if (order.length > 0) {
+        list = orderBySlugs(list, order);
+    } else {
+        list = sortByUpdatedDesc(list);
+        if (options?.featuredOnly) {
+            list = list.filter((p) => p.featured);
+        }
     }
 
     if (options?.limit && options.limit > 0) {
